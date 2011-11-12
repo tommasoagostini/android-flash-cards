@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="kindergarten_set1">
+        <item>all</item>
+        <item>am</item>
+        <item>are</item>
+        <item>be</item>
+        <item>but</item>
+        <item>came</item>
+        <item>did</item>
+        <item>do</item>
+        <item>get</item>
+        <item>good</item>
+        <item>have</item>
+        <item>like</item>
+        <item>must</item>
+        <item>new</item>
+        <item>no</item>
+        <item>now</item>
+        <item>on</item>
+        <item>out</item>
+        <item>please</item>
+        <item>pretty</item>
+        <item>saw</item>
+        <item>say</item>
+        <item>so</item>
+        <item>soon</item>
+        <item>under</item>
+        <item>well</item>
+        <item>went</item>
+        <item>what</item>
+        <item>will</item>
+        <item>yes</item>
+    </string-array>
+    <string-array name="kindergarten_set2">
+        <item>a</item>
+        <item>and</item>
+        <item>are</item>
+        <item>for</item>
+        <item>go</item>
+        <item>have</item>
+        <item>he</item>
+        <item>here</item>
+        <item>I</item>
+        <item>is</item>
+        <item>like</item>
+        <item>my</item>
+        <item>play</item>
+        <item>said</item>
+        <item>see</item>
+        <item>she</item>
+        <item>the</item>
+        <item>to</item>
+    </string-array>
+</resources>
