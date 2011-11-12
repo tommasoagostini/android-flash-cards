@@ -16,11 +16,10 @@
 
 package org.thomasamsler.android.flashcards;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,7 +37,7 @@ public class FragmentPagerActivity extends FragmentActivity {
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
 	private Random random;
-	private Set<String> words;
+	private List<String> words;
 	private int numberOfWords;
 	private int wordCount;
 	
@@ -61,7 +60,7 @@ public class FragmentPagerActivity extends FragmentActivity {
 		Bundle bundle = getIntent().getExtras();
 		int wordsId = bundle.getInt(AppConstants.SELECTED_LIST_ITEM_KEY);
 		
-		words = new LinkedHashSet<String>(Arrays.asList(getResources().getStringArray(WordSets.wordSets.get(Integer.valueOf(wordsId)))));
+		words = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.wordSets.get(Integer.valueOf(wordsId)))));
 		numberOfWords = words.size();
 		wordCount = 1;
 		
@@ -82,23 +81,11 @@ public class FragmentPagerActivity extends FragmentActivity {
 		public Fragment getItem(int index) {
 
 			String word = null;
-			int randomNum = random.nextInt(words.size()) + 1;
-			
-			for(Iterator<String> iter = words.iterator(); iter.hasNext();) {
-				
-				if(0 < randomNum) {
-					
-					word = iter.next();
-					randomNum--;
-				}
-				else {
-					
-					break;
-				}
-			}
-			
+			int randomNum = random.nextInt(words.size());
+
+			word = words.get(randomNum);
 			words.remove(word);
-			
+
 			return PageFragment.newInstance(word, wordCount++, numberOfWords);
 		}
 
