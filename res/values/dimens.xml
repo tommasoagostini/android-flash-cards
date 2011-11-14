@@ -2,4 +2,8 @@
 <resources>
     <dimen name="ActionBarItemRightPadding">10dp</dimen>
     <dimen name="ActionBarItemLeftPadding">10dp</dimen>
+    <dimen name="WordNumberBottomPadding">10dp</dimen>
+    <dimen name="ActionBarHeight">40sp</dimen>
+    <dimen name="ActionBarFontSize">18dp</dimen>
+    <dimen name="WordFontSize">80dp</dimen>
 </resources>
