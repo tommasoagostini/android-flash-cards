@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
-        android:layout_height="35sp"
+        android:layout_height="@dimen/ActionBarHeight"
         android:background="@drawable/actionbar_gradient" >
 
         <TextView
@@ -19,7 +19,7 @@
             android:layout_centerVertical="true"
             android:text="@string/app_name"
             android:textColor="#FFFFFF"
-            android:textSize="18dp"
+            android:textSize="@dimen/ActionBarFontSize"
             android:typeface="normal"
             android:layout_marginLeft="@dimen/ActionBarItemLeftPadding" />
         

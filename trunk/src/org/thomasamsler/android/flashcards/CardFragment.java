@@ -18,8 +18,10 @@ package org.thomasamsler.android.flashcards;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -52,15 +54,18 @@ public class CardFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
 	    View view = inflater.inflate(R.layout.card, container, false);
-	    TextView textView = (TextView) view.findViewById(R.id.textView1);
-	    textView.setText(getArguments().getString(WORD_KEY));
+
+	    // Set the main word 
+	    TextView wordTextView = (TextView) view.findViewById(R.id.textView1);
+	    wordTextView.setText(getArguments().getString(WORD_KEY));
 	    
-	    TextView foo = (TextView) view.findViewById(R.id.textView2);
+	    // Set the bottom word counter
+	    TextView counterTextView = (TextView) view.findViewById(R.id.textView2);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(getArguments().getInt(CURRENT_KEY));
 	    sb.append(" of ");
 	    sb.append(getArguments().getInt(MAX_KEY));
-	    foo.setText(sb.toString());
+	    counterTextView.setText(sb.toString());
 	    
 	    return view;
 	}
