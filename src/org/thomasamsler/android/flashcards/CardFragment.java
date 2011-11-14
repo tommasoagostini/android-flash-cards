@@ -18,10 +18,8 @@ package org.thomasamsler.android.flashcards;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -30,6 +28,7 @@ public class CardFragment extends Fragment {
 	private final static String WORD_KEY = "word";
 	private final static String MAX_KEY = "max";
 	private final static String CURRENT_KEY = "current";
+	
 	
 	public static CardFragment newInstance(String word, int wordCount, int totalWords) {
 		
@@ -56,11 +55,11 @@ public class CardFragment extends Fragment {
 	    View view = inflater.inflate(R.layout.card, container, false);
 
 	    // Set the main word 
-	    TextView wordTextView = (TextView) view.findViewById(R.id.textView1);
+	    TextView wordTextView = (TextView) view.findViewById(R.id.textViewWord);
 	    wordTextView.setText(getArguments().getString(WORD_KEY));
 	    
 	    // Set the bottom word counter
-	    TextView counterTextView = (TextView) view.findViewById(R.id.textView2);
+	    TextView counterTextView = (TextView) view.findViewById(R.id.textViewWordNumber);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(getArguments().getInt(CURRENT_KEY));
 	    sb.append(" of ");

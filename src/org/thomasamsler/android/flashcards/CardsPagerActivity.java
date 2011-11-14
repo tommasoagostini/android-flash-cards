@@ -28,26 +28,33 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class CardsPagerActivity extends FragmentActivity {
 
+	private final int NORMAL_TEXT_SIZE = 80;
+	private final int LARGE_TEXT_SIZE = 120;
+	
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
-	private Random random;
-	private List<String> words;
-	private int numberOfWords;
-	private int wordCount;
+	private Random mRandom;
+	private List<String> mWords;
+	private int mNumberOfWords;
+	private int mWordCount;
+	private boolean mMagnify = false;
 	
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cards);
 		
-		ImageButton imageButton = (ImageButton)findViewById(R.id.imageButtonList);
-		imageButton.setOnClickListener(new OnClickListener() {
+		ImageButton imageButtonList = (ImageButton)findViewById(R.id.imageButtonList);
+		imageButtonList.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				
@@ -56,19 +63,73 @@ public class CardsPagerActivity extends FragmentActivity {
 			}
 		});
 		
+		/*
+		 * When the user taps on the magnify image button, it will increase the 
+		 * text size of the words.
+		 */
+		ImageButton imageButtonMagnify = (ImageButton)findViewById(R.id.imageButtonMagnify);
+		imageButtonMagnify.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+
+				// Create a boolean toggle
+				mMagnify ^= true;
+
+				for(int i = 0; i < mViewPager.getChildCount(); i++) {
+					
+					try {
+						
+						((TextView) mViewPager.getChildAt(i).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? LARGE_TEXT_SIZE : NORMAL_TEXT_SIZE);
+					}
+					catch(Exception e) {
+						
+						Log.w(AppConstants.LOG_TAG, "WARN: Was not able to set text size", e);
+					}
+				}
+			}
+		});
+		
 		// Get intent data
 		Bundle bundle = getIntent().getExtras();
 		int wordsId = bundle.getInt(AppConstants.SELECTED_LIST_ITEM_KEY);
 		
-		words = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.wordSets.get(Integer.valueOf(wordsId)))));
-		numberOfWords = words.size();
-		wordCount = 1;
+		mWords = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.mWordSets.get(Integer.valueOf(wordsId)))));
+		mNumberOfWords = mWords.size();
+		mWordCount = 1;
 		
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
 		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 		mViewPager.setAdapter(mMyFragmentPagerAdapter);
 		
-		random = new Random();
+		/*
+		 * Use page change listener to magnify the words 
+		 */
+		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			public void onPageSelected(int arg0) {
+				
+				if(mMagnify) {
+				
+					for(int i = 0; i < mViewPager.getChildCount(); i++) {
+
+						try {
+						
+							((TextView) mViewPager.getChildAt(i).findViewById(R.id.textViewWord)).setTextSize(LARGE_TEXT_SIZE);
+						}
+						catch(Exception e) {
+							
+							Log.w(AppConstants.LOG_TAG, "WARN: Was not able to set text size", e);
+						}
+					}
+				}
+			}
+			
+			public void onPageScrolled(int arg0, float arg1, int arg2) { /* Nothing to do here */ }
+			
+			public void onPageScrollStateChanged(int arg0) { /* Nothing to do here */ }
+		});
+		
+		mRandom = new Random();
 	}
 
 	private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -81,18 +142,18 @@ public class CardsPagerActivity extends FragmentActivity {
 		public Fragment getItem(int index) {
 
 			String word = null;
-			int randomNum = random.nextInt(words.size());
+			int randomNum = mRandom.nextInt(mWords.size());
 
-			word = words.get(randomNum);
-			words.remove(word);
+			word = mWords.get(randomNum);
+			mWords.remove(word);
 
-			return CardFragment.newInstance(word, wordCount++, numberOfWords);
+			return CardFragment.newInstance(word, mWordCount++, mNumberOfWords);
 		}
 
 		@Override
 		public int getCount() {
 
-			return numberOfWords;
+			return mNumberOfWords;
 		}
 	}
 }

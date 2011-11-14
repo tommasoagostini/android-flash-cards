@@ -6,13 +6,13 @@
     android:background="#FFFFFF">
 
     <RelativeLayout
-        android:id="@+id/relativeLayout1"
+        android:id="@+id/relativeLayoutListActionBar"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/ActionBarHeight"
         android:background="@drawable/actionbar_gradient" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/textViewListActionBarTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -26,7 +26,7 @@
     </RelativeLayout>
 
     <fragment
-        android:id="@+id/fragment1"
+        android:id="@+id/arrayListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="org.thomasamsler.android.flashcards.ArrayListFragment" />

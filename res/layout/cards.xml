@@ -6,13 +6,13 @@
     android:background="#FFFFFF">
 
     <RelativeLayout
-        android:id="@+id/relativeLayout1"
+        android:id="@+id/relativeLayoutCardsActionBar"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/ActionBarHeight"
         android:background="@drawable/actionbar_gradient" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/textViewCardsActionBarTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -32,6 +32,16 @@
             android:layout_marginRight="@dimen/ActionBarItemRightPadding"
             android:background="#000000"
             android:src="@drawable/ic_action_list" />
+
+        <ImageButton
+            android:id="@+id/imageButtonMagnify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/imageButtonList"
+            android:layout_marginRight="@dimen/ActionBarItemRightPadding"
+            android:background="#000000"
+            android:src="@drawable/ic_action_magnify" />
 
     </RelativeLayout>
 
