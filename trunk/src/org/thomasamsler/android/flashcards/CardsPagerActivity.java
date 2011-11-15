@@ -38,7 +38,7 @@ import android.widget.TextView;
 public class CardsPagerActivity extends FragmentActivity {
 
 	private final int NORMAL_TEXT_SIZE = 80;
-	private final int LARGE_TEXT_SIZE = 120;
+	private final int LARGE_TEXT_SIZE = 100;
 	
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
@@ -67,7 +67,7 @@ public class CardsPagerActivity extends FragmentActivity {
 		 * When the user taps on the magnify image button, it will increase the 
 		 * text size of the words.
 		 */
-		ImageButton imageButtonMagnify = (ImageButton)findViewById(R.id.imageButtonMagnify);
+		final ImageButton imageButtonMagnify = (ImageButton)findViewById(R.id.imageButtonMagnify);
 		imageButtonMagnify.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
@@ -75,6 +75,16 @@ public class CardsPagerActivity extends FragmentActivity {
 				// Create a boolean toggle
 				mMagnify ^= true;
 
+				// Change button image between magnify and reduce
+				if(mMagnify) {
+				
+					imageButtonMagnify.setImageResource(R.drawable.ic_action_reduce);
+				}
+				else {
+					
+					imageButtonMagnify.setImageResource(R.drawable.ic_action_magnify);
+				}
+				
 				for(int i = 0; i < mViewPager.getChildCount(); i++) {
 					
 					try {
