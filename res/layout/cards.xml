@@ -23,16 +23,17 @@
             android:typeface="normal"
             android:layout_marginLeft="@dimen/ActionBarItemLeftPadding" />
         
-        <ImageButton
-            android:id="@+id/imageButtonList"
+		<ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/ActionBarItemRightPadding"
-            android:background="#000000"
-            android:src="@drawable/ic_action_list" />
-
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonMagnify"
+            android:paddingBottom="0dp"
+            android:paddingRight="10dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+        
         <ImageButton
             android:id="@+id/imageButtonMagnify"
             android:layout_width="wrap_content"
@@ -42,6 +43,27 @@
             android:layout_marginRight="@dimen/ActionBarItemRightPadding"
             android:background="#000000"
             android:src="@drawable/ic_action_magnify" />
+        
+        <ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonList"
+            android:paddingBottom="0dp"
+            android:paddingRight="10dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
+            android:background="#000000"
+            android:src="@drawable/ic_action_list" />
 
     </RelativeLayout>
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="ActionBarItemRightPadding">10dp</dimen>
+    <dimen name="ActionBarItemRightPadding">20dp</dimen>
+    <dimen name="ActionBarItemRightBorderPadding">10dp</dimen>
     <dimen name="ActionBarItemLeftPadding">10dp</dimen>
     <dimen name="WordNumberBottomPadding">10dp</dimen>
     <dimen name="ActionBarHeight">40sp</dimen>
