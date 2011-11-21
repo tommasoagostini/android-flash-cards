@@ -20,7 +20,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class CardFragment extends Fragment {
@@ -28,7 +34,7 @@ public class CardFragment extends Fragment {
 	private final static String WORD_KEY = "word";
 	private final static String MAX_KEY = "max";
 	private final static String CURRENT_KEY = "current";
-	
+	private Integer mTag;
 	
 	public static CardFragment newInstance(String word, int wordCount, int totalWords) {
 		
@@ -55,8 +61,46 @@ public class CardFragment extends Fragment {
 	    View view = inflater.inflate(R.layout.card, container, false);
 
 	    // Set the main word 
-	    TextView wordTextView = (TextView) view.findViewById(R.id.textViewWord);
+	    final TextView wordTextView = (TextView)view.findViewById(R.id.textViewWord);
 	    wordTextView.setText(getArguments().getString(WORD_KEY));
+//	    wordTextView.setOnLongClickListener(new OnLongClickListener() {
+//			
+//			public boolean onLongClick(View v) {
+//				// FIXME: Experimental 
+//				Animation hyperspaceJump = AnimationUtils.loadAnimation(v.getContext(), R.anim.scale);
+//				wordTextView.startAnimation(hyperspaceJump);
+//				return false;
+//			}
+//		});
+	    
+	    final EditText editTextWord = (EditText)view.findViewById(R.id.editTextWord);
+	    final ImageButton imageButtonSave = (ImageButton)view.findViewById(R.id.imageButtonSave);
+	    final ImageButton imageButtonCancel = (ImageButton)view.findViewById(R.id.imageButtonCancel);
+	    
+	    imageButtonSave.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				editTextWord.setVisibility(View.INVISIBLE);
+				wordTextView.setText(editTextWord.getText());
+				wordTextView.setVisibility(View.VISIBLE);
+				v.setVisibility(View.INVISIBLE);
+				imageButtonCancel.setVisibility(View.INVISIBLE);
+				
+				((CardsPagerActivity)getActivity()).updateWord(mTag, editTextWord.getText().toString());
+			}
+		});
+	    
+	    imageButtonCancel.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				editTextWord.setVisibility(View.INVISIBLE);
+				wordTextView.setVisibility(View.VISIBLE);
+				v.setVisibility(View.INVISIBLE);
+				imageButtonSave.setVisibility(View.INVISIBLE);
+			}
+		});
 	    
 	    // Set the bottom word counter
 	    TextView counterTextView = (TextView) view.findViewById(R.id.textViewWordNumber);
@@ -66,6 +110,13 @@ public class CardFragment extends Fragment {
 	    sb.append(getArguments().getInt(MAX_KEY));
 	    counterTextView.setText(sb.toString());
 	    
+	    view.setTag(mTag);
+	    
 	    return view;
+	}
+	
+	public void setTag(Integer obj) {
+		
+		mTag = obj;
 	}
 }

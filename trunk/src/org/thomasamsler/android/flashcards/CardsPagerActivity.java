@@ -16,8 +16,12 @@
 
 package org.thomasamsler.android.flashcards;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -26,26 +30,27 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class CardsPagerActivity extends FragmentActivity {
 
-	private final int NORMAL_TEXT_SIZE = 80;
-	private final int LARGE_TEXT_SIZE = 100;
+	private final int NORMAL_TEXT_SIZE = 60;
+	private final int LARGE_TEXT_SIZE = 80;
 	
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
 	private Random mRandom;
 	private List<String> mWords;
-	private int mNumberOfWords;
-	private int mWordCount;
+	private Integer[] mRandomWordsIndex;
+	private List<Integer> mWordsIndex = new ArrayList<Integer>();
 	private boolean mMagnify = false;
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -84,56 +89,65 @@ public class CardsPagerActivity extends FragmentActivity {
 					
 					imageButtonMagnify.setImageResource(R.drawable.ic_action_magnify);
 				}
+
+				// Get TextView and Magnify or reduce its font size
+				int currentIndex = mViewPager.getCurrentItem();
+				Integer tag = mRandomWordsIndex[currentIndex];
+				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? LARGE_TEXT_SIZE : NORMAL_TEXT_SIZE);
+			}
+		});
+		
+		ImageButton imageButtonEdit = (ImageButton)findViewById(R.id.imageButtonEdit);
+		imageButtonEdit.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
 				
-				for(int i = 0; i < mViewPager.getChildCount(); i++) {
-					
-					try {
-						
-						((TextView) mViewPager.getChildAt(i).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? LARGE_TEXT_SIZE : NORMAL_TEXT_SIZE);
-					}
-					catch(Exception e) {
-						
-						Log.w(AppConstants.LOG_TAG, "WARN: Was not able to set text size", e);
-					}
-				}
+				int currentIndex = mViewPager.getCurrentItem();
+				
+				Integer tag = mRandomWordsIndex[currentIndex];
+				
+				View card = mViewPager.findViewWithTag(tag);
+				
+				TextView textView = ((TextView)card.findViewById(R.id.textViewWord));
+				EditText editText = ((EditText)card.findViewById(R.id.editTextWord));
+				((ImageButton)card.findViewById(R.id.imageButtonCancel)).setVisibility(View.VISIBLE);
+				((ImageButton)card.findViewById(R.id.imageButtonSave)).setVisibility(View.VISIBLE);
+				
+				textView.setVisibility(View.INVISIBLE);
+				editText.setText(textView.getText());
+				editText.setVisibility(View.VISIBLE);
 			}
 		});
 		
 		// Get intent data
 		Bundle bundle = getIntent().getExtras();
-		int wordsId = bundle.getInt(AppConstants.SELECTED_LIST_ITEM_KEY);
+		int fileId = bundle.getInt(AppConstants.SELECTED_LIST_ITEM_KEY);
+		String[] files = bundle.getStringArray(AppConstants.FILE_NAMES_KEY);
 		
-		mWords = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.mWordSets.get(Integer.valueOf(wordsId)))));
-		mNumberOfWords = mWords.size();
-		mWordCount = 1;
+		mWords = getWords(files[fileId]);
+		mRandomWordsIndex = new Integer[mWords.size()];
+		// Initialize arrays
+		for(int i = 0; i < mWords.size(); i++) {
+			
+			mRandomWordsIndex[i] = Integer.valueOf(-1);
+			mWordsIndex.add(Integer.valueOf(i));
+		}
 		
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
 		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 		mViewPager.setAdapter(mMyFragmentPagerAdapter);
 		
 		/*
-		 * Use page change listener to magnify the words 
+		 * Use page change listener to magnify and reduce the word's font size
 		 */
 		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
-			
-			public void onPageSelected(int arg0) {
-				
-				if(mMagnify) {
-				
-					for(int i = 0; i < mViewPager.getChildCount(); i++) {
 
-						try {
-						
-							((TextView) mViewPager.getChildAt(i).findViewById(R.id.textViewWord)).setTextSize(LARGE_TEXT_SIZE);
-						}
-						catch(Exception e) {
-							
-							Log.w(AppConstants.LOG_TAG, "WARN: Was not able to set text size", e);
-						}
-					}
-				}
+			public void onPageSelected(int currentIndex) {
+
+				Integer tag = mRandomWordsIndex[currentIndex];
+				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? LARGE_TEXT_SIZE : NORMAL_TEXT_SIZE);
 			}
-			
+
 			public void onPageScrolled(int arg0, float arg1, int arg2) { /* Nothing to do here */ }
 			
 			public void onPageScrollStateChanged(int arg0) { /* Nothing to do here */ }
@@ -141,8 +155,39 @@ public class CardsPagerActivity extends FragmentActivity {
 		
 		mRandom = new Random();
 	}
+	
+	public void updateWord(int index, String word) {
+		
+		mWords.set(index, word);
+	}
 
-	private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+	private ArrayList<String> getWords(String fileName) {
+		
+		ArrayList<String> words = new ArrayList<String>();
+		
+		try {
+			
+			FileInputStream fis =  getApplicationContext().openFileInput(fileName);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+			String word;
+			while((word = reader.readLine()) != null) {
+				
+				words.add(word);
+			}
+		}
+		catch (FileNotFoundException e) {
+			
+			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: while reading words from file", e);
+		}
+		catch (IOException e) {
+			
+			Log.w(AppConstants.LOG_TAG, "IOException: while reading words from file", e);
+		}
+		
+		return words;
+	}
+	
+	private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
 		public MyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -151,19 +196,25 @@ public class CardsPagerActivity extends FragmentActivity {
 		@Override
 		public Fragment getItem(int index) {
 
-			String word = null;
-			int randomNum = mRandom.nextInt(mWords.size());
-
-			word = mWords.get(randomNum);
-			mWords.remove(word);
-
-			return CardFragment.newInstance(word, mWordCount++, mNumberOfWords);
+			int randomNum;
+			
+			if(0 == mRandomWordsIndex[index].compareTo(Integer.valueOf(-1))) {
+				
+				randomNum = mRandom.nextInt(mWordsIndex.size());
+				mRandomWordsIndex[index] = mWordsIndex.get(randomNum);
+				mWordsIndex.remove(randomNum);
+			}
+			
+			CardFragment cardFragment = CardFragment.newInstance(mWords.get(mRandomWordsIndex[index]), (index + 1), mWords.size());
+			cardFragment.setTag(mRandomWordsIndex[index]);
+			
+			return cardFragment;
 		}
 
 		@Override
 		public int getCount() {
 
-			return mNumberOfWords;
+			return mWords.size();
 		}
 	}
 }
