@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -42,6 +41,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class CardsPagerActivity extends FragmentActivity {
@@ -105,19 +105,18 @@ public class CardsPagerActivity extends FragmentActivity {
 			public void onClick(View v) {
 				
 				int currentIndex = mViewPager.getCurrentItem();
-				
 				Integer tag = mRandomWordsIndex[currentIndex];
-				
 				View card = mViewPager.findViewWithTag(tag);
 				
 				TextView textView = ((TextView)card.findViewById(R.id.textViewWord));
-				EditText editText = ((EditText)card.findViewById(R.id.editTextWord));
-				((ImageButton)card.findViewById(R.id.imageButtonCancel)).setVisibility(View.VISIBLE);
-				((ImageButton)card.findViewById(R.id.imageButtonSave)).setVisibility(View.VISIBLE);
-				
 				textView.setVisibility(View.INVISIBLE);
+				
+				EditText editText = ((EditText)card.findViewById(R.id.editTextWord));
 				editText.setText(textView.getText());
 				editText.setVisibility(View.VISIBLE);
+				
+				LinearLayout linearLayoutEditButtons = (LinearLayout)card.findViewById(R.id.linearLayoutEditButtons);
+				linearLayoutEditButtons.setVisibility(View.VISIBLE);
 			}
 		});
 		
