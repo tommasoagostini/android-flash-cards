@@ -21,5 +21,8 @@ public interface AppConstants {
 	public static final String SELECTED_LIST_ITEM_KEY = "words";
 	public static final String LOG_TAG = "Flash Cards";
 	public static final String FILE_NAMES_KEY = "files";
+	
+	public static final int NORMAL_TEXT_SIZE = 60;
+	public static final int LARGE_TEXT_SIZE = 80;
 
 }

@@ -62,6 +62,7 @@ public class CardFragment extends Fragment {
 
 	    // Set the main word 
 	    final TextView wordTextView = (TextView)view.findViewById(R.id.textViewWord);
+	    wordTextView.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 	    wordTextView.setText(getArguments().getString(WORD_KEY));
 //	    wordTextView.setOnLongClickListener(new OnLongClickListener() {
 //			
@@ -74,6 +75,7 @@ public class CardFragment extends Fragment {
 //		});
 	    
 	    final EditText editTextWord = (EditText)view.findViewById(R.id.editTextWord);
+	    editTextWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 	    final ImageButton imageButtonSave = (ImageButton)view.findViewById(R.id.imageButtonSave);
 	    final ImageButton imageButtonCancel = (ImageButton)view.findViewById(R.id.imageButtonCancel);
 	    
