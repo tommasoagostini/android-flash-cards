@@ -19,12 +19,16 @@ package org.thomasamsler.android.flashcards;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,14 +46,12 @@ import android.widget.TextView;
 
 public class CardsPagerActivity extends FragmentActivity {
 
-	private final int NORMAL_TEXT_SIZE = 60;
-	private final int LARGE_TEXT_SIZE = 80;
-	
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
 	private Random mRandom;
 	private List<String> mWords;
 	private Integer[] mRandomWordsIndex;
+	private String mFileName;
 	private List<Integer> mWordsIndex = new ArrayList<Integer>();
 	private boolean mMagnify = false;
 	
@@ -93,7 +95,7 @@ public class CardsPagerActivity extends FragmentActivity {
 				// Get TextView and Magnify or reduce its font size
 				int currentIndex = mViewPager.getCurrentItem();
 				Integer tag = mRandomWordsIndex[currentIndex];
-				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? LARGE_TEXT_SIZE : NORMAL_TEXT_SIZE);
+				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? AppConstants.LARGE_TEXT_SIZE : AppConstants.NORMAL_TEXT_SIZE);
 			}
 		});
 		
@@ -124,7 +126,12 @@ public class CardsPagerActivity extends FragmentActivity {
 		int fileId = bundle.getInt(AppConstants.SELECTED_LIST_ITEM_KEY);
 		String[] files = bundle.getStringArray(AppConstants.FILE_NAMES_KEY);
 		
-		mWords = getWords(files[fileId]);
+		/*
+		 * Save file name so that we can update the file if the user changes words
+		 */
+		mFileName = files[fileId];
+		
+		mWords = getWords(mFileName);
 		mRandomWordsIndex = new Integer[mWords.size()];
 		// Initialize arrays
 		for(int i = 0; i < mWords.size(); i++) {
@@ -145,7 +152,7 @@ public class CardsPagerActivity extends FragmentActivity {
 			public void onPageSelected(int currentIndex) {
 
 				Integer tag = mRandomWordsIndex[currentIndex];
-				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? LARGE_TEXT_SIZE : NORMAL_TEXT_SIZE);
+				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? AppConstants.LARGE_TEXT_SIZE : AppConstants.NORMAL_TEXT_SIZE);
 			}
 
 			public void onPageScrolled(int arg0, float arg1, int arg2) { /* Nothing to do here */ }
@@ -158,9 +165,46 @@ public class CardsPagerActivity extends FragmentActivity {
 	
 	public void updateWord(int index, String word) {
 		
+		/*
+		 * First, we update the in memory list of words
+		 */
 		mWords.set(index, word);
+		
+		/*
+		 * Then, we update the file
+		 */
+		saveWords(mFileName, mWords);
 	}
 
+	private void saveWords(String fileName, List<String> words) {
+		
+		/*
+		 * First, we delete the exiting file
+		 */
+		if(!getApplicationContext().deleteFile(fileName)) {
+			
+			Log.w(AppConstants.LOG_TAG, "Was not able to delete file with name = " + fileName);
+			return;
+		}
+		
+		try {
+
+			FileOutputStream fos = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+			PrintStream ps = new PrintStream(fos);
+			
+			for(String word : words) {
+
+				ps.println(word);
+			}
+			
+			ps.close();
+		}
+		catch (FileNotFoundException e) {
+
+			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
+		}
+	}
+	
 	private ArrayList<String> getWords(String fileName) {
 		
 		ArrayList<String> words = new ArrayList<String>();
@@ -174,6 +218,8 @@ public class CardsPagerActivity extends FragmentActivity {
 				
 				words.add(word);
 			}
+			
+			reader.close();
 		}
 		catch (FileNotFoundException e) {
 			

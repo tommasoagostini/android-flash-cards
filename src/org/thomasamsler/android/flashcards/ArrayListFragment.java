@@ -79,13 +79,15 @@ public class ArrayListFragment extends ListFragment {
 
 				fos = getActivity().getApplicationContext().openFileOutput(WordSets.mWordSetNames.get(0), Context.MODE_PRIVATE);
 				ps = new PrintStream(fos);
+				
 				for(String word : words) {
 
 					ps.println(word);
 				}
+				
 				ps.close();
-
-			} catch (FileNotFoundException e) {
+			}
+			catch (FileNotFoundException e) {
 
 				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
 			}
@@ -96,13 +98,15 @@ public class ArrayListFragment extends ListFragment {
 
 				fos = getActivity().getApplicationContext().openFileOutput(WordSets.mWordSetNames.get(1), Context.MODE_PRIVATE);
 				ps = new PrintStream(fos);
+				
 				for(String word : words) {
 
 					ps.println(word);
 				}
+				
 				ps.close();
-
-			} catch (FileNotFoundException e) {
+			}
+			catch (FileNotFoundException e) {
 
 				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
 			}
