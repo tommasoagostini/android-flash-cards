@@ -24,5 +24,7 @@ public interface AppConstants {
 	
 	public static final int NORMAL_TEXT_SIZE = 60;
 	public static final int LARGE_TEXT_SIZE = 80;
+	
+	public static final String _OF_ = " of ";
 
 }

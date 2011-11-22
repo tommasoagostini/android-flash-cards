@@ -15,6 +15,18 @@
         android:textColor="#000000"
         android:textStyle="bold"
         android:typeface="normal" />
+    
+    <TextView
+        android:id="@+id/textViewWord2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:typeface="normal"
+        android:visibility="invisible" />
 
     <EditText
         android:id="@+id/editTextWord"
@@ -35,21 +47,20 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textViewWord"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/SaveButtonTopPadding" >
+        android:layout_marginTop="@dimen/SaveButtonTopPadding"
+        android:visibility="invisible" >
 
         <ImageButton
             android:id="@+id/imageButtonCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:visibility="invisible" />
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
         
         <ImageButton
             android:id="@+id/imageButtonSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_save"
-            android:visibility="invisible" />
+            android:src="@android:drawable/ic_menu_save" />
         
     </LinearLayout>
     
