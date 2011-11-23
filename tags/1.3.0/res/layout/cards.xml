@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutCardsActionBar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/ActionBarHeight"
+        android:background="@drawable/actionbar_gradient" >
+
+        <TextView
+            android:id="@+id/textViewCardsActionBarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ActionBarFontSize"
+            android:typeface="normal"
+            android:layout_marginLeft="@dimen/ActionBarItemLeftPadding" />
+        
+     	<ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonEdit"
+            android:paddingBottom="0dp"
+            android:paddingRight="15dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/imageButtonMagnify"
+            android:layout_marginRight="@dimen/ActionBarItemRightPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_edit" />
+        
+		<ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonMagnify"
+            android:paddingBottom="0dp"
+            android:paddingRight="15dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonMagnify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/imageButtonList"
+            android:layout_marginRight="@dimen/ActionBarItemRightPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_magnify" />
+        
+        <ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonList"
+            android:paddingBottom="0dp"
+            android:paddingRight="15dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_list" />
+
+    </RelativeLayout>
+
+	<android.support.v4.view.ViewPager
+    	android:layout_width="match_parent" 
+    	android:layout_height="match_parent" 
+    	android:id="@+id/viewpager"/>
+
+</LinearLayout>
