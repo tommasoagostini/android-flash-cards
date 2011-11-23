@@ -39,10 +39,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class CardsPagerActivity extends FragmentActivity {
 
@@ -92,10 +89,19 @@ public class CardsPagerActivity extends FragmentActivity {
 					imageButtonMagnify.setImageResource(R.drawable.ic_action_magnify);
 				}
 
-				// Get TextView and Magnify or reduce its font size
+				// Get CardFragment and magnify or reduce its font size
 				int currentIndex = mViewPager.getCurrentItem();
 				Integer tag = mRandomWordsIndex[currentIndex];
-				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? AppConstants.LARGE_TEXT_SIZE : AppConstants.NORMAL_TEXT_SIZE);
+				CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentByTag(tag.toString());
+				
+				if(mMagnify) {
+					
+					cardFragment.onMagnifyFont();
+				}
+				else {
+					
+					cardFragment.onReduceFont();
+				}
 			}
 		});
 		
@@ -106,17 +112,9 @@ public class CardsPagerActivity extends FragmentActivity {
 				
 				int currentIndex = mViewPager.getCurrentItem();
 				Integer tag = mRandomWordsIndex[currentIndex];
-				View card = mViewPager.findViewWithTag(tag);
 				
-				TextView textView = ((TextView)card.findViewById(R.id.textViewWord));
-				textView.setVisibility(View.INVISIBLE);
-				
-				EditText editText = ((EditText)card.findViewById(R.id.editTextWord));
-				editText.setText(textView.getText());
-				editText.setVisibility(View.VISIBLE);
-				
-				LinearLayout linearLayoutEditButtons = (LinearLayout)card.findViewById(R.id.linearLayoutEditButtons);
-				linearLayoutEditButtons.setVisibility(View.VISIBLE);
+				CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentByTag(tag.toString());
+				cardFragment.onEdit();
 			}
 		});
 		
@@ -151,7 +149,17 @@ public class CardsPagerActivity extends FragmentActivity {
 			public void onPageSelected(int currentIndex) {
 
 				Integer tag = mRandomWordsIndex[currentIndex];
-				((TextView)mViewPager.findViewWithTag(tag).findViewById(R.id.textViewWord)).setTextSize(mMagnify ? AppConstants.LARGE_TEXT_SIZE : AppConstants.NORMAL_TEXT_SIZE);
+				
+				CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentByTag(tag.toString());
+				
+				if(mMagnify) {
+					
+					cardFragment.onMagnifyFont();
+				}
+				else {
+					
+					cardFragment.onReduceFont();
+				}
 			}
 
 			public void onPageScrolled(int arg0, float arg1, int arg2) { /* Nothing to do here */ }
@@ -252,6 +260,11 @@ public class CardsPagerActivity extends FragmentActivity {
 			
 			CardFragment cardFragment = CardFragment.newInstance(mWords.get(mRandomWordsIndex[index]), (index + 1), mWords.size());
 			cardFragment.setTag(mRandomWordsIndex[index]);
+			
+			/*
+			 * Adding a tag to the fragment so that we can retrieve it later to dispatch calls to it
+			 */
+			getSupportFragmentManager().beginTransaction().add(cardFragment, mRandomWordsIndex[index].toString()).commit();
 			
 			return cardFragment;
 		}
