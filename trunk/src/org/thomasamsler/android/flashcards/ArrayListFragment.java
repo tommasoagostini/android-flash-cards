@@ -48,6 +48,8 @@ public class ArrayListFragment extends ListFragment {
 		}
 
 		mFileNames = getActivity().getApplicationContext().fileList();
+		
+		Arrays.sort(mFileNames);
 
 		setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFileNames));
 	}
