@@ -38,6 +38,12 @@ public class CardFragment extends Fragment {
 	private final static String CURRENT_KEY = "current";
 	private Integer mTag;
 	private boolean mWordToggle = false;
+	private TextView mTextViewWord;
+	private TextView mTextViewWord2;
+	private EditText mEditTextWord;
+	private LinearLayout mLinearLayoutEditButtons;
+	private ImageButton mImageButtonSave;
+	private ImageButton mImageButtonCancel;
 
 	public static CardFragment newInstance(String word, int wordCount, int totalWords) {
 
@@ -48,7 +54,7 @@ public class CardFragment extends Fragment {
 		bundle.putInt(CURRENT_KEY, wordCount);
 		bundle.putInt(MAX_KEY, totalWords);
 		pageFragment.setArguments(bundle);
-
+		
 		return pageFragment;
 	}
 
@@ -63,54 +69,79 @@ public class CardFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.card, container, false);
 
-		String[] words = getArguments().getString(WORD_KEY).split(":");
+		String[] words = getArguments().getString(WORD_KEY).split(AppConstants.WORD_DELIMITER_TOKEN);
 		
-		// Set the main word 
-		final TextView textViewWord = (TextView)view.findViewById(R.id.textViewWord);
-		textViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
-		textViewWord.setText(words[0]);
+		mTextViewWord = (TextView)view.findViewById(R.id.textViewWord);
+		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mTextViewWord.setText(words[0]);
 
-		final TextView textViewWord2 = (TextView)view.findViewById(R.id.textViewWord2);
-		textViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
-		textViewWord2.setText(words[1]);
+		mTextViewWord2 = (TextView)view.findViewById(R.id.textViewWord2);
+		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mTextViewWord2.setText(words[1]);
 
-		final EditText editTextWord = (EditText)view.findViewById(R.id.editTextWord);
-		editTextWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mEditTextWord = (EditText)view.findViewById(R.id.editTextWord);
+		mEditTextWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 
-		final LinearLayout linearLayoutEditButtons = (LinearLayout)view.findViewById(R.id.linearLayoutEditButtons);
+		mLinearLayoutEditButtons = (LinearLayout)view.findViewById(R.id.linearLayoutEditButtons);
 
-		final ImageButton imageButtonSave = (ImageButton)view.findViewById(R.id.imageButtonSave);
-		imageButtonSave.setOnClickListener(new OnClickListener() {
+		mImageButtonSave = (ImageButton)view.findViewById(R.id.imageButtonSave);
+		mImageButtonSave.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 
-				editTextWord.setVisibility(View.INVISIBLE);
-				linearLayoutEditButtons.setVisibility(View.INVISIBLE);
+				mEditTextWord.setVisibility(View.INVISIBLE);
+				mLinearLayoutEditButtons.setVisibility(View.INVISIBLE);
 
 				/*
 				 * Check if the user changed anything, and only update if there is a change
 				 */
-				if(!editTextWord.getText().toString().equals(textViewWord.getText().toString())) {
+				
+				if(!mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewWord.getText().toString())) {
 
-					textViewWord.setText(editTextWord.getText());
-					textViewWord.setVisibility(View.VISIBLE);
-					((CardsPagerActivity)getActivity()).updateWord(mTag, editTextWord.getText().toString());
+					mTextViewWord.setText(mEditTextWord.getText());
+					mTextViewWord.setVisibility(View.VISIBLE);
+					StringBuilder sb = new StringBuilder();
+					sb.append(mEditTextWord.getText().toString());
+					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
+					sb.append(mTextViewWord2.getText().toString());
+					((CardsPagerActivity)getActivity()).updateWord(mTag, sb.toString());
 				}
-				else {
+				else if(mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewWord2.getText().toString())) {
+					
+					mTextViewWord2.setText(mEditTextWord.getText());
+					mTextViewWord2.setVisibility(View.VISIBLE);
+					StringBuilder sb = new StringBuilder();
+					sb.append(mTextViewWord.getText().toString());
+					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
+					sb.append(mEditTextWord.getText().toString());
+					((CardsPagerActivity)getActivity()).updateWord(mTag, sb.toString());
+				}
+				else if(!mWordToggle) {
 
-					textViewWord.setVisibility(View.VISIBLE);
+					mTextViewWord.setVisibility(View.VISIBLE);
+				}
+				else if(mWordToggle) {
+					
+					mTextViewWord2.setVisibility(View.VISIBLE);
 				}
 			}
 		});
 
-		final ImageButton imageButtonCancel = (ImageButton)view.findViewById(R.id.imageButtonCancel);
-		imageButtonCancel.setOnClickListener(new OnClickListener() {
+		mImageButtonCancel = (ImageButton)view.findViewById(R.id.imageButtonCancel);
+		mImageButtonCancel.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 
-				editTextWord.setVisibility(View.INVISIBLE);
-				textViewWord.setVisibility(View.VISIBLE);
-				linearLayoutEditButtons.setVisibility(View.INVISIBLE);
+				mEditTextWord.setVisibility(View.INVISIBLE);
+				if(mWordToggle) {
+					
+					mTextViewWord2.setVisibility(View.VISIBLE);
+				}
+				else {
+					
+					mTextViewWord.setVisibility(View.VISIBLE);
+				}
+				mLinearLayoutEditButtons.setVisibility(View.INVISIBLE);
 			}
 		});
 
@@ -141,13 +172,13 @@ public class CardFragment extends Fragment {
 
 						if(mWordToggle) {
 
-							textViewWord.setVisibility(View.INVISIBLE);
-							textViewWord2.setVisibility(View.VISIBLE);
+							mTextViewWord.setVisibility(View.INVISIBLE);
+							mTextViewWord2.setVisibility(View.VISIBLE);
 						}
 						else {
 
-							textViewWord.setVisibility(View.VISIBLE);
-							textViewWord2.setVisibility(View.INVISIBLE);
+							mTextViewWord.setVisibility(View.VISIBLE);
+							mTextViewWord2.setVisibility(View.INVISIBLE);
 						}
 						
 						v.startAnimation(flip2);
@@ -159,12 +190,43 @@ public class CardFragment extends Fragment {
 				return false;
 			}
 		});
-
+		
 		return view;
 	}
 
 	public void setTag(Integer obj) {
 
 		mTag = obj;
+	}
+	
+	public void onEdit() {
+		
+		
+		mTextViewWord.setVisibility(View.INVISIBLE);
+		mTextViewWord2.setVisibility(View.INVISIBLE);
+		
+		if(mWordToggle) {
+			
+			mEditTextWord.setText(mTextViewWord2.getText());
+		}
+		else {
+		
+			mEditTextWord.setText(mTextViewWord.getText());
+		}
+ 		
+		mEditTextWord.setVisibility(View.VISIBLE);
+		mLinearLayoutEditButtons.setVisibility(View.VISIBLE);
+	}
+	
+	public void onMagnifyFont() {
+		
+		mTextViewWord.setTextSize(AppConstants.LARGE_TEXT_SIZE);
+		mTextViewWord2.setTextSize(AppConstants.LARGE_TEXT_SIZE);
+	}
+	
+	public void onReduceFont() {
+		
+		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 	}
 }

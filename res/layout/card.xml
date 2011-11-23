@@ -45,7 +45,7 @@
         android:id="@+id/linearLayoutEditButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewWord"
+        android:layout_below="@+id/editTextWord"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/SaveButtonTopPadding"
         android:visibility="invisible" >

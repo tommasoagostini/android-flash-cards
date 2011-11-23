@@ -29,7 +29,7 @@
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/imageButtonEdit"
             android:paddingBottom="0dp"
-            android:paddingRight="10dp"
+            android:paddingRight="15dp"
             android:paddingTop="0dp"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_bright" />
@@ -50,7 +50,7 @@
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/imageButtonMagnify"
             android:paddingBottom="0dp"
-            android:paddingRight="10dp"
+            android:paddingRight="15dp"
             android:paddingTop="0dp"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_bright" />
@@ -71,7 +71,7 @@
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/imageButtonList"
             android:paddingBottom="0dp"
-            android:paddingRight="10dp"
+            android:paddingRight="15dp"
             android:paddingTop="0dp"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_bright" />
