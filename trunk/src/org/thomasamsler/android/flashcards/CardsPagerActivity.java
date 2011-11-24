@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import android.content.Context;
@@ -91,9 +93,7 @@ public class CardsPagerActivity extends FragmentActivity {
 
 				// Get CardFragment and magnify or reduce its font size
 				int currentIndex = mViewPager.getCurrentItem();
-				Integer tag = mRandomWordsIndex[currentIndex];
-				CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentByTag(tag.toString());
-				
+				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
 				if(mMagnify) {
 					
 					cardFragment.onMagnifyFont();
@@ -111,9 +111,7 @@ public class CardsPagerActivity extends FragmentActivity {
 			public void onClick(View v) {
 				
 				int currentIndex = mViewPager.getCurrentItem();
-				Integer tag = mRandomWordsIndex[currentIndex];
-				
-				CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentByTag(tag.toString());
+				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
 				cardFragment.onEdit();
 			}
 		});
@@ -148,9 +146,7 @@ public class CardsPagerActivity extends FragmentActivity {
 
 			public void onPageSelected(int currentIndex) {
 
-				Integer tag = mRandomWordsIndex[currentIndex];
-				
-				CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentByTag(tag.toString());
+				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
 				
 				if(mMagnify) {
 					
@@ -175,7 +171,7 @@ public class CardsPagerActivity extends FragmentActivity {
 		/*
 		 * First, we update the in memory list of words
 		 */
-		mWords.set(index, word);
+		mWords.set(mRandomWordsIndex[index], word);
 		
 		/*
 		 * Then, we update the file
@@ -242,6 +238,8 @@ public class CardsPagerActivity extends FragmentActivity {
 	
 	private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
+		private Map<Integer, CardFragment> mPageReferenceMap = new HashMap<Integer, CardFragment>();
+		
 		public MyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
@@ -258,13 +256,8 @@ public class CardsPagerActivity extends FragmentActivity {
 				mWordsIndex.remove(randomNum);
 			}
 			
-			CardFragment cardFragment = CardFragment.newInstance(mWords.get(mRandomWordsIndex[index]), (index + 1), mWords.size());
-			cardFragment.setTag(mRandomWordsIndex[index]);
-			
-			/*
-			 * Adding a tag to the fragment so that we can retrieve it later to dispatch calls to it
-			 */
-			getSupportFragmentManager().beginTransaction().add(cardFragment, mRandomWordsIndex[index].toString()).commit();
+			CardFragment cardFragment = CardFragment.newInstance(mWords.get(mRandomWordsIndex[index]), index, mWords.size());
+			mPageReferenceMap.put(Integer.valueOf(index), cardFragment);
 			
 			return cardFragment;
 		}
@@ -273,6 +266,19 @@ public class CardsPagerActivity extends FragmentActivity {
 		public int getCount() {
 
 			return mWords.size();
+		}
+		
+		@Override
+		public void destroyItem(View container, int position, Object object) {
+		
+			super.destroyItem(container, position, object);
+			
+			mPageReferenceMap.remove(Integer.valueOf(position));
+		}
+		
+		public CardFragment getFragment(int key) {
+			
+			return mPageReferenceMap.get(key);
 		}
 	}
 }

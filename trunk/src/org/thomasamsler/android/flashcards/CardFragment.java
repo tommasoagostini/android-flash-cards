@@ -36,7 +36,6 @@ public class CardFragment extends Fragment {
 	private final static String WORD_KEY = "word";
 	private final static String MAX_KEY = "max";
 	private final static String CURRENT_KEY = "current";
-	private Integer mTag;
 	private boolean mWordToggle = false;
 	private TextView mTextViewWord;
 	private TextView mTextViewWord2;
@@ -44,6 +43,7 @@ public class CardFragment extends Fragment {
 	private LinearLayout mLinearLayoutEditButtons;
 	private ImageButton mImageButtonSave;
 	private ImageButton mImageButtonCancel;
+	private int mWordIndex;
 
 	public static CardFragment newInstance(String word, int wordCount, int totalWords) {
 
@@ -69,6 +69,8 @@ public class CardFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.card, container, false);
 
+		mWordIndex = getArguments().getInt(CURRENT_KEY);
+		
 		String[] words = getArguments().getString(WORD_KEY).split(AppConstants.WORD_DELIMITER_TOKEN);
 		
 		mTextViewWord = (TextView)view.findViewById(R.id.textViewWord);
@@ -104,7 +106,7 @@ public class CardFragment extends Fragment {
 					sb.append(mEditTextWord.getText().toString());
 					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
 					sb.append(mTextViewWord2.getText().toString());
-					((CardsPagerActivity)getActivity()).updateWord(mTag, sb.toString());
+					((CardsPagerActivity)getActivity()).updateWord(mWordIndex, sb.toString());
 				}
 				else if(mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewWord2.getText().toString())) {
 					
@@ -114,7 +116,7 @@ public class CardFragment extends Fragment {
 					sb.append(mTextViewWord.getText().toString());
 					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
 					sb.append(mEditTextWord.getText().toString());
-					((CardsPagerActivity)getActivity()).updateWord(mTag, sb.toString());
+					((CardsPagerActivity)getActivity()).updateWord(mWordIndex, sb.toString());
 				}
 				else if(!mWordToggle) {
 
@@ -148,12 +150,12 @@ public class CardFragment extends Fragment {
 		// Set the bottom word counter
 		TextView counterTextView = (TextView) view.findViewById(R.id.textViewWordNumber);
 		StringBuilder sb = new StringBuilder();
-		sb.append(getArguments().getInt(CURRENT_KEY));
+		sb.append(mWordIndex + 1);
 		sb.append(AppConstants._OF_);
 		sb.append(getArguments().getInt(MAX_KEY));
 		counterTextView.setText(sb.toString());
 
-		view.setTag(mTag);
+		//view.setTag(mTag);
 		view.setOnLongClickListener(new OnLongClickListener() {
 
 			public boolean onLongClick(final View v) {
@@ -194,11 +196,6 @@ public class CardFragment extends Fragment {
 		return view;
 	}
 
-	public void setTag(Integer obj) {
-
-		mTag = obj;
-	}
-	
 	public void onEdit() {
 		
 		
