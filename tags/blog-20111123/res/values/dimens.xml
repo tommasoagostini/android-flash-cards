@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ActionBarItemRightPadding">30dp</dimen>
+    <dimen name="ActionBarItemRightBorderPadding">10dp</dimen>
+    <dimen name="ActionBarItemLeftPadding">10dp</dimen>
+    <dimen name="WordNumberBottomPadding">10dp</dimen>
+    <dimen name="ActionBarHeight">50sp</dimen>
+    <dimen name="ActionBarFontSize">18dp</dimen>
+    <dimen name="SaveButtonTopPadding">20px</dimen>
+</resources>
