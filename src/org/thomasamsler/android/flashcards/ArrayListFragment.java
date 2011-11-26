@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
@@ -28,30 +29,41 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class ArrayListFragment extends ListFragment {
 
-	private String[] mFileNames;
+	private static final int MENU_ITEM_ADD = 3;
+	private static final int MENU_ITEM_DELETE = 4;
+	
+	private ArrayList<String> mFileNames;
+	private ArrayAdapter<String> mArrayAdapter;
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		mFileNames = getActivity().getApplicationContext().fileList();
+		registerForContextMenu(getListView());
 		
-		if(0 == mFileNames.length) {
+		mFileNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
+		
+		if(0 == mFileNames.size()) {
 			
 			createDefaultFiles();
+			mFileNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
 		}
 
-		mFileNames = getActivity().getApplicationContext().fileList();
-		
-		Arrays.sort(mFileNames);
+		Collections.sort(mFileNames);
 
-		setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFileNames));
+		mArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFileNames);
+
+		setListAdapter(mArrayAdapter);
 	}
 
 	@Override
@@ -60,11 +72,58 @@ public class ArrayListFragment extends ListFragment {
 		Intent intent = new Intent(v.getContext(), CardsPagerActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putInt(AppConstants.SELECTED_LIST_ITEM_KEY, position);
-		bundle.putStringArray(AppConstants.FILE_NAMES_KEY, mFileNames);
+		bundle.putStringArrayList(AppConstants.FILE_NAMES_KEY, mFileNames);
 		intent.putExtras(bundle);
 		startActivity(intent);
 	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
 
+		menu.add(MENU_ITEM_ADD, MENU_ITEM_ADD, 1, R.string.list_menu_add);
+		menu.add(MENU_ITEM_DELETE, MENU_ITEM_DELETE, 2, R.string.list_meanu_delete);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+			
+		AdapterView.AdapterContextMenuInfo info =  (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		int listItemPosition = (int) getListAdapter().getItemId(info.position);
+		
+		switch(item.getGroupId()) {
+
+		case MENU_ITEM_ADD:
+			addCard(listItemPosition);
+			break;
+		case MENU_ITEM_DELETE:
+			deleteCardSet(listItemPosition);
+			break;
+		default:
+			Log.w(AppConstants.LOG_TAG, "List context menu selection not recognized.");
+		}
+
+		return false;
+	}
+
+	private void addCard(int listItemPosition) {
+		
+	}
+	
+	private void deleteCardSet(int listItemPosition) {
+		
+		boolean isDeleted = getActivity().getApplicationContext().deleteFile(mFileNames.get(listItemPosition));
+		
+		if(isDeleted) {
+			
+			mFileNames.remove(listItemPosition);
+			mArrayAdapter.notifyDataSetChanged();
+		}
+		else {
+
+			Log.w(AppConstants.LOG_TAG, "Was not able to delete card set");
+		}
+	}
+	
 	private void createDefaultFiles() {
 
 		// Get a list of files if there are any
