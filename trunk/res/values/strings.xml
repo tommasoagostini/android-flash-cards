@@ -2,5 +2,9 @@
 <resources>
 
     <string name="app_name">Flash Cards</string>
+    <string name="menu_card_information">Information</string>
+    <string name="card_information">Card Set: %1$s</string>
+    <string name="list_menu_add">Add Card</string>
+    <string name="list_meanu_delete">Delete</string>
 
 </resources>

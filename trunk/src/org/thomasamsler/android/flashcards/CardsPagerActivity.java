@@ -39,9 +39,13 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class CardsPagerActivity extends FragmentActivity {
 
@@ -119,12 +123,12 @@ public class CardsPagerActivity extends FragmentActivity {
 		// Get intent data
 		Bundle bundle = getIntent().getExtras();
 		int fileId = bundle.getInt(AppConstants.SELECTED_LIST_ITEM_KEY);
-		String[] files = bundle.getStringArray(AppConstants.FILE_NAMES_KEY);
+		ArrayList<String>fileNames = bundle.getStringArrayList(AppConstants.FILE_NAMES_KEY);
 		
 		/*
 		 * Save file name so that we can update the file if the user changes words
 		 */
-		mFileName = files[fileId];
+		mFileName = fileNames.get(fileId);
 		
 		mWords = getWords(mFileName);
 		mRandomWordsIndex = new Integer[mWords.size()];
@@ -164,6 +168,26 @@ public class CardsPagerActivity extends FragmentActivity {
 		});
 		
 		mRandom = new Random();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.card_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_card_information:
+	        showCardInformation();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
 	}
 	
 	public void updateWord(int index, String word) {
@@ -280,5 +304,16 @@ public class CardsPagerActivity extends FragmentActivity {
 			
 			return mPageReferenceMap.get(key);
 		}
+	}
+	
+	/*
+	 * Menu methods
+	 */
+	
+	public void showCardInformation() {
+		
+		String message = String.format(getResources().getString(R.string.card_information), mFileName);
+		
+		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 	}
 }
