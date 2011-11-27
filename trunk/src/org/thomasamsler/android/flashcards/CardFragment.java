@@ -155,12 +155,19 @@ public class CardFragment extends Fragment {
 		sb.append(getArguments().getInt(MAX_KEY));
 		counterTextView.setText(sb.toString());
 
-		//view.setTag(mTag);
 		view.setOnLongClickListener(new OnLongClickListener() {
 
 			public boolean onLongClick(final View v) {
 
-				Animation flip1 = AnimationUtils.loadAnimation(v.getContext(), R.anim.flip1);
+				/*
+				 * If in edit mode, we don't allow the user to switch between the front and back page.
+				 */
+				if(mEditTextWord.isShown()) {
+					
+					return false;
+				}
+				
+				final Animation flip1 = AnimationUtils.loadAnimation(v.getContext(), R.anim.flip1);
 				final Animation flip2 = AnimationUtils.loadAnimation(v.getContext(), R.anim.flip2);
 				flip1.setAnimationListener(new AnimationListener() {
 					
@@ -197,7 +204,6 @@ public class CardFragment extends Fragment {
 	}
 
 	public void onEdit() {
-		
 		
 		mTextViewWord.setVisibility(View.INVISIBLE);
 		mTextViewWord2.setVisibility(View.INVISIBLE);

@@ -58,6 +58,7 @@ public class CardsPagerActivity extends FragmentActivity {
 	private List<Integer> mWordsIndex = new ArrayList<Integer>();
 	private boolean mMagnify = false;
 	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
@@ -122,15 +123,15 @@ public class CardsPagerActivity extends FragmentActivity {
 		
 		// Get intent data
 		Bundle bundle = getIntent().getExtras();
-		int fileId = bundle.getInt(AppConstants.SELECTED_LIST_ITEM_KEY);
-		ArrayList<String>fileNames = bundle.getStringArrayList(AppConstants.FILE_NAMES_KEY);
-		
-		/*
-		 * Save file name so that we can update the file if the user changes words
-		 */
-		mFileName = fileNames.get(fileId);
+		mFileName = bundle.getString(AppConstants.FILE_NAME_KEY);
 		
 		mWords = getWords(mFileName);
+		
+		if(0 == mWords.size()) {
+			
+			Toast.makeText(getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_LONG).show();
+		}
+		
 		mRandomWordsIndex = new Integer[mWords.size()];
 		// Initialize arrays
 		for(int i = 0; i < mWords.size(); i++) {
@@ -243,7 +244,9 @@ public class CardsPagerActivity extends FragmentActivity {
 			String word;
 			while((word = reader.readLine()) != null) {
 				
-				words.add(word);
+				if(null != word && !"".equals(word) && 3 <= word.length()) {
+					words.add(word);
+				}
 			}
 			
 			reader.close();
