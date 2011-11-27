@@ -54,13 +54,15 @@
             android:id="@+id/imageButtonCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:background="@null" />
         
         <ImageButton
             android:id="@+id/imageButtonSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_save" />
+            android:src="@android:drawable/ic_menu_save"
+            android:background="@null" />
         
     </LinearLayout>
     

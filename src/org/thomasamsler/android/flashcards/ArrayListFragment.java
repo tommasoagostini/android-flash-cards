@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -33,14 +35,18 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class ArrayListFragment extends ListFragment {
 
-	private static final int MENU_ITEM_ADD = 3;
-	private static final int MENU_ITEM_DELETE = 4;
+	private static final int MENU_ITEM_ADD = 1;
+	private static final int MENU_ITEM_DELETE = 2;
 	
 	private ArrayList<String> mFileNames;
 	private ArrayAdapter<String> mArrayAdapter;
@@ -64,6 +70,74 @@ public class ArrayListFragment extends ListFragment {
 		mArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFileNames);
 
 		setListAdapter(mArrayAdapter);
+		
+		ImageButton imageButtonNewCardSet = (ImageButton)getActivity().findViewById(R.id.imageButtonNewCardSet);
+		imageButtonNewCardSet.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				AlertDialog.Builder dialog = new AlertDialog.Builder(v.getContext());
+				dialog.setTitle(R.string.new_card_set_title);
+				
+				final EditText input = new EditText(v.getContext());
+				input.setPadding(10, 0, 10, 0);
+				dialog.setView(input);
+				dialog.setPositiveButton(R.string.new_card_set_save_button, new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which) {
+						
+						String newFileName = input.getText().toString().trim();
+						
+						if(null == newFileName || "".equals(newFileName)) {
+							
+							Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning2, Toast.LENGTH_LONG).show();
+						}
+						else {
+							
+							String [] fileNames = getActivity().getApplicationContext().fileList();
+							boolean fileNameExists = false;
+							
+							for(String fileName : fileNames) {
+								
+								if(newFileName.equals(fileName)) {
+									
+									fileNameExists = true;
+									break;
+								}
+							}
+							
+							if(fileNameExists) {
+								
+								Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning1, Toast.LENGTH_LONG).show();
+							}
+							else {
+								
+								try {
+									
+									FileOutputStream fos = getActivity().getApplicationContext().openFileOutput(newFileName, Context.MODE_PRIVATE);
+									PrintStream ps = new PrintStream(fos);
+									ps.close();
+									
+								} catch (FileNotFoundException e) {
+									
+									Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create new file", e);
+								}
+								
+								mFileNames.add(newFileName);
+								mArrayAdapter.notifyDataSetChanged();
+							}
+						}
+					}
+				});
+				
+				dialog.setNegativeButton(R.string.new_card_set_cancel_button, new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which) { /* Cancel: nothing to do */ }
+				});
+				
+				dialog.show();
+			}
+		});
 	}
 
 	@Override
@@ -71,8 +145,7 @@ public class ArrayListFragment extends ListFragment {
 
 		Intent intent = new Intent(v.getContext(), CardsPagerActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putInt(AppConstants.SELECTED_LIST_ITEM_KEY, position);
-		bundle.putStringArrayList(AppConstants.FILE_NAMES_KEY, mFileNames);
+		bundle.putString(AppConstants.FILE_NAME_KEY, mFileNames.get(position));
 		intent.putExtras(bundle);
 		startActivity(intent);
 	}
@@ -107,6 +180,11 @@ public class ArrayListFragment extends ListFragment {
 
 	private void addCard(int listItemPosition) {
 		
+		Intent intent = new Intent(getActivity().getApplicationContext(), AddCardActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putString(AppConstants.FILE_NAME_KEY, mFileNames.get(listItemPosition));
+		intent.putExtras(bundle);
+		startActivity(intent);
 	}
 	
 	private void deleteCardSet(int listItemPosition) {

@@ -22,6 +22,27 @@
             android:textSize="@dimen/ActionBarFontSize"
             android:typeface="normal"
             android:layout_marginLeft="@dimen/ActionBarItemLeftPadding" />
+        
+        <ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonNewCardSet"
+            android:paddingBottom="0dp"
+            android:paddingRight="15dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+
+        <ImageButton
+            android:id="@+id/imageButtonNewCardSet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_new" />
 
     </RelativeLayout>
 

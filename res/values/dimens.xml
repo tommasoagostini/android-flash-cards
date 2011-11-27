@@ -7,4 +7,6 @@
     <dimen name="ActionBarHeight">50sp</dimen>
     <dimen name="ActionBarFontSize">18dp</dimen>
     <dimen name="SaveButtonTopPadding">20px</dimen>
+    <dimen name="AddWordTitleTopPadding">15dp</dimen>
+    <dimen name="AddWordEditTextPadding">10dp</dimen>
 </resources>
