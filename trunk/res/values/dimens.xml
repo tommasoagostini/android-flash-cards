@@ -9,4 +9,7 @@
     <dimen name="SaveButtonTopPadding">20px</dimen>
     <dimen name="AddWordTitleTopPadding">15dp</dimen>
     <dimen name="AddWordEditTextPadding">10dp</dimen>
+    <dimen name="EditButtonsCenterPadding">20dp</dimen>
+    <dimen name="DialogTitleBottomPadding">15dp</dimen>
+    <dimen name="DialogLayoutPadding">10dp</dimen>
 </resources>

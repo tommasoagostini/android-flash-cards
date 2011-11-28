@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CardFragment extends Fragment {
 
@@ -37,8 +38,10 @@ public class CardFragment extends Fragment {
 	private final static String MAX_KEY = "max";
 	private final static String CURRENT_KEY = "current";
 	private boolean mWordToggle = false;
+	private StringBuilder mCounterStringBuilder;
 	private TextView mTextViewWord;
 	private TextView mTextViewWord2;
+	private TextView mCounterTextView;
 	private EditText mEditTextWord;
 	private LinearLayout mLinearLayoutEditButtons;
 	private ImageButton mImageButtonSave;
@@ -91,6 +94,11 @@ public class CardFragment extends Fragment {
 
 			public void onClick(View v) {
 
+				if(!isValid(mEditTextWord.getText().toString().trim())) {
+					
+					return;
+				}
+				
 				mEditTextWord.setVisibility(View.INVISIBLE);
 				mLinearLayoutEditButtons.setVisibility(View.INVISIBLE);
 
@@ -148,12 +156,13 @@ public class CardFragment extends Fragment {
 		});
 
 		// Set the bottom word counter
-		TextView counterTextView = (TextView) view.findViewById(R.id.textViewWordNumber);
-		StringBuilder sb = new StringBuilder();
-		sb.append(mWordIndex + 1);
-		sb.append(AppConstants._OF_);
-		sb.append(getArguments().getInt(MAX_KEY));
-		counterTextView.setText(sb.toString());
+		mCounterTextView = (TextView) view.findViewById(R.id.textViewWordNumber);
+		mCounterStringBuilder = new StringBuilder();
+		mCounterStringBuilder.append(mWordIndex + 1);
+		mCounterStringBuilder.append(AppConstants._OF_);
+		mCounterStringBuilder.append(getArguments().getInt(MAX_KEY));
+		mCounterTextView.setText(mCounterStringBuilder.toString());
+		mCounterTextView.append(AppConstants.FRONT);
 
 		view.setOnLongClickListener(new OnLongClickListener() {
 
@@ -183,11 +192,15 @@ public class CardFragment extends Fragment {
 
 							mTextViewWord.setVisibility(View.INVISIBLE);
 							mTextViewWord2.setVisibility(View.VISIBLE);
+							mCounterTextView.setText(mCounterStringBuilder.toString());
+							mCounterTextView.append(AppConstants.BACK);
 						}
 						else {
 
 							mTextViewWord.setVisibility(View.VISIBLE);
 							mTextViewWord2.setVisibility(View.INVISIBLE);
+							mCounterTextView.setText(mCounterStringBuilder.toString());
+							mCounterTextView.append(AppConstants.FRONT);
 						}
 						
 						v.startAnimation(flip2);
@@ -231,5 +244,16 @@ public class CardFragment extends Fragment {
 		
 		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+	}
+	
+	private boolean isValid(String input) {
+		
+		if(null != input && input.contains(AppConstants.WORD_DELIMITER_TOKEN)) {
+			
+			Toast.makeText(getActivity().getApplicationContext(), R.string.input_validation_warning, Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		
+		return true;
 	}
 }

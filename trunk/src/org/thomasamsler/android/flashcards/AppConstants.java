@@ -27,6 +27,8 @@ public interface AppConstants {
 	public static final int LARGE_TEXT_SIZE = 80;
 	
 	public static final String _OF_ = " of ";
+	public static final String BACK = " Back";
+	public static final String FRONT = " Front";
 	
 	public static final String WORD_DELIMITER_TOKEN = ":";
 	

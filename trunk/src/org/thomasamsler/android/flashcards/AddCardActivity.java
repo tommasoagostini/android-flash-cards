@@ -86,6 +86,11 @@ public class AddCardActivity extends FragmentActivity {
 		imageButtonAddSave.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
+
+				if(!isValid(mEditText.getText().toString().trim())) {
+					
+					return;
+				}
 				
 				if(mWordToggle) { // Back side
 				
@@ -165,7 +170,7 @@ public class AddCardActivity extends FragmentActivity {
 				if(mWordToggle) { // Back side
 					
 					// Save front side word
-					mFrontPageWord = mEditText.getText().toString();
+					mFrontPageWord = mEditText.getText().toString().trim();
 					
 					// Restore back side word
 					if(null == mBackPageWord || "".equals(mBackPageWord)) {
@@ -182,7 +187,7 @@ public class AddCardActivity extends FragmentActivity {
 				else { // Front side
 					
 					// Save back side word
-					mBackPageWord = mEditText.getText().toString();
+					mBackPageWord = mEditText.getText().toString().trim();
 					
 					// Restore front side word
 					if(null == mFrontPageWord || "".equals(mFrontPageWord)) {
@@ -228,6 +233,17 @@ public class AddCardActivity extends FragmentActivity {
 		catch(Exception e) {
 			
 			Log.w(AppConstants.LOG_TAG, "Exception: Was not able to write to file", e);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean isValid(String input) {
+		
+		if(null != input && input.contains(AppConstants.WORD_DELIMITER_TOKEN)) {
+			
+			Toast.makeText(getApplicationContext(), R.string.input_validation_warning, Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		
