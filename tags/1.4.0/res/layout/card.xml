@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayoutCard"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="0.51" >
+
+    <TextView
+        android:id="@+id/textViewWord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:typeface="normal" />
+    
+    <TextView
+        android:id="@+id/textViewWord2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:typeface="normal"
+        android:visibility="invisible" />
+
+    <EditText
+        android:id="@+id/editTextWord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:typeface="normal"
+        android:visibility="invisible" />
+
+    
+    <LinearLayout
+        android:id="@+id/linearLayoutEditButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextWord"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/SaveButtonTopPadding"
+        android:visibility="invisible" >
+
+        <ImageButton
+            android:id="@+id/imageButtonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/EditButtonsCenterPadding"
+            android:background="@null"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/EditButtonsCenterPadding"
+            android:background="@null"
+            android:src="@android:drawable/ic_menu_save" />
+        
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/textViewWordNumber"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/WordNumberBottomPadding"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#C0C0C0" />
+        
+
+</RelativeLayout>

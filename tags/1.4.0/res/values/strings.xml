@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Flash Cards</string>
+    <string name="add_card">Add Flash Card</string>
+    <string name="menu_card_information">Card Info</string>
+    <string name="card_information">Card Set: %1$s</string>
+    <string name="list_menu_add">Add Card</string>
+    <string name="list_meanu_delete">Delete</string>
+    <string name="add_card_front_title">Front Side</string>
+    <string name="add_card_back_title">Back Side</string>
+    <string name="add_card_save_message_error">ERROR: Was not able to save card</string>
+    <string name="add_card_save_message_warning1">Invalid front page entry</string>
+    <string name="add_card_save_message_warning2">Invalid entry</string>
+    <string name="add_card_save_message_front_page">Card front page saved</string>
+    <string name="add_card_save_message_success">Card saved</string>
+    <string name="new_card_set_message">Enter name:</string>
+    <string name="new_card_set_save_button">Save</string>
+    <string name="new_card_set_cancel_button">Cancel</string>
+    <string name="new_card_set_dialog_message_warning1">Name already exists</string>
+    <string name="new_card_set_dialog_message_warning2">Invalid name</string>
+    <string name="view_cards_emtpy_set_message">This card set is empty</string>
+    <string name="input_validation_warning">Input contains invalid \':\' character</string>
+    <string name="delete_card_set_dialog_message">Are you sure you want to delete the card set?</string>
+    <string name="delete_card_set_dialog_ok">Yes</string>
+    <string name="delete_card_set_dialog_cancel">Cancel</string>
+
+</resources>
