@@ -33,9 +33,11 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -52,7 +54,7 @@ public class ArrayListFragment extends ListFragment {
 	private ArrayAdapter<String> mArrayAdapter;
 	
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
 		registerForContextMenu(getListView());
@@ -76,17 +78,19 @@ public class ArrayListFragment extends ListFragment {
 			
 			public void onClick(View v) {
 				
-				AlertDialog.Builder dialog = new AlertDialog.Builder(v.getContext());
-				dialog.setTitle(R.string.new_card_set_title);
+				AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+				builder.setCancelable(false);
 				
-				final EditText input = new EditText(v.getContext());
-				input.setPadding(10, 0, 10, 0);
-				dialog.setView(input);
-				dialog.setPositiveButton(R.string.new_card_set_save_button, new DialogInterface.OnClickListener() {
+				LayoutInflater inflater = getLayoutInflater(savedInstanceState);
+				View layout = inflater.inflate(R.layout.dialog, (ViewGroup) getActivity().findViewById(R.id.layout_root));
+				final EditText editText = (EditText)layout.findViewById(R.id.editTextDialogAdd);
+				
+				builder.setView(layout);
+				builder.setPositiveButton(R.string.new_card_set_save_button, new DialogInterface.OnClickListener() {
 					
 					public void onClick(DialogInterface dialog, int which) {
 						
-						String newFileName = input.getText().toString().trim();
+						String newFileName = editText.getText().toString().trim();
 						
 						if(null == newFileName || "".equals(newFileName)) {
 							
@@ -130,12 +134,16 @@ public class ArrayListFragment extends ListFragment {
 					}
 				});
 				
-				dialog.setNegativeButton(R.string.new_card_set_cancel_button, new DialogInterface.OnClickListener() {
+				builder.setNegativeButton(R.string.new_card_set_cancel_button, new DialogInterface.OnClickListener() {
 					
-					public void onClick(DialogInterface dialog, int which) { /* Cancel: nothing to do */ }
+					public void onClick(DialogInterface dialog, int which) {
+						
+						dialog.cancel();
+					}
 				});
 				
-				dialog.show();
+				AlertDialog alert = builder.create();
+				alert.show();
 			}
 		});
 	}
@@ -187,19 +195,39 @@ public class ArrayListFragment extends ListFragment {
 		startActivity(intent);
 	}
 	
-	private void deleteCardSet(int listItemPosition) {
+	private void deleteCardSet(final int listItemPosition) {
 		
-		boolean isDeleted = getActivity().getApplicationContext().deleteFile(mFileNames.get(listItemPosition));
-		
-		if(isDeleted) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(R.string.delete_card_set_dialog_message);
+		builder.setCancelable(false);
+		builder.setPositiveButton(R.string.delete_card_set_dialog_ok, new DialogInterface.OnClickListener() {
 			
-			mFileNames.remove(listItemPosition);
-			mArrayAdapter.notifyDataSetChanged();
-		}
-		else {
+			public void onClick(DialogInterface dialog, int which) {
+				
+				boolean isDeleted = getActivity().getApplicationContext().deleteFile(mFileNames.get(listItemPosition));
+				
+				if(isDeleted) {
+					
+					mFileNames.remove(listItemPosition);
+					mArrayAdapter.notifyDataSetChanged();
+				}
+				else {
 
-			Log.w(AppConstants.LOG_TAG, "Was not able to delete card set");
-		}
+					Log.w(AppConstants.LOG_TAG, "Was not able to delete card set");
+				}
+			}
+		});
+		
+		builder.setNegativeButton(R.string.delete_card_set_dialog_cancel, new DialogInterface.OnClickListener() {
+			
+			public void onClick(DialogInterface dialog, int which) { 
+				
+				dialog.cancel();
+			}
+		});
+		
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 	
 	private void createDefaultFiles() {
