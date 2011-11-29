@@ -16,18 +16,32 @@
 
 package org.thomasamsler.android.flashcards;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -45,7 +59,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ArrayListFragment extends ListFragment {
+public class ArrayListFragment extends ListFragment implements FlashCardExchangeData {
 
 	private static final int MENU_ITEM_ADD = 1;
 	private static final int MENU_ITEM_DELETE = 2;
@@ -146,6 +160,8 @@ public class ArrayListFragment extends ListFragment {
 				alert.show();
 			}
 		});
+		
+		new GetExternalCardSetsTask().execute();
 	}
 
 	@Override
@@ -277,6 +293,97 @@ public class ArrayListFragment extends ListFragment {
 
 				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
 			}
+		}
+	}
+	
+	private class GetExternalCardSetsTask extends AsyncTask<Void, Void, String []> {
+
+		@Override
+		protected String[] doInBackground(Void... params) {
+			
+			StringBuilder uriBuilder = new StringBuilder();
+			uriBuilder.append(API_GET_USER).append(USER_LOGIN).append(API_KEY);
+			
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(uriBuilder.toString());
+			HttpResponse response;
+			String[] cardSetNames = null;
+
+			try {
+				
+				response = httpclient.execute(httpget);
+				HttpEntity entity = response.getEntity();
+
+				if (entity != null) {
+
+					InputStream inputStream = entity.getContent();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+					StringBuilder content = new StringBuilder();
+
+					String line = null;
+
+					try {
+
+						while((line = reader.readLine()) != null) {
+
+							content.append(line);
+						}
+					}
+					catch(IOException e) {
+
+						e.printStackTrace();
+					}
+					finally {
+
+						try {
+
+							reader.close();
+
+						}
+						catch(IOException e) {
+
+							e.printStackTrace();
+						}
+					}
+
+
+					JSONObject jsonObject = new JSONObject(content.toString());
+					JSONArray jsonArray = jsonObject.getJSONObject("results").getJSONArray("sets");
+
+					cardSetNames = new String[jsonArray.length()];
+
+					for(int i = 0; i < jsonArray.length(); i++) {
+
+						JSONObject data = jsonArray.getJSONObject(i);
+						cardSetNames[i] = data.getString("title");
+					}
+				}
+			}
+			catch(ClientProtocolException e) {
+
+				Log.e(AppConstants.LOG_TAG, "ClientProtocolException", e);
+			}
+			catch(IOException e) {
+
+				Log.e(AppConstants.LOG_TAG, "IOException", e);
+			}
+			catch(Exception e) {
+
+				Log.i(AppConstants.LOG_TAG, "General Exception", e);
+			}
+
+			return cardSetNames;
+		}
+
+		@Override
+		protected void onPostExecute(String[] cardSetNames) {
+
+			for(String cardSetName : cardSetNames) {
+
+				mFileNames.add(cardSetName);
+			}
+
+			mArrayAdapter.notifyDataSetChanged();
 		}
 	}
 }
