@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutAddCardActionBar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/ActionBarHeight"
+        android:background="@drawable/actionbar_gradient" >
+
+        <TextView
+            android:id="@+id/textViewAddCardActionBarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/ActionBarItemLeftPadding"
+            android:text="@string/add_card"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ActionBarFontSize"
+            android:typeface="normal" />
+
+        <ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonAddList"
+            android:paddingBottom="0dp"
+            android:paddingRight="15dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+
+        <ImageButton
+            android:id="@+id/imageButtonAddList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_list" />
+        
+    </RelativeLayout>
+    
+   <fragment
+        android:id="@+id/arrayListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="org.thomasamsler.android.flashcards.AddCardFragment" />
+
+</LinearLayout>
