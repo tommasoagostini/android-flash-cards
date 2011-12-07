@@ -47,14 +47,14 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class CardsPagerActivity extends FragmentActivity {
+public class CardsPagerActivity extends FragmentActivity implements FlashCardExchangeData {
 
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
 	private Random mRandom;
 	private List<String> mWords;
 	private Integer[] mRandomWordsIndex;
-	private String mFileName;
+	private String mCardSetName;
 	private List<Integer> mWordsIndex = new ArrayList<Integer>();
 	private boolean mMagnify = false;
 	
@@ -123,9 +123,9 @@ public class CardsPagerActivity extends FragmentActivity {
 		
 		// Get intent data
 		Bundle bundle = getIntent().getExtras();
-		mFileName = bundle.getString(AppConstants.FILE_NAME_KEY);
+		mCardSetName = bundle.getString(AppConstants.CARD_SET_NAME_KEY);
 		
-		mWords = getWords(mFileName);
+		mWords = getWords(mCardSetName);
 		
 		if(0 == mWords.size()) {
 			
@@ -201,7 +201,7 @@ public class CardsPagerActivity extends FragmentActivity {
 		/*
 		 * Then, we update the file
 		 */
-		saveWords(mFileName, mWords);
+		saveWords(mCardSetName, mWords);
 	}
 
 	private void saveWords(String fileName, List<String> words) {
@@ -227,39 +227,41 @@ public class CardsPagerActivity extends FragmentActivity {
 			
 			ps.close();
 		}
-		catch (FileNotFoundException e) {
+		catch(FileNotFoundException e) {
 
 			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
 		}
 	}
 	
-	private ArrayList<String> getWords(String fileName) {
-		
+	private ArrayList<String> getWords(String cardSetName) {
+
 		ArrayList<String> words = new ArrayList<String>();
-		
+
 		try {
-			
-			FileInputStream fis =  getApplicationContext().openFileInput(fileName);
+
+			FileInputStream fis =  getApplicationContext().openFileInput(cardSetName);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
 			String word;
+
 			while((word = reader.readLine()) != null) {
-				
-				if(null != word && !"".equals(word) && 3 <= word.length()) {
+
+				if(null != word && !"".equals(word) && AppConstants.MIN_DATA_LENGTH <= word.length()) {
+
 					words.add(word);
 				}
 			}
-			
+
 			reader.close();
 		}
-		catch (FileNotFoundException e) {
-			
+		catch(FileNotFoundException e) {
+
 			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: while reading words from file", e);
 		}
-		catch (IOException e) {
-			
+		catch(IOException e) {
+
 			Log.w(AppConstants.LOG_TAG, "IOException: while reading words from file", e);
 		}
-		
+
 		return words;
 	}
 	
@@ -315,7 +317,7 @@ public class CardsPagerActivity extends FragmentActivity {
 	
 	public void showCardInformation() {
 		
-		String message = String.format(getResources().getString(R.string.card_information), mFileName);
+		String message = String.format(getResources().getString(R.string.card_information), mCardSetName);
 		
 		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 	}

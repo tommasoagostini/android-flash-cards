@@ -16,15 +16,84 @@
 
 package org.thomasamsler.android.flashcards;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 public class ListActivity extends FragmentActivity {
+	
+	private boolean mFetchExternal = true;
 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.list);
+        
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("AFC", MODE_PRIVATE);
+        mFetchExternal = sharedPreferences.getBoolean("fetchExternal", true);
+        
+        if(!mFetchExternal) {
+        	
+			ProgressBar progressBar =  (ProgressBar) findViewById(R.id.progressBar1);
+			progressBar.setVisibility(ProgressBar.GONE);
+        }
     }
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.card_set_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_card_set_setup:
+	    	// TODO : Launch setup intent
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("AFC", MODE_PRIVATE);
+		Editor editor = sharedPreferences.edit();
+		editor.putBoolean("fetchExternal", mFetchExternal);
+		editor.commit();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		
+		SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("AFC", MODE_PRIVATE);
+		Editor editor = sharedPreferences.edit();
+		editor.putBoolean("fetchExternal", true);
+		editor.commit();
+	}
+	
+	protected boolean canFetchExternal() {
+		
+		return mFetchExternal;
+	}
+	
+	protected void disableFetchExternal() {
+		
+		Log.i("DEBUG", "called disableFetchExternal() ...");
+		mFetchExternal = false;
+	}
 }

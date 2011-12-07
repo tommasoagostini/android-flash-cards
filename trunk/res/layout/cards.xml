@@ -24,13 +24,12 @@
             android:layout_marginLeft="@dimen/ActionBarItemLeftPadding" />
         
      	<ImageView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/imageButtonEdit"
-            android:paddingBottom="0dp"
-            android:paddingRight="15dp"
-            android:paddingTop="0dp"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_bright" />
         
@@ -45,13 +44,12 @@
             android:src="@drawable/ic_action_edit" />
         
 		<ImageView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/imageButtonMagnify"
-            android:paddingBottom="0dp"
-            android:paddingRight="15dp"
-            android:paddingTop="0dp"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_bright" />
         
@@ -66,13 +64,12 @@
             android:src="@drawable/ic_action_magnify" />
         
         <ImageView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/imageButtonList"
-            android:paddingBottom="0dp"
-            android:paddingRight="15dp"
-            android:paddingTop="0dp"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_bright" />
         

@@ -21,7 +21,8 @@ public interface AppConstants {
 	public static final String SELECTED_LIST_ITEM_KEY = "words";
 	public static final String LOG_TAG = "Flash Cards";
 	public static final String FILE_NAMES_KEY = "files";
-	public static final String FILE_NAME_KEY = "fnk";
+	public static final String CARD_SET_NAME_KEY = "csnk";
+	public static final String CARD_SET_ID_KEY = "csik";
 	
 	public static final int NORMAL_TEXT_SIZE = 60;
 	public static final int LARGE_TEXT_SIZE = 80;
@@ -31,6 +32,14 @@ public interface AppConstants {
 	public static final String FRONT = " Front";
 	
 	public static final String WORD_DELIMITER_TOKEN = ":";
+	
+	/*
+	 * A card set entry has to have a minimum length of 3
+	 * e.g.
+	 * <front>:<back>
+	 * a:b
+	 */
+	public static final int MIN_DATA_LENGTH = 3;
 	
 
 }
