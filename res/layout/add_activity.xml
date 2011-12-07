@@ -24,13 +24,12 @@
             android:typeface="normal" />
 
         <ImageView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_toLeftOf="@+id/imageButtonAddList"
-            android:paddingBottom="0dp"
-            android:paddingRight="15dp"
-            android:paddingTop="0dp"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
             android:scaleType="fitXY"
             android:src="@android:drawable/divider_horizontal_bright" />
 

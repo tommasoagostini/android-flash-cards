@@ -40,7 +40,7 @@ import android.widget.Toast;
 
 public class AddCardFragment extends Fragment {
 
-	private String mFileName;
+	private String mCardSetName;
 	private String mFrontPageWord;
 	private String mBackPageWord;
 	
@@ -64,8 +64,9 @@ public class AddCardFragment extends Fragment {
 	
 		super.onCreate(savedInstanceState);
 
+		
 		Bundle bundle = getActivity().getIntent().getExtras();
-		mFileName = bundle.getString(AppConstants.FILE_NAME_KEY);
+		mCardSetName = bundle.getString(AppConstants.CARD_SET_NAME_KEY);
 		
 		mEditText = (EditText)getActivity().findViewById(R.id.editTextAdd);
 		mTextViewTitle = (TextView)getActivity().findViewById(R.id.textViewAddTitle);
@@ -133,7 +134,7 @@ public class AddCardFragment extends Fragment {
 					}
 				}
 
-				mIsSaved = addCard(mFileName, mFrontPageWord, mBackPageWord);
+				mIsSaved = addCard(mCardSetName, mFrontPageWord, mBackPageWord);
 
 				if(mIsSaved) {
 

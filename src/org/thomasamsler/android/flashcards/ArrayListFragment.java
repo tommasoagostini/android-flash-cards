@@ -57,6 +57,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class ArrayListFragment extends ListFragment implements FlashCardExchangeData {
@@ -64,8 +65,8 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	private static final int MENU_ITEM_ADD = 1;
 	private static final int MENU_ITEM_DELETE = 2;
 	
-	private ArrayList<String> mFileNames;
-	private ArrayAdapter<String> mArrayAdapter;
+	private ArrayList<CardSet> mCardSets;
+	private ArrayAdapter<CardSet> mArrayAdapter;
 	
 	@Override
 	public void onActivityCreated(final Bundle savedInstanceState) {
@@ -73,17 +74,17 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 		registerForContextMenu(getListView());
 		
-		mFileNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
+		mCardSets = getCardSetItems();
 		
-		if(0 == mFileNames.size()) {
+		if(0 == mCardSets.size()) {
 			
-			createDefaultFiles();
-			mFileNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
+			createDefaultCardSets();
+			mCardSets = getCardSetItems();
 		}
 
-		Collections.sort(mFileNames);
+		Collections.sort(mCardSets);
 
-		mArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mFileNames);
+		mArrayAdapter = new ArrayAdapter<CardSet>(getActivity(), android.R.layout.simple_list_item_1, mCardSets);
 
 		setListAdapter(mArrayAdapter);
 		
@@ -136,12 +137,14 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 									PrintStream ps = new PrintStream(fos);
 									ps.close();
 									
-								} catch (FileNotFoundException e) {
+								}
+								catch(FileNotFoundException e) {
 									
 									Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create new file", e);
 								}
 								
-								mFileNames.add(newFileName);
+								mCardSets.add(new CardSet(newFileName));
+								Collections.sort(mCardSets);
 								mArrayAdapter.notifyDataSetChanged();
 							}
 						}
@@ -161,17 +164,35 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			}
 		});
 		
-		new GetExternalCardSetsTask().execute();
+		if(((ListActivity)getActivity()).canFetchExternal()) {
+			
+			new GetExternalCardSetsTask().execute();
+			Log.i("DEBUG", "Fetching external ...");
+		}
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
+		
+		CardSet cardSet = mCardSets.get(position);
 
 		Intent intent = new Intent(v.getContext(), CardsPagerActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putString(AppConstants.FILE_NAME_KEY, mFileNames.get(position));
+		bundle.putString(AppConstants.CARD_SET_NAME_KEY, mCardSets.get(position).getName());
 		intent.putExtras(bundle);
-		startActivity(intent);
+		
+		if(null != cardSet.getId() && !"".equals(cardSet.getId())) {
+
+			ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+			progressBar.setVisibility(ProgressBar.VISIBLE);
+			
+			cardSet.setIntent(intent);
+			new GetExternalCardsTask().execute(cardSet);
+		}
+		else {
+
+			startActivity(intent);
+		}
 	}
 	
 	@Override
@@ -204,11 +225,25 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 	private void addCard(int listItemPosition) {
 		
+		CardSet cardSet = mCardSets.get(listItemPosition);
+		
 		Intent intent = new Intent(getActivity().getApplicationContext(), AddCardActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putString(AppConstants.FILE_NAME_KEY, mFileNames.get(listItemPosition));
+		bundle.putString(AppConstants.CARD_SET_NAME_KEY, mCardSets.get(listItemPosition).getName());
 		intent.putExtras(bundle);
-		startActivity(intent);
+		
+		if(null != cardSet.getId() && !"".equals(cardSet.getId())) {
+			
+			ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+			progressBar.setVisibility(ProgressBar.VISIBLE);
+			
+			cardSet.setIntent(intent);
+			new GetExternalCardsTask().execute(cardSet);
+		}
+		else {
+
+			startActivity(intent);
+		}
 	}
 	
 	private void deleteCardSet(final int listItemPosition) {
@@ -220,17 +255,27 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			
 			public void onClick(DialogInterface dialog, int which) {
 				
-				boolean isDeleted = getActivity().getApplicationContext().deleteFile(mFileNames.get(listItemPosition));
+				// Check if we have the card set stored in the file system
+				String[] fileNames = getActivity().getApplicationContext().fileList();
 				
-				if(isDeleted) {
+				for(String fileName : fileNames) {
 					
-					mFileNames.remove(listItemPosition);
-					mArrayAdapter.notifyDataSetChanged();
+					if(fileName.equals(mCardSets.get(listItemPosition).getName())) {
+						
+						boolean isDeleted = getActivity().getApplicationContext().deleteFile(mCardSets.get(listItemPosition).getName());
+						
+						if(!isDeleted) {
+							
+							Log.w(AppConstants.LOG_TAG, "Was not able to delete card set");
+						}
+						
+						break;
+					}
 				}
-				else {
-
-					Log.w(AppConstants.LOG_TAG, "Was not able to delete card set");
-				}
+				
+				mCardSets.remove(listItemPosition);
+				Collections.sort(mCardSets);
+				mArrayAdapter.notifyDataSetChanged();
 			}
 		});
 		
@@ -246,7 +291,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		alert.show();
 	}
 	
-	private void createDefaultFiles() {
+	private void createDefaultCardSets() {
 
 		// Get a list of files if there are any
 		String[] files = getActivity().getApplicationContext().fileList();
@@ -270,7 +315,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				
 				ps.close();
 			}
-			catch (FileNotFoundException e) {
+			catch(FileNotFoundException e) {
 
 				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
 			}
@@ -296,18 +341,35 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		}
 	}
 	
-	private class GetExternalCardSetsTask extends AsyncTask<Void, Void, String []> {
+	/*
+	 * Helper method:
+	 * Taking an array of file names, and turn them into a list of ListItem
+	 */
+	private ArrayList<CardSet> getCardSetItems() {
+		
+		ArrayList<CardSet> fileNameList = new ArrayList<CardSet>() ;
+		String[] fileNames = getActivity().getApplicationContext().fileList();
+		
+		for(String fileName : fileNames) {
+			
+			fileNameList.add(new CardSet(fileName));
+		}
+		
+		return fileNameList;
+	}
+	
+	private class GetExternalCardSetsTask extends AsyncTask<Void, Void, List<CardSet>> {
 
 		@Override
-		protected String[] doInBackground(Void... params) {
+		protected List<CardSet> doInBackground(Void... params) {
 			
 			StringBuilder uriBuilder = new StringBuilder();
-			uriBuilder.append(API_GET_USER).append(USER_LOGIN).append(API_KEY);
+			uriBuilder.append(API_GET_USER).append(TEST_USER_NAME).append(API_KEY);
 			
 			HttpClient httpclient = new DefaultHttpClient();
 			HttpGet httpget = new HttpGet(uriBuilder.toString());
 			HttpResponse response;
-			String[] cardSetNames = null;
+			List<CardSet> cardSets = null;
 
 			try {
 				
@@ -350,12 +412,12 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					JSONObject jsonObject = new JSONObject(content.toString());
 					JSONArray jsonArray = jsonObject.getJSONObject("results").getJSONArray("sets");
 
-					cardSetNames = new String[jsonArray.length()];
+					cardSets = new ArrayList<CardSet>();
 
 					for(int i = 0; i < jsonArray.length(); i++) {
 
 						JSONObject data = jsonArray.getJSONObject(i);
-						cardSetNames[i] = data.getString("title");
+						cardSets.add(new CardSet(data.getString("card_set_id"), data.getString("title")));
 					}
 				}
 			}
@@ -372,18 +434,134 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				Log.i(AppConstants.LOG_TAG, "General Exception", e);
 			}
 
-			return cardSetNames;
+			return cardSets;
 		}
 
 		@Override
-		protected void onPostExecute(String[] cardSetNames) {
+		protected void onPostExecute(List<CardSet> cardSets) {
+			
+			if(null != cardSets) {
+				
+				ArrayList<String> existingCardSetNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
+				
+				for(CardSet cardSet : cardSets) {
+					
+					if(!existingCardSetNames.contains(cardSet.getName())) {
+						
+						mCardSets.add(cardSet);
+					}
+				}
 
-			for(String cardSetName : cardSetNames) {
-
-				mFileNames.add(cardSetName);
+				Collections.sort(mCardSets);
+				mArrayAdapter.notifyDataSetChanged();
 			}
 
-			mArrayAdapter.notifyDataSetChanged();
+			ListActivity listActivity = (ListActivity) getActivity();
+			ProgressBar progressBar = (ProgressBar) listActivity.findViewById(R.id.progressBar1);
+			progressBar.setVisibility(ProgressBar.GONE);
+			listActivity.disableFetchExternal();
+		}
+	}
+	
+	private class GetExternalCardsTask extends AsyncTask<CardSet, Void, CardSet> {
+
+		@Override
+		protected CardSet doInBackground(CardSet... cardSets) {
+			
+			StringBuilder uriBuilder = new StringBuilder();
+			uriBuilder.append(API_GET_CARD_SET).append(cardSets[0].getId()).append(API_KEY);
+			
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(uriBuilder.toString());
+			HttpResponse response;
+
+			try {
+				
+				response = httpclient.execute(httpget);
+				HttpEntity entity = response.getEntity();
+
+				if (entity != null) {
+
+					InputStream inputStream = entity.getContent();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+					StringBuilder content = new StringBuilder();
+
+					String line = null;
+
+					try {
+
+						while((line = reader.readLine()) != null) {
+
+							content.append(line);
+						}
+					}
+					catch(IOException e) {
+
+						e.printStackTrace();
+					}
+					finally {
+
+						try {
+
+							reader.close();
+
+						}
+						catch(IOException e) {
+
+							e.printStackTrace();
+						}
+					}
+
+					JSONObject jsonObject = new JSONObject(content.toString());
+					JSONArray jsonArray = jsonObject.getJSONObject("results").getJSONArray("flashcards");
+					FileOutputStream fos = null;
+					PrintStream ps = null;
+
+					try {
+					
+						fos = getActivity().getApplicationContext().openFileOutput(cardSets[0].getName(), Context.MODE_PRIVATE);
+					}
+					catch(FileNotFoundException e) {
+
+						Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
+					}
+					
+					ps = new PrintStream(fos);
+
+					for(int i = 0; i < jsonArray.length(); i++) {
+						
+						JSONObject data = jsonArray.getJSONObject(i);
+						ps.print(data.getString("question"));
+						ps.print(AppConstants.WORD_DELIMITER_TOKEN);
+						ps.println(data.getString("answer"));
+					}
+					
+					ps.close();
+				}
+			}
+			catch(ClientProtocolException e) {
+
+				Log.e(AppConstants.LOG_TAG, "ClientProtocolException", e);
+			}
+			catch(IOException e) {
+
+				Log.e(AppConstants.LOG_TAG, "IOException", e);
+			}
+			catch(Exception e) {
+
+				Log.i(AppConstants.LOG_TAG, "General Exception", e);
+			}
+
+			return cardSets[0];
+		}
+		
+		@Override
+		protected void onPostExecute(CardSet cardSet) {
+			
+			ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+			progressBar.setVisibility(ProgressBar.GONE);
+			
+			startActivity(cardSet.getIntent());
 		}
 	}
 }
