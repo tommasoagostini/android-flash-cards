@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item android:id="@+id/menu_card_set_setup"
-          android:icon="@android:drawable/ic_menu_preferences"
-          android:title="@string/menu_card_set_setup" />
+    <item
+        android:id="@+id/menu_card_set_setup"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/menu_card_set_setup"/>
+
+    <item
+        android:id="@+id/menu_card_set_external"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="@string/menu_card_set_external"/>
 
 </menu>
