@@ -163,12 +163,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				alert.show();
 			}
 		});
-		
-		if(((ListActivity)getActivity()).canFetchExternal()) {
-			
-			new GetExternalCardSetsTask().execute();
-			Log.i("DEBUG", "Fetching external ...");
-		}
 	}
 
 	@Override
@@ -223,6 +217,15 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		return false;
 	}
 
+	protected void getFlashCardExchangeCardSets() {
+		
+		ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+		progressBar.setVisibility(ProgressBar.VISIBLE);
+		
+		new GetExternalCardSetsTask().execute();
+		Log.i("DEBUG", "Fetching external ...");
+	}
+	
 	private void addCard(int listItemPosition) {
 		
 		CardSet cardSet = mCardSets.get(listItemPosition);
@@ -234,6 +237,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		if(null != cardSet.getId() && !"".equals(cardSet.getId())) {
 			
+			Log.i("DEBUG", "addCard : getting cards from FlashCardExchange ...");
 			ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			
@@ -456,10 +460,8 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				mArrayAdapter.notifyDataSetChanged();
 			}
 
-			ListActivity listActivity = (ListActivity) getActivity();
-			ProgressBar progressBar = (ProgressBar) listActivity.findViewById(R.id.progressBar1);
+			ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
 			progressBar.setVisibility(ProgressBar.GONE);
-			listActivity.disableFetchExternal();
 		}
 	}
 	
@@ -560,6 +562,9 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			
 			ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
 			progressBar.setVisibility(ProgressBar.GONE);
+			
+			// Now that we have the cards, we indicate that we don't need to get them anymore
+			cardSet.setId("");
 			
 			startActivity(cardSet.getIntent());
 		}

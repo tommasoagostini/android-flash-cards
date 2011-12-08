@@ -5,6 +5,7 @@
     <string name="add_card">Add Flash Card</string>
     <string name="menu_card_information">Card Info</string>
     <string name="menu_card_set_setup">Setup</string>
+    <string name="menu_card_set_external">Flash Card Exchange</string>
     <string name="card_information">Card Set: %1$s</string>
     <string name="list_menu_add">Add Card</string>
     <string name="list_meanu_delete">Delete</string>
@@ -25,5 +26,6 @@
     <string name="delete_card_set_dialog_message">Are you sure you want to delete the card set?</string>
     <string name="delete_card_set_dialog_ok">Yes</string>
     <string name="delete_card_set_dialog_cancel">Cancel</string>
+    <string name="setup_user_name">User Name:</string>
 
 </resources>

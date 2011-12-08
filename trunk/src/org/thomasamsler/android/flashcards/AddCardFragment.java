@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -52,6 +51,7 @@ public class AddCardFragment extends Fragment {
 	private boolean mIsSaved = false;
 	
 	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
 		
@@ -63,7 +63,6 @@ public class AddCardFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 	
 		super.onCreate(savedInstanceState);
-
 		
 		Bundle bundle = getActivity().getIntent().getExtras();
 		mCardSetName = bundle.getString(AppConstants.CARD_SET_NAME_KEY);
@@ -75,9 +74,8 @@ public class AddCardFragment extends Fragment {
 		imageButtonAddList.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				
-				Intent intent = new Intent(v.getContext(), ListActivity.class);
-				startActivity(intent);
+
+				getActivity().finish();
 			}
 		});
 		
@@ -86,8 +84,7 @@ public class AddCardFragment extends Fragment {
 			
 			public void onClick(View v) {
 				
-				Intent intent = new Intent(v.getContext(), ListActivity.class);
-				startActivity(intent);
+				getActivity().finish();
 			}
 		});
 		
@@ -139,9 +136,7 @@ public class AddCardFragment extends Fragment {
 				if(mIsSaved) {
 
 					Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_success, Toast.LENGTH_SHORT).show();
-
-					Intent intent = new Intent(v.getContext(), ListActivity.class);
-					startActivity(intent);
+					getActivity().finish();
 				}
 				else {
 

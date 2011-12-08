@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Random;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -69,8 +68,7 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 
 			public void onClick(View v) {
 				
-				Intent intent = new Intent(v.getContext(), ListActivity.class);
-				startActivity(intent);
+				finish();
 			}
 		});
 		
@@ -319,6 +317,6 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 		
 		String message = String.format(getResources().getString(R.string.card_information), mCardSetName);
 		
-		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 	}
 }

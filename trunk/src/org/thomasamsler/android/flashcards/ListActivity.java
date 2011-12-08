@@ -16,34 +16,30 @@
 
 package org.thomasamsler.android.flashcards;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 
 public class ListActivity extends FragmentActivity {
 	
-	private boolean mFetchExternal = true;
-
+	private ArrayListFragment mArrayListFragment;
+	private SetupFragment mSetupFragment;
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.list);
         
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("AFC", MODE_PRIVATE);
-        mFetchExternal = sharedPreferences.getBoolean("fetchExternal", true);
-        
-        if(!mFetchExternal) {
-        	
-			ProgressBar progressBar =  (ProgressBar) findViewById(R.id.progressBar1);
-			progressBar.setVisibility(ProgressBar.GONE);
-        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        mArrayListFragment = new ArrayListFragment();
+        fragmentTransaction.add(R.id.fragmentContainer, mArrayListFragment);
+        fragmentTransaction.commit();
     }
 	
 	@Override
@@ -59,41 +55,19 @@ public class ListActivity extends FragmentActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_card_set_setup:
-	    	// TODO : Launch setup intent
+	    	FragmentManager fragmentManager = getSupportFragmentManager();
+	        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+	        mSetupFragment = new SetupFragment();
+	        fragmentTransaction.replace(R.id.fragmentContainer, mSetupFragment);
+	        fragmentTransaction.addToBackStack(null);
+	        fragmentTransaction.commit();
 	        return true;
+	    case R.id.menu_card_set_external:
+	    	
+	    	mArrayListFragment.getFlashCardExchangeCardSets();
+	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		
-		SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("AFC", MODE_PRIVATE);
-		Editor editor = sharedPreferences.edit();
-		editor.putBoolean("fetchExternal", mFetchExternal);
-		editor.commit();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		
-		SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("AFC", MODE_PRIVATE);
-		Editor editor = sharedPreferences.edit();
-		editor.putBoolean("fetchExternal", true);
-		editor.commit();
-	}
-	
-	protected boolean canFetchExternal() {
-		
-		return mFetchExternal;
-	}
-	
-	protected void disableFetchExternal() {
-		
-		Log.i("DEBUG", "called disableFetchExternal() ...");
-		mFetchExternal = false;
 	}
 }
