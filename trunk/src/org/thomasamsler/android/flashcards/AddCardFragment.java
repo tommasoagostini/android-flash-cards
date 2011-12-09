@@ -39,7 +39,7 @@ import android.widget.Toast;
 
 public class AddCardFragment extends Fragment {
 
-	private String mCardSetName;
+	private CardSet mCardSet;
 	private String mFrontPageWord;
 	private String mBackPageWord;
 	
@@ -55,7 +55,7 @@ public class AddCardFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
 		
-		return inflater.inflate(R.layout.add_fragment, container);
+		return inflater.inflate(R.layout.add_fragment, container, false);
 	}
 	
 	
@@ -64,27 +64,15 @@ public class AddCardFragment extends Fragment {
 	
 		super.onCreate(savedInstanceState);
 		
-		Bundle bundle = getActivity().getIntent().getExtras();
-		mCardSetName = bundle.getString(AppConstants.CARD_SET_NAME_KEY);
-		
 		mEditText = (EditText)getActivity().findViewById(R.id.editTextAdd);
 		mTextViewTitle = (TextView)getActivity().findViewById(R.id.textViewAddTitle);
-		
-		ImageButton imageButtonAddList = (ImageButton)getActivity().findViewById(R.id.imageButtonAddList);
-		imageButtonAddList.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-
-				getActivity().finish();
-			}
-		});
 		
 		ImageButton imageButtonAddCancel = (ImageButton)getActivity().findViewById(R.id.imageButtonAddCancel);
 		imageButtonAddCancel.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
 				
-				getActivity().finish();
+				((ListActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
 		
@@ -131,12 +119,12 @@ public class AddCardFragment extends Fragment {
 					}
 				}
 
-				mIsSaved = addCard(mCardSetName, mFrontPageWord, mBackPageWord);
+				mIsSaved = addCard(mCardSet.getName(), mFrontPageWord, mBackPageWord);
 
 				if(mIsSaved) {
 
 					Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_success, Toast.LENGTH_SHORT).show();
-					getActivity().finish();
+					((ListActivity)getActivity()).showArrayListFragment(true);
 				}
 				else {
 
@@ -155,6 +143,11 @@ public class AddCardFragment extends Fragment {
 				return false;
 			}
 		});
+	}
+	
+	protected void setCardSet(CardSet cardSet) {
+		
+		this.mCardSet = cardSet;
 	}
 	
 	private void flipCard(final View v) {

@@ -26,7 +26,9 @@ import android.view.MenuItem;
 
 public class ListActivity extends FragmentActivity {
 	
+	private ListActionbarFragment mListActionbarFragment;
 	private ArrayListFragment mArrayListFragment;
+	private AddCardFragment mAddCardFragment;
 	private SetupFragment mSetupFragment;
 	
 	@Override
@@ -35,11 +37,8 @@ public class ListActivity extends FragmentActivity {
         
         setContentView(R.layout.list);
         
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        mArrayListFragment = new ArrayListFragment();
-        fragmentTransaction.add(R.id.fragmentContainer, mArrayListFragment);
-        fragmentTransaction.commit();
+        showListActionbarFragment();
+        showArrayListFragment(false);
     }
 	
 	@Override
@@ -54,20 +53,87 @@ public class ListActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
+	    
 	    case R.id.menu_card_set_setup:
-	    	FragmentManager fragmentManager = getSupportFragmentManager();
-	        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-	        mSetupFragment = new SetupFragment();
-	        fragmentTransaction.replace(R.id.fragmentContainer, mSetupFragment);
-	        fragmentTransaction.addToBackStack(null);
-	        fragmentTransaction.commit();
+	    	showSetupFragment();
 	        return true;
+
 	    case R.id.menu_card_set_external:
-	    	
 	    	mArrayListFragment.getFlashCardExchangeCardSets();
 	    	return true;
+
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	protected void showArrayListFragment(boolean addToBackStack) {
+		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        
+        if(null == mArrayListFragment) {
+        	
+        	mArrayListFragment = new ArrayListFragment();
+        }
+        
+        fragmentTransaction.replace(R.id.fragmentContainer, mArrayListFragment);
+        
+        if(addToBackStack) {
+        
+        	fragmentTransaction.addToBackStack(null);
+        }
+        
+        fragmentTransaction.commit();
+	}
+	
+	protected void showAddCardFragment(CardSet cardSet) {
+		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        
+        if(null == mAddCardFragment) {
+        	
+        	mAddCardFragment = new AddCardFragment();
+        }
+        
+        mAddCardFragment.setCardSet(cardSet);
+        fragmentTransaction.replace(R.id.fragmentContainer, mAddCardFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+	}
+	
+	protected void showSetupFragment() {
+		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        
+        if(null == mSetupFragment) {
+        	
+        	mSetupFragment = new SetupFragment();
+        }
+        
+        fragmentTransaction.replace(R.id.fragmentContainer, mSetupFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+	}
+	
+	protected void showListActionbarFragment() {
+		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        
+        if(null == mListActionbarFragment) {
+        	
+        	mListActionbarFragment = new ListActionbarFragment();
+        }
+        
+        fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
+        fragmentTransaction.commit();
+	}
+	
+	protected void addCardSet(CardSet cardSet) {
+		
+		mArrayListFragment.addCardSet(cardSet);
 	}
 }

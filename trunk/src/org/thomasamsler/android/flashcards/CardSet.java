@@ -20,9 +20,13 @@ import android.content.Intent;
 
 public class CardSet implements Comparable<CardSet> {
 	
+	public static final int ADD_CARD_FRAGMENT = 1;
+	public static final int CARDS_PAGER_FRAGMENT = 2;
+	
 	private String mName;
 	private String mId;
 	private Intent intent;
+	private int showFragment;
 	
 	public CardSet(String name) {
 		
@@ -57,6 +61,14 @@ public class CardSet implements Comparable<CardSet> {
 
 	public void setIntent(Intent intent) {
 		this.intent = intent;
+	}
+
+	public int getShowFragment() {
+		return showFragment;
+	}
+
+	public void setShowFragment(int showFragment) {
+		this.showFragment = showFragment;
 	}
 
 	@Override
