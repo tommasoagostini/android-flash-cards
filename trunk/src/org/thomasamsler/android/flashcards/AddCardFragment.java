@@ -47,8 +47,8 @@ public class AddCardFragment extends Fragment {
 	private EditText mEditText;
 	private TextView mTextViewTitle;
 	
-	private boolean mWordToggle = false;
-	private boolean mIsSaved = false;
+	private boolean mWordToggle;
+	private boolean mIsSaved;
 	
 	
 	@Override
@@ -61,10 +61,15 @@ public class AddCardFragment extends Fragment {
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-	
 		super.onCreate(savedInstanceState);
+
+		mFrontPageWord = "";
+		mBackPageWord = "";
+		mWordToggle = false;
+		mIsSaved = false;
 		
 		mEditText = (EditText)getActivity().findViewById(R.id.editTextAdd);
+		
 		mTextViewTitle = (TextView)getActivity().findViewById(R.id.textViewAddTitle);
 		
 		ImageButton imageButtonAddCancel = (ImageButton)getActivity().findViewById(R.id.imageButtonAddCancel);
@@ -130,6 +135,8 @@ public class AddCardFragment extends Fragment {
 
 					Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_error, Toast.LENGTH_LONG).show();
 				}
+				
+				mEditText.setText("");
 			}
 		});
 
@@ -216,7 +223,7 @@ public class AddCardFragment extends Fragment {
 			StringBuilder sb = new StringBuilder();
 			sb.append(frontSideWord);
 			sb.append(AppConstants.WORD_DELIMITER_TOKEN);
-			sb.append(mBackPageWord);
+			sb.append(backSideWord);
 			ps.print(sb.toString());
 			
 			ps.println();
