@@ -97,6 +97,12 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 				// Get CardFragment and magnify or reduce its font size
 				int currentIndex = mViewPager.getCurrentItem();
 				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
+				
+				if(null == cardFragment) {
+					
+					return;
+				}
+				
 				if(mMagnify) {
 					
 					cardFragment.onMagnifyFont();
@@ -115,7 +121,11 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 				
 				int currentIndex = mViewPager.getCurrentItem();
 				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
-				cardFragment.onEdit();
+				
+				if(null != cardFragment) {
+					
+					cardFragment.onEdit();
+				}
 			}
 		});
 		
@@ -127,7 +137,7 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 		
 		if(0 == mWords.size()) {
 			
-			Toast.makeText(getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 		}
 		
 		mRandomWordsIndex = new Integer[mWords.size()];

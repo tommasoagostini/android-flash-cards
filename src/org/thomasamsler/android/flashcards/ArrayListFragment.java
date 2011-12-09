@@ -17,6 +17,7 @@
 package org.thomasamsler.android.flashcards;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,15 +48,10 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -87,82 +83,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		mArrayAdapter = new ArrayAdapter<CardSet>(getActivity(), android.R.layout.simple_list_item_1, mCardSets);
 
 		setListAdapter(mArrayAdapter);
-		
-		ImageButton imageButtonNewCardSet = (ImageButton)getActivity().findViewById(R.id.imageButtonNewCardSet);
-		imageButtonNewCardSet.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				
-				AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-				builder.setCancelable(false);
-				
-				LayoutInflater inflater = getLayoutInflater(savedInstanceState);
-				View layout = inflater.inflate(R.layout.dialog, (ViewGroup) getActivity().findViewById(R.id.layout_root));
-				final EditText editText = (EditText)layout.findViewById(R.id.editTextDialogAdd);
-				
-				builder.setView(layout);
-				builder.setPositiveButton(R.string.new_card_set_save_button, new DialogInterface.OnClickListener() {
-					
-					public void onClick(DialogInterface dialog, int which) {
-						
-						String newFileName = editText.getText().toString().trim();
-						
-						if(null == newFileName || "".equals(newFileName)) {
-							
-							Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning2, Toast.LENGTH_LONG).show();
-						}
-						else {
-							
-							String [] fileNames = getActivity().getApplicationContext().fileList();
-							boolean fileNameExists = false;
-							
-							for(String fileName : fileNames) {
-								
-								if(newFileName.equals(fileName)) {
-									
-									fileNameExists = true;
-									break;
-								}
-							}
-							
-							if(fileNameExists) {
-								
-								Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning1, Toast.LENGTH_LONG).show();
-							}
-							else {
-								
-								try {
-									
-									FileOutputStream fos = getActivity().getApplicationContext().openFileOutput(newFileName, Context.MODE_PRIVATE);
-									PrintStream ps = new PrintStream(fos);
-									ps.close();
-									
-								}
-								catch(FileNotFoundException e) {
-									
-									Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create new file", e);
-								}
-								
-								mCardSets.add(new CardSet(newFileName));
-								Collections.sort(mCardSets);
-								mArrayAdapter.notifyDataSetChanged();
-							}
-						}
-					}
-				});
-				
-				builder.setNegativeButton(R.string.new_card_set_cancel_button, new DialogInterface.OnClickListener() {
-					
-					public void onClick(DialogInterface dialog, int which) {
-						
-						dialog.cancel();
-					}
-				});
-				
-				AlertDialog alert = builder.create();
-				alert.show();
-			}
-		});
+	
 	}
 
 	@Override
@@ -170,6 +91,12 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		CardSet cardSet = mCardSets.get(position);
 
+		if((null == cardSet.getId() || "".equals(cardSet.getId())) && !hasCards(cardSet.getName())) {
+		
+			Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
 		Intent intent = new Intent(v.getContext(), CardsPagerActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putString(AppConstants.CARD_SET_NAME_KEY, mCardSets.get(position).getName());
@@ -181,6 +108,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			
 			cardSet.setIntent(intent);
+			cardSet.setShowFragment(CardSet.CARDS_PAGER_FRAGMENT);
 			new GetExternalCardsTask().execute(cardSet);
 		}
 		else {
@@ -217,6 +145,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		return false;
 	}
 
+	protected void addCardSet(CardSet cardSet) {
+		
+		mCardSets.add(cardSet);
+		Collections.sort(mCardSets);
+		mArrayAdapter.notifyDataSetChanged();
+	}
+	
 	protected void getFlashCardExchangeCardSets() {
 		
 		ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
@@ -226,27 +161,54 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		Log.i("DEBUG", "Fetching external ...");
 	}
 	
+	private boolean hasCards(String cardSetName) {
+
+		boolean hasCards = false;
+		
+		try {
+
+			FileInputStream fis =  getActivity().getApplicationContext().openFileInput(cardSetName);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+			String word;
+
+			while((word = reader.readLine()) != null) {
+
+				if(null != word && !"".equals(word) && AppConstants.MIN_DATA_LENGTH <= word.length()) {
+
+					hasCards = true;
+					break;
+				}
+			}
+
+			reader.close();
+		}
+		catch(FileNotFoundException e) {
+
+			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: while reading words from file", e);
+		}
+		catch(IOException e) {
+
+			Log.w(AppConstants.LOG_TAG, "IOException: while reading words from file", e);
+		}
+
+		return hasCards;
+	}
+	
 	private void addCard(int listItemPosition) {
 		
 		CardSet cardSet = mCardSets.get(listItemPosition);
 		
-		Intent intent = new Intent(getActivity().getApplicationContext(), AddCardActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putString(AppConstants.CARD_SET_NAME_KEY, mCardSets.get(listItemPosition).getName());
-		intent.putExtras(bundle);
-		
 		if(null != cardSet.getId() && !"".equals(cardSet.getId())) {
 			
-			Log.i("DEBUG", "addCard : getting cards from FlashCardExchange ...");
 			ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
 			progressBar.setVisibility(ProgressBar.VISIBLE);
 			
-			cardSet.setIntent(intent);
+			cardSet.setShowFragment(CardSet.ADD_CARD_FRAGMENT);
 			new GetExternalCardsTask().execute(cardSet);
 		}
 		else {
 
-			startActivity(intent);
+			((ListActivity)getActivity()).showAddCardFragment(cardSet);
 		}
 	}
 	
@@ -565,6 +527,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			
 			// Now that we have the cards, we indicate that we don't need to get them anymore
 			cardSet.setId("");
+			
+			switch(cardSet.getShowFragment()) {
+			
+			case CardSet.ADD_CARD_FRAGMENT:
+				((ListActivity)getActivity()).showAddCardFragment(cardSet);
+				return;
+			}
 			
 			startActivity(cardSet.getIntent());
 		}

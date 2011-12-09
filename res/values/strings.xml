@@ -27,5 +27,6 @@
     <string name="delete_card_set_dialog_ok">Yes</string>
     <string name="delete_card_set_dialog_cancel">Cancel</string>
     <string name="setup_user_name">User Name:</string>
+    <string name="setup_title">Flash Card Exchange</string>
 
 </resources>

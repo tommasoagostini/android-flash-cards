@@ -5,56 +5,10 @@
     android:orientation="vertical"
     android:background="#FFFFFF">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayoutListActionBar"
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/ActionBarHeight"
-        android:background="@drawable/actionbar_gradient" >
-
-        <TextView
-            android:id="@+id/textViewListActionBarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/ActionBarItemLeftPadding"
-            android:text="@string/app_name"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/ActionBarFontSize"
-            android:typeface="normal" />
-        
-        <ProgressBar
-            android:id="@+id/progressBar1"
-            style="@android:style/Widget.ProgressBar.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/imageView1"
-            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
-            android:visibility="gone" />
-        
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_toLeftOf="@+id/imageButtonNewCardSet"
-            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
-            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
-            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
-            android:scaleType="fitXY"
-            android:src="@android:drawable/divider_horizontal_bright" />
-
-        <ImageButton
-            android:id="@+id/imageButtonNewCardSet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
-            android:background="@null"
-            android:src="@drawable/ic_action_new" />
-
-    </RelativeLayout>
+    <LinearLayout 
+        android:id="@+id/actionbarContainer"
+        android:layout_width="match_parent"
+    	android:layout_height="@dimen/ActionBarHeight"/>
     
     <LinearLayout
         android:id="@+id/fragmentContainer"
