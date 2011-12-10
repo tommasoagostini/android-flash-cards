@@ -18,6 +18,10 @@ package org.thomasamsler.android.flashcards;
 
 public interface AppConstants {
 	
+	public static final String PREFERENCE_NAME = "FlashCardsPrefsFile";
+	public static final String PREFERENCE_FCEX_USER_NAME = "fcexun";
+	
+	
 	public static final String SELECTED_LIST_ITEM_KEY = "words";
 	public static final String LOG_TAG = "Flash Cards";
 	public static final String FILE_NAMES_KEY = "files";

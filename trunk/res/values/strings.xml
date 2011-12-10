@@ -28,5 +28,9 @@
     <string name="delete_card_set_dialog_cancel">Cancel</string>
     <string name="setup_user_name">User Name:</string>
     <string name="setup_title">Flash Card Exchange</string>
+    <string name="setup_save_user_name_success">Saved User Name</string>
+    <string name="setup_save_user_name_error">Flash Card Exchange Error: User name is unknown</string>
+    <string name="setup_save_user_name_failure">Was not able to verify user name</string>
+    <string name="setup_no_user_name_defined">Please provide your Flash Card Exchange user name.</string>
 
 </resources>
