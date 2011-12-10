@@ -29,7 +29,7 @@
         android:textColor="#000000" />
     
     <EditText
-        android:id="@+id/editTextSetup"
+        android:id="@+id/editTextSetupUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -41,7 +41,7 @@
         android:id="@+id/linearLayoutSetupEditButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextSetup"
+        android:layout_below="@+id/editTextSetupUserName"
         android:layout_centerHorizontal="true" >
 
         <ImageButton

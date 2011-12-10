@@ -42,6 +42,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -157,8 +158,18 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
 		progressBar.setVisibility(ProgressBar.VISIBLE);
 		
-		new GetExternalCardSetsTask().execute();
-		Log.i("DEBUG", "Fetching external ...");
+		SharedPreferences preferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+		String userName = preferences.getString(AppConstants.PREFERENCE_FCEX_USER_NAME, "");
+		
+		if(null != userName && !"".equals(userName)) {
+		
+			new GetExternalCardSetsTask().execute(userName);
+		}
+		else {
+			
+			Toast.makeText(getActivity().getApplicationContext(), R.string.setup_no_user_name_defined, Toast.LENGTH_SHORT).show();
+			((ListActivity)getActivity()).showSetupFragment();
+		}
 	}
 	
 	private boolean hasCards(String cardSetName) {
@@ -324,13 +335,15 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		return fileNameList;
 	}
 	
-	private class GetExternalCardSetsTask extends AsyncTask<Void, Void, List<CardSet>> {
+	private class GetExternalCardSetsTask extends AsyncTask<String, Void, List<CardSet>> {
 
 		@Override
-		protected List<CardSet> doInBackground(Void... params) {
+		protected List<CardSet> doInBackground(String... params) {
+			
+			String userName = params[0].trim();
 			
 			StringBuilder uriBuilder = new StringBuilder();
-			uriBuilder.append(API_GET_USER).append(TEST_USER_NAME).append(API_KEY);
+			uriBuilder.append(API_GET_USER).append(userName).append(API_KEY);
 			
 			HttpClient httpclient = new DefaultHttpClient();
 			HttpGet httpget = new HttpGet(uriBuilder.toString());
@@ -359,31 +372,29 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					}
 					catch(IOException e) {
 
-						e.printStackTrace();
+						Log.e(AppConstants.LOG_TAG, "IOException", e);
 					}
 					finally {
 
 						try {
 
 							reader.close();
-
 						}
 						catch(IOException e) {
 
-							e.printStackTrace();
+							Log.e(AppConstants.LOG_TAG, "IOException", e);
 						}
 					}
 
-
 					JSONObject jsonObject = new JSONObject(content.toString());
-					JSONArray jsonArray = jsonObject.getJSONObject("results").getJSONArray("sets");
+					JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FILED_SETS);
 
 					cardSets = new ArrayList<CardSet>();
 
 					for(int i = 0; i < jsonArray.length(); i++) {
 
 						JSONObject data = jsonArray.getJSONObject(i);
-						cardSets.add(new CardSet(data.getString("card_set_id"), data.getString("title")));
+						cardSets.add(new CardSet(data.getString(FIELD_CARD_SET_ID), data.getString(FIELD_TITLE)));
 					}
 				}
 			}
@@ -461,7 +472,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					}
 					catch(IOException e) {
 
-						e.printStackTrace();
+						Log.e(AppConstants.LOG_TAG, "IOException", e);
 					}
 					finally {
 
@@ -472,12 +483,12 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 						}
 						catch(IOException e) {
 
-							e.printStackTrace();
+							Log.e(AppConstants.LOG_TAG, "IOException", e);
 						}
 					}
 
 					JSONObject jsonObject = new JSONObject(content.toString());
-					JSONArray jsonArray = jsonObject.getJSONObject("results").getJSONArray("flashcards");
+					JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FIELD_FLASHCARDS);
 					FileOutputStream fos = null;
 					PrintStream ps = null;
 
@@ -495,9 +506,9 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					for(int i = 0; i < jsonArray.length(); i++) {
 						
 						JSONObject data = jsonArray.getJSONObject(i);
-						ps.print(data.getString("question"));
+						ps.print(data.getString(FIELD_QUESTION));
 						ps.print(AppConstants.WORD_DELIMITER_TOKEN);
-						ps.println(data.getString("answer"));
+						ps.println(data.getString(FIELD_ANSWER));
 					}
 					
 					ps.close();
