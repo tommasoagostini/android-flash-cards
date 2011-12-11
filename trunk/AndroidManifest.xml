@@ -27,11 +27,6 @@
             android:theme="@android:style/Theme.NoTitleBar"
             android:name=".CardsPagerActivity" >
         </activity>
-        <activity
-            android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:name=".AddCardActivity">
-        </activity>
     </application>
 
 </manifest>
