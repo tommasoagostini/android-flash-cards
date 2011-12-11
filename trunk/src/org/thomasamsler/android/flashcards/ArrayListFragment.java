@@ -434,7 +434,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			}
 			catch(Exception e) {
 
-				Log.i(AppConstants.LOG_TAG, "General Exception", e);
+				Log.e(AppConstants.LOG_TAG, "General Exception", e);
 			}
  
 
@@ -583,7 +583,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			}
 			catch(Exception e) {
 
-				Log.i(AppConstants.LOG_TAG, "General Exception", e);
+				Log.e(AppConstants.LOG_TAG, "General Exception", e);
 			}
 
 			return jsonObject;
@@ -595,6 +595,9 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			mProgressBar.setVisibility(ProgressBar.GONE);
 			CardSet cardSet = null;
 
+			FileOutputStream fos = null;
+			PrintStream ps = null;
+			
 			try {
 				
 				// Check REST call response
@@ -610,10 +613,10 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				JSONObject cardSetJson = jsonObject.getJSONObject(FIELD_FC_ARG);
 				cardSet = new CardSet("", cardSetJson.getString(CardSet.NAME_KEY), cardSetJson.getInt(CardSet.FRAGMENT_KEY));
 				
-				// Write the card set to a file
+				// Card Set Cards
 				JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FIELD_FLASHCARDS);
-				FileOutputStream fos = null;
-				PrintStream ps = null;
+				
+				// Write the card set to a file
 				fos = getActivity().getApplicationContext().openFileOutput(cardSet.getName(), Context.MODE_PRIVATE);
 				ps = new PrintStream(fos);
 
@@ -624,8 +627,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					ps.print(AppConstants.WORD_DELIMITER_TOKEN);
 					ps.println(data.getString(FIELD_ANSWER));
 				}
-
-				ps.close();
 				
 				/* 
 				 * Now that we have the cards, we indicate that we don't need to get 
@@ -642,6 +643,10 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			catch(FileNotFoundException e) {
 
 				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
+			}
+			finally {
+				
+				ps.close();
 			}
 			
 			switch(cardSet.getFragmentId()) {

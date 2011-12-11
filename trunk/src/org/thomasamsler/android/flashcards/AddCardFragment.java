@@ -215,19 +215,20 @@ public class AddCardFragment extends Fragment {
 	
 	private boolean addCard(String fileName, String frontSideWord, String backSideWord) {
 		
+		FileOutputStream fos;
+		PrintStream ps = null;
+		
 		try {
 			
-			FileOutputStream fos = getActivity().getApplicationContext().openFileOutput(fileName, Context.MODE_APPEND);
-			PrintStream ps = new PrintStream(fos);
+			fos = getActivity().getApplicationContext().openFileOutput(fileName, Context.MODE_APPEND);
+			ps = new PrintStream(fos);
 			
 			StringBuilder sb = new StringBuilder();
 			sb.append(frontSideWord);
 			sb.append(AppConstants.WORD_DELIMITER_TOKEN);
 			sb.append(backSideWord);
 			ps.print(sb.toString());
-			
 			ps.println();
-			ps.close();
 		}
 		catch(FileNotFoundException e) {
 
@@ -238,6 +239,10 @@ public class AddCardFragment extends Fragment {
 			
 			Log.w(AppConstants.LOG_TAG, "Exception: Was not able to write to file", e);
 			return false;
+		}
+		finally {
+
+			ps.close();
 		}
 		
 		return true;
