@@ -42,12 +42,14 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class SetupFragment extends Fragment implements FlashCardExchangeData {
 
 	private EditText mEditTextUserName;
 	private String mPreferenceUserName;
+	private ProgressBar mProgressBar;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,16 +69,32 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 		mEditTextUserName = (EditText)getActivity().findViewById(R.id.editTextSetupUserName);
 		mEditTextUserName.setText(mPreferenceUserName);
 		
+		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+		
 		ImageButton imageButtonSave = (ImageButton)getActivity().findViewById(R.id.imageButtonSetupSave);
 		imageButtonSave.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
 				
+				mProgressBar.setVisibility(ProgressBar.VISIBLE);
+				
 				String userName = mEditTextUserName.getText().toString();
 				
 				if(null != userName && !"".equals(userName) && !mPreferenceUserName.equals(userName)) {
 					
-					new GetExternalCardSetsTask().execute(userName);
+					if(hasConnectivity()) {
+					
+						new GetExternalCardSetsTask().execute(userName);
+					}
+					else {
+						
+						mProgressBar.setVisibility(ProgressBar.GONE);
+						Toast.makeText(getActivity().getApplicationContext(), R.string.util_connectivity_error, Toast.LENGTH_SHORT).show();
+					}
+				}
+				else {
+					
+					mProgressBar.setVisibility(ProgressBar.GONE);
 				}
 			}
 		});
@@ -89,6 +107,15 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 				((ListActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
+	}
+	
+	
+	/*
+     * Helper method to check if there is network connectivity
+     */
+	private boolean hasConnectivity() {
+		
+		return ((ListActivity)getActivity()).hasConnectivity();
 	}
 	
 	private class GetExternalCardSetsTask extends AsyncTask<String, Void, JSONObject> {
@@ -166,7 +193,9 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 
 		@Override
 		protected void onPostExecute(JSONObject jsonObject) {
-			
+
+			mProgressBar.setVisibility(ProgressBar.GONE);
+
 			try {
 				
 				String responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);

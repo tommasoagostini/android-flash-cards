@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayoutSetupActionBar"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/actionbar_gradient" >
+
+    <TextView
+        android:id="@+id/textViewSetupActionBarTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/ActionBarItemLeftPadding"
+        android:text="@string/app_name"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/ActionBarFontSize"
+        android:typeface="normal" />
+    
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonSetupShowList"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonSetupShowList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_list" />
+
+</RelativeLayout>

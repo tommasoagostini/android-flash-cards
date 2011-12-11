@@ -16,17 +16,24 @@
 
 package org.thomasamsler.android.flashcards;
 
-import android.content.Intent;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.util.Log;
+
 
 public class CardSet implements Comparable<CardSet> {
 	
 	public static final int ADD_CARD_FRAGMENT = 1;
 	public static final int CARDS_PAGER_FRAGMENT = 2;
 	
+	public static final String ID_KEY = "i";
+	public static final String NAME_KEY = "n";
+	public static final String FRAGMENT_KEY = "f";
+	
 	private String mName;
 	private String mId;
-	private Intent intent;
-	private int showFragment;
+	private int mFragmentId;
 	
 	public CardSet(String name) {
 		
@@ -35,8 +42,15 @@ public class CardSet implements Comparable<CardSet> {
 	
 	public CardSet(String id, String name) {
 		
-		this.mName = name;
 		this.mId = id;
+		this.mName = name;
+	}
+	
+	public CardSet(String id, String name, int fragmentId) {
+		
+		this.mId = id;
+		this.mName = name;
+		this.mFragmentId = fragmentId;
 	}
 	
 	public String getName() {
@@ -54,21 +68,13 @@ public class CardSet implements Comparable<CardSet> {
 	public void setId(String id) {
 		this.mId = id;
 	}
-	
-	public Intent getIntent() {
-		return intent;
+
+	public int getFragmentId() {
+		return mFragmentId;
 	}
 
-	public void setIntent(Intent intent) {
-		this.intent = intent;
-	}
-
-	public int getShowFragment() {
-		return showFragment;
-	}
-
-	public void setShowFragment(int showFragment) {
-		this.showFragment = showFragment;
+	public void setFragmentId(int fragmentId) {
+		this.mFragmentId = fragmentId;
 	}
 
 	@Override
@@ -80,5 +86,51 @@ public class CardSet implements Comparable<CardSet> {
 	public int compareTo(CardSet listItem) {
 		
 		return mName.compareTo(listItem.getName());
+	}
+	
+	public JSONObject getJSON() {
+		
+		JSONObject json = new JSONObject();
+		
+		try {
+		
+			json.put(ID_KEY, mId);
+			json.put(NAME_KEY, mName);
+			json.put(FRAGMENT_KEY, mFragmentId);
+			
+		}
+		catch(JSONException e) {
+			
+			Log.e(AppConstants.LOG_TAG, "JSONException", e);
+		}
+		
+		return json;
+	}
+
+	@Override
+	public int hashCode() {
+		
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CardSet other = (CardSet) obj;
+		if (mName == null) {
+			if (other.mName != null)
+				return false;
+		} else if (!mName.equals(other.mName))
+			return false;
+		return true;
 	}
 }
