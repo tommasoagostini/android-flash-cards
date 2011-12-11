@@ -90,16 +90,22 @@ public class ListActionbarFragment extends Fragment {
 							}
 							else {
 								
+								FileOutputStream fos;
+								PrintStream ps = null;
+								
 								try {
 									
-									FileOutputStream fos = getActivity().getApplicationContext().openFileOutput(newFileName, Context.MODE_PRIVATE);
-									PrintStream ps = new PrintStream(fos);
-									ps.close();
+									fos = getActivity().getApplicationContext().openFileOutput(newFileName, Context.MODE_PRIVATE);
+									ps = new PrintStream(fos);
 									
 								}
 								catch(FileNotFoundException e) {
 									
 									Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create new file", e);
+								}
+								finally {
+									
+									ps.close();
 								}
 								
 								((ListActivity)getActivity()).addCardSet(new CardSet(newFileName));

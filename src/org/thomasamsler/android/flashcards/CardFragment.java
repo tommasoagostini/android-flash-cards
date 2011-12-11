@@ -143,6 +143,7 @@ public class CardFragment extends Fragment {
 			public void onClick(View v) {
 
 				mEditTextWord.setVisibility(View.INVISIBLE);
+				
 				if(mWordToggle) {
 					
 					mTextViewWord2.setVisibility(View.VISIBLE);
@@ -151,6 +152,7 @@ public class CardFragment extends Fragment {
 					
 					mTextViewWord.setVisibility(View.VISIBLE);
 				}
+				
 				mLinearLayoutEditButtons.setVisibility(View.INVISIBLE);
 			}
 		});
@@ -178,6 +180,7 @@ public class CardFragment extends Fragment {
 				
 				final Animation flip1 = AnimationUtils.loadAnimation(v.getContext(), R.anim.flip1);
 				final Animation flip2 = AnimationUtils.loadAnimation(v.getContext(), R.anim.flip2);
+				
 				flip1.setAnimationListener(new AnimationListener() {
 					
 					public void onAnimationStart(Animation animation) { /* Nothing to do here */ }

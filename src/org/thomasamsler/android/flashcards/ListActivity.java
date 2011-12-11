@@ -55,6 +55,7 @@ public class ListActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    
@@ -155,26 +156,26 @@ public class ListActivity extends FragmentActivity {
 	}
 	
 	/*
-     * Helper method to check if there is network connectivity
-     */
-    protected boolean hasConnectivity() {
-            
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        
-            if(null == connectivityManager) {
-                    
-                    return false;
-            }
-            
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            
-            if(null != networkInfo && networkInfo.isAvailable() && networkInfo.isConnected()) {
-                    
-                    return true;
-            }
-            else {
-                    
-                    return false;
-            }
-    }
+	 * Helper method to check if there is network connectivity
+	 */
+	protected boolean hasConnectivity() {
+
+		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		if(null == connectivityManager) {
+
+			return false;
+		}
+
+		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+		if(null != networkInfo && networkInfo.isAvailable() && networkInfo.isConnected()) {
+
+			return true;
+		}
+		else {
+
+			return false;
+		}
+	}
 }
