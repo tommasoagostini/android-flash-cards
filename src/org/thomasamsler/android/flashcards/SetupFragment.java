@@ -69,7 +69,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 		mEditTextUserName = (EditText)getActivity().findViewById(R.id.editTextSetupUserName);
 		mEditTextUserName.setText(mPreferenceUserName);
 		
-		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBarSetup);
 		
 		ImageButton imageButtonSave = (ImageButton)getActivity().findViewById(R.id.imageButtonSetupSave);
 		imageButtonSave.setOnClickListener(new OnClickListener() {
