@@ -4,5 +4,9 @@
     <item android:id="@+id/menu_card_information"
           android:icon="@android:drawable/ic_menu_info_details"
           android:title="@string/menu_card_information" />
+    
+    <item android:id="@+id/menu_card_delete"
+          android:icon="@android:drawable/ic_menu_delete"
+          android:title="@string/menu_card_delete" />
 
 </menu>
