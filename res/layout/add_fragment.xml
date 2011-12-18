@@ -21,7 +21,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/AddWordEditTextPadding"
-        android:layout_marginRight="@dimen/AddWordEditTextPadding" />
+        android:layout_marginRight="@dimen/AddWordEditTextPadding"
+        android:inputType="text" />
 
     <LinearLayout
         android:id="@+id/linearLayoutAddEditButtons"

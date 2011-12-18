@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Flash Cards</string>
-    <string name="add_card">Add Flash Card</string>
     <string name="menu_card_information">Card Info</string>
+    <string name="menu_card_delete">Delete Card</string>
     <string name="menu_card_set_setup">Setup</string>
     <string name="menu_card_set_external">Flash Card Exchange</string>
     <string name="card_information">Card Set: %1$s</string>
@@ -35,5 +35,9 @@
     <string name="setup_no_user_name_defined">Please provide your Flash Card Exchange user name.</string>
     <string name="util_connectivity_error">Cannot connect to the Internet</string>
     <string name="util_flash_card_exchange_api_error">Flash Card Exchange Error</string>
+    <string name="delete_last_card_message">Deleted last card from card set:\n%1$s</string>
+    
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
 
 </resources>

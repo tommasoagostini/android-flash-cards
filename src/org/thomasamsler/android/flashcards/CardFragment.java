@@ -34,9 +34,10 @@ import android.widget.Toast;
 
 public class CardFragment extends Fragment {
 
-	private final static String WORD_KEY = "word";
-	private final static String MAX_KEY = "max";
-	private final static String CURRENT_KEY = "current";
+	private final static String CARD_KEY = "c";
+	private final static String MAX_KEY = "m";
+	private final static String CARD_POSITION_KEY = "p";
+	
 	private boolean mWordToggle = false;
 	private StringBuilder mCounterStringBuilder;
 	private TextView mTextViewWord;
@@ -46,15 +47,15 @@ public class CardFragment extends Fragment {
 	private LinearLayout mLinearLayoutEditButtons;
 	private ImageButton mImageButtonSave;
 	private ImageButton mImageButtonCancel;
-	private int mWordIndex;
+	private int mCardPosition;
 
-	public static CardFragment newInstance(String word, int wordCount, int totalWords) {
+	public static CardFragment newInstance(String word, int wordIndex, int totalWords) {
 
 		CardFragment pageFragment = new CardFragment();
 		Bundle bundle = new Bundle();
 
-		bundle.putString(WORD_KEY, word);
-		bundle.putInt(CURRENT_KEY, wordCount);
+		bundle.putString(CARD_KEY, word);
+		bundle.putInt(CARD_POSITION_KEY, wordIndex);
 		bundle.putInt(MAX_KEY, totalWords);
 		pageFragment.setArguments(bundle);
 		
@@ -72,9 +73,9 @@ public class CardFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.card, container, false);
 
-		mWordIndex = getArguments().getInt(CURRENT_KEY);
+		mCardPosition = getArguments().getInt(CARD_POSITION_KEY);
 		
-		String[] words = getArguments().getString(WORD_KEY).split(AppConstants.WORD_DELIMITER_TOKEN);
+		String[] words = getArguments().getString(CARD_KEY).split(AppConstants.WORD_DELIMITER_TOKEN);
 		
 		mTextViewWord = (TextView)view.findViewById(R.id.textViewWord);
 		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
@@ -114,7 +115,7 @@ public class CardFragment extends Fragment {
 					sb.append(mEditTextWord.getText().toString());
 					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
 					sb.append(mTextViewWord2.getText().toString());
-					((CardsPagerActivity)getActivity()).updateWord(mWordIndex, sb.toString());
+					((CardsPagerActivity)getActivity()).updateCard(mCardPosition, sb.toString());
 				}
 				else if(mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewWord2.getText().toString())) {
 					
@@ -124,7 +125,7 @@ public class CardFragment extends Fragment {
 					sb.append(mTextViewWord.getText().toString());
 					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
 					sb.append(mEditTextWord.getText().toString());
-					((CardsPagerActivity)getActivity()).updateWord(mWordIndex, sb.toString());
+					((CardsPagerActivity)getActivity()).updateCard(mCardPosition, sb.toString());
 				}
 				else if(!mWordToggle) {
 
@@ -160,7 +161,7 @@ public class CardFragment extends Fragment {
 		// Set the bottom word counter
 		mCounterTextView = (TextView) view.findViewById(R.id.textViewWordNumber);
 		mCounterStringBuilder = new StringBuilder();
-		mCounterStringBuilder.append(mWordIndex + 1);
+		mCounterStringBuilder.append(mCardPosition + 1);
 		mCounterStringBuilder.append(AppConstants._OF_);
 		mCounterStringBuilder.append(getArguments().getInt(MAX_KEY));
 		mCounterTextView.setText(mCounterStringBuilder.toString());

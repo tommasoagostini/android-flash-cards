@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/relativeLayoutCard"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_weight="0.51" >
+    android:layout_height="match_parent" >
 
     <TextView
         android:id="@+id/textViewWord"
@@ -38,7 +37,8 @@
         android:textColor="#000000"
         android:textStyle="bold"
         android:typeface="normal"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:inputType="text" />
 
     
     <LinearLayout

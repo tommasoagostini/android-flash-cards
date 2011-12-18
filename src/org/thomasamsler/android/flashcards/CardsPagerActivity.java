@@ -48,14 +48,17 @@ import android.widget.Toast;
 
 public class CardsPagerActivity extends FragmentActivity implements FlashCardExchangeData {
 
+	private static final Integer NEG_ONE = Integer.valueOf(-1);
+	
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
 	private Random mRandom;
-	private List<String> mWords;
-	private Integer[] mRandomWordsIndex;
+	private List<String> mCards;
+	private List<Integer> mRandomCardPositionList;
+	private List<Integer> mAvailableCardPositionList;
 	private String mCardSetName;
-	private List<Integer> mWordsIndex = new ArrayList<Integer>();
 	private boolean mMagnify = false;
+	private int mNumberOfCards;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +99,7 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 
 				// Get CardFragment and magnify or reduce its font size
 				int currentIndex = mViewPager.getCurrentItem();
-				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
+				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
 				
 				if(null == cardFragment) {
 					
@@ -120,7 +123,7 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 			public void onClick(View v) {
 				
 				int currentIndex = mViewPager.getCurrentItem();
-				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
+				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
 				
 				if(null != cardFragment) {
 					
@@ -133,19 +136,22 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 		Bundle bundle = getIntent().getExtras();
 		mCardSetName = bundle.getString(AppConstants.CARD_SET_NAME_KEY);
 		
-		mWords = getWords(mCardSetName);
+		mCards = getCards(mCardSetName);
 		
-		if(0 == mWords.size()) {
+		if(0 == mCards.size()) {
 			
 			Toast.makeText(getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 		}
 		
-		mRandomWordsIndex = new Integer[mWords.size()];
+		mNumberOfCards = mCards.size();
+		mRandomCardPositionList = new ArrayList<Integer>();
+		mAvailableCardPositionList = new ArrayList<Integer>();
+		
 		// Initialize arrays
-		for(int i = 0; i < mWords.size(); i++) {
+		for(int i = 0; i < mNumberOfCards; i++) {
 			
-			mRandomWordsIndex[i] = Integer.valueOf(-1);
-			mWordsIndex.add(Integer.valueOf(i));
+			mRandomCardPositionList.add(NEG_ONE);
+			mAvailableCardPositionList.add(Integer.valueOf(i));
 		}
 		
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -159,7 +165,12 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 
 			public void onPageSelected(int currentIndex) {
 
-				CardFragment cardFragment = ((MyFragmentPagerAdapter)mViewPager.getAdapter()).getFragment(currentIndex);
+				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
+				
+				if(null == cardFragment) {
+					
+					return;
+				}
 				
 				if(mMagnify) {
 					
@@ -189,30 +200,33 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
-	    switch (item.getItemId()) {
+
+		switch (item.getItemId()) {
 	    case R.id.menu_card_information:
 	        showCardInformation();
 	        return true;
+	    case R.id.menu_card_delete:
+	    	deleteCard();
+	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
 	
-	public void updateWord(int index, String word) {
+	public void updateCard(int index, String card) {
 		
 		/*
 		 * First, we update the in memory list of words
 		 */
-		mWords.set(mRandomWordsIndex[index], word);
+		mCards.set(mRandomCardPositionList.get(index), card);
 		
 		/*
 		 * Then, we update the file
 		 */
-		saveWords(mCardSetName, mWords);
+		saveCards(mCardSetName, mCards);
 	}
 
-	private void saveWords(String fileName, List<String> words) {
+	private void saveCards(String fileName, List<String> cards) {
 		
 		/*
 		 * First, we delete the exiting file
@@ -223,43 +237,52 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 			return;
 		}
 		
+		FileOutputStream fos;
+		PrintStream ps = null;
+		
 		try {
 
-			FileOutputStream fos = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
-			PrintStream ps = new PrintStream(fos);
+			fos = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+			ps = new PrintStream(fos);
 			
-			for(String word : words) {
+			for(String card : cards) {
 
-				ps.println(word);
+				if(null != card && !"".equals(card)) {
+					
+					ps.println(card);
+				}
 			}
-			
-			ps.close();
 		}
 		catch(FileNotFoundException e) {
 
 			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
 		}
+		finally {
+			
+			ps.close();
+		}
 	}
 	
-	private ArrayList<String> getWords(String cardSetName) {
+	private ArrayList<String> getCards(String cardSetName) {
 
-		ArrayList<String> words = new ArrayList<String>();
+		ArrayList<String> cards = new ArrayList<String>();
 
+		FileInputStream fis;
+		BufferedReader reader = null;
+		
 		try {
 
-			FileInputStream fis =  getApplicationContext().openFileInput(cardSetName);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-			String word;
+			fis =  getApplicationContext().openFileInput(cardSetName);
+			reader = new BufferedReader(new InputStreamReader(fis));
+			String card;
 
-			while((word = reader.readLine()) != null) {
+			while((card = reader.readLine()) != null) {
 
-				if(null != word && !"".equals(word) && AppConstants.MIN_DATA_LENGTH <= word.length()) {
+				if(null != card && !"".equals(card) && AppConstants.MIN_DATA_LENGTH <= card.length()) {
 
-					words.add(word);
+					cards.add(card);
 				}
 			}
-
-			reader.close();
 		}
 		catch(FileNotFoundException e) {
 
@@ -269,8 +292,19 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 
 			Log.w(AppConstants.LOG_TAG, "IOException: while reading words from file", e);
 		}
+		finally {
+			
+			try {
+				
+				reader.close();
+			}
+			catch (IOException e) {
+				
+				Log.e(AppConstants.LOG_TAG, "IOException", e);
+			}
+		}
 
-		return words;
+		return cards;
 	}
 	
 	private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
@@ -286,14 +320,13 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 
 			int randomNum;
 			
-			if(0 == mRandomWordsIndex[index].compareTo(Integer.valueOf(-1))) {
+			if(mRandomCardPositionList.get(index).compareTo(NEG_ONE) == 0) {
 				
-				randomNum = mRandom.nextInt(mWordsIndex.size());
-				mRandomWordsIndex[index] = mWordsIndex.get(randomNum);
-				mWordsIndex.remove(randomNum);
+				randomNum = mRandom.nextInt(mAvailableCardPositionList.size());
+				mRandomCardPositionList.set(index, mAvailableCardPositionList.remove(randomNum));
 			}
 			
-			CardFragment cardFragment = CardFragment.newInstance(mWords.get(mRandomWordsIndex[index]), index, mWords.size());
+			CardFragment cardFragment = CardFragment.newInstance(mCards.get(mRandomCardPositionList.get(index)), index, mNumberOfCards);
 			mPageReferenceMap.put(Integer.valueOf(index), cardFragment);
 			
 			return cardFragment;
@@ -302,15 +335,24 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 		@Override
 		public int getCount() {
 
-			return mWords.size();
+			return mNumberOfCards;
 		}
 		
 		@Override
 		public void destroyItem(View container, int position, Object object) {
 		
 			super.destroyItem(container, position, object);
-			
 			mPageReferenceMap.remove(Integer.valueOf(position));
+		}
+		
+		/*
+		 * Overriding this method in conjunction with calling notifyDataSetChanged 
+		 * removes a page from the pager.
+		 */
+		@Override
+		public int getItemPosition(Object object) {
+		 
+			return POSITION_NONE;
 		}
 		
 		public CardFragment getFragment(int key) {
@@ -328,5 +370,51 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 		String message = String.format(getResources().getString(R.string.card_information), mCardSetName);
 		
 		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+	}
+	
+	public void deleteCard() {
+		
+		// Get the current card index
+		int currentIndex = mViewPager.getCurrentItem();
+		
+		// Reduce the card counter by one
+		mNumberOfCards -=1;
+		
+		// Mark card as deleted. The saveCards(...) method ignores null or empty string cards
+		mCards.set(mRandomCardPositionList.get(currentIndex), null);
+		
+		// Save cards
+		saveCards(mCardSetName, mCards);
+		
+		// Remove the deleted card position
+		mRandomCardPositionList.remove(currentIndex);
+
+		/*
+		 * Determine all remaining random card positions
+		 */
+		int randomNum;
+		
+		if(mAvailableCardPositionList.size() > 0) {
+		
+			for(int i = 0; i < mRandomCardPositionList.size(); i++) {
+
+				if(NEG_ONE.compareTo(mRandomCardPositionList.get(i)) == 0 && mAvailableCardPositionList.size() > 0) {
+
+					randomNum = mRandom.nextInt(mAvailableCardPositionList.size());
+					mRandomCardPositionList.set(i, mAvailableCardPositionList.remove(randomNum));
+				}
+			}
+		}
+
+		mMyFragmentPagerAdapter.notifyDataSetChanged();
+		
+		// When we delete the last card in a card set, we return to the list
+		if(mRandomCardPositionList.size() == 0) {
+			
+			String message = String.format(getResources().getString(R.string.delete_last_card_message), mCardSetName);
+			Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+			
+			finish();
+		}
 	}
 }
