@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeLayoutSetup"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF" >
+
+    <TextView
+        android:id="@+id/textViewAboutTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/AboutTopPadding"
+        android:textSize="@dimen/AboutFontSize"
+        android:text="@string/about_title"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/textViewAboutVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewAboutTitle"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/AboutTopPadding"
+        android:textSize="@dimen/AboutFontSize"
+        android:text="@string/about_version"
+        android:textColor="#000000" />
+    
+    <TextView
+        android:id="@+id/textViewAboutAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewAboutVersion"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/AboutTopPadding"
+        android:textSize="@dimen/AboutFontSize"
+        android:text="@string/about_author"
+        android:textColor="#000000" />
+
+    <ImageButton
+        android:id="@+id/imageButtonAboutClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewAboutAuthor"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_marginTop="@dimen/AboutTopPadding"
+        android:contentDescription="@string/button_close" />
+
+</RelativeLayout>

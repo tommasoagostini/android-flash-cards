@@ -45,5 +45,9 @@ public interface AppConstants {
 	 */
 	public static final int MIN_DATA_LENGTH = 3;
 	
-
+	
+	public static final int HELP_CONTEXT_DEFAULT = 0;
+	public static final int HELP_CONTEXT_SETUP = 1;
+	public static final int HELP_CONTEXT_CARD_SET_LIST = 2;
+	public static final int HELP_CONTEXT_ADD_CARD = 3;
 }

@@ -43,6 +43,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -307,72 +308,20 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 		return cards;
 	}
 	
-	private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
-
-		private Map<Integer, CardFragment> mPageReferenceMap = new HashMap<Integer, CardFragment>();
-		
-		public MyFragmentPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-
-		@Override
-		public Fragment getItem(int index) {
-
-			int randomNum;
-			
-			if(mRandomCardPositionList.get(index).compareTo(NEG_ONE) == 0) {
-				
-				randomNum = mRandom.nextInt(mAvailableCardPositionList.size());
-				mRandomCardPositionList.set(index, mAvailableCardPositionList.remove(randomNum));
-			}
-			
-			CardFragment cardFragment = CardFragment.newInstance(mCards.get(mRandomCardPositionList.get(index)), index, mNumberOfCards);
-			mPageReferenceMap.put(Integer.valueOf(index), cardFragment);
-			
-			return cardFragment;
-		}
-
-		@Override
-		public int getCount() {
-
-			return mNumberOfCards;
-		}
-		
-		@Override
-		public void destroyItem(View container, int position, Object object) {
-		
-			super.destroyItem(container, position, object);
-			mPageReferenceMap.remove(Integer.valueOf(position));
-		}
-		
-		/*
-		 * Overriding this method in conjunction with calling notifyDataSetChanged 
-		 * removes a page from the pager.
-		 */
-		@Override
-		public int getItemPosition(Object object) {
-		 
-			return POSITION_NONE;
-		}
-		
-		public CardFragment getFragment(int key) {
-			
-			return mPageReferenceMap.get(key);
-		}
-	}
-	
 	/*
-	 * Menu methods
+	 * Menu method
 	 */
-	
-	public void showCardInformation() {
+	private void showCardInformation() {
 		
 		String message = String.format(getResources().getString(R.string.card_information), mCardSetName);
 		
 		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 	}
 	
-	public void deleteCard() {
+	/*
+	 * Menu method
+	 */
+	private void deleteCard() {
 		
 		// Get the current card index
 		int currentIndex = mViewPager.getCurrentItem();
@@ -415,6 +364,63 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 			Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 			
 			finish();
+		}
+	}
+	
+	/*
+	 * Classes
+	 */
+	private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
+
+		private Map<Integer, CardFragment> mPageReferenceMap = new HashMap<Integer, CardFragment>();
+		
+		public MyFragmentPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int index) {
+
+			int randomNum;
+			
+			if(mRandomCardPositionList.get(index).compareTo(NEG_ONE) == 0) {
+				
+				randomNum = mRandom.nextInt(mAvailableCardPositionList.size());
+				mRandomCardPositionList.set(index, mAvailableCardPositionList.remove(randomNum));
+			}
+			
+			CardFragment cardFragment = CardFragment.newInstance(mCards.get(mRandomCardPositionList.get(index)), index, mNumberOfCards);
+			mPageReferenceMap.put(Integer.valueOf(index), cardFragment);
+			
+			return cardFragment;
+		}
+
+		@Override
+		public int getCount() {
+
+			return mNumberOfCards;
+		}
+		
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+		
+			super.destroyItem(container, position, object);
+			mPageReferenceMap.remove(Integer.valueOf(position));
+		}
+		
+		/*
+		 * Overriding this method in conjunction with calling notifyDataSetChanged 
+		 * removes a page from the pager.
+		 */
+		@Override
+		public int getItemPosition(Object object) {
+		 
+			return POSITION_NONE;
+		}
+		
+		public CardFragment getFragment(int key) {
+			
+			return mPageReferenceMap.get(key);
 		}
 	}
 }

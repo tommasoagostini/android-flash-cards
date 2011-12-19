@@ -38,7 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/EditButtonsCenterPadding"
             android:background="@null"
-            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="@string/button_cancel" />
 
         <ImageButton
             android:id="@+id/imageButtonAddSave"
@@ -46,7 +47,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/EditButtonsCenterPadding"
             android:background="@null"
-            android:src="@android:drawable/ic_menu_save" />
+            android:src="@android:drawable/ic_menu_save"
+            android:contentDescription="@string/button_save" />
     </LinearLayout>
 
 </RelativeLayout>

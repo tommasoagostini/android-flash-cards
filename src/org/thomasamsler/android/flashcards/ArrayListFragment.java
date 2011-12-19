@@ -152,6 +152,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 		return false;
 	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		((ListActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_CARD_SET_LIST);
+	}
 
 	protected void addCardSet(CardSet cardSet) {
 		
