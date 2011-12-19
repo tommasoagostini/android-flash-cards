@@ -152,6 +152,13 @@ public class AddCardFragment extends Fragment {
 		});
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		((ListActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_ADD_CARD);
+	}
+	
 	protected void setCardSet(CardSet cardSet) {
 		
 		this.mCardSet = cardSet;

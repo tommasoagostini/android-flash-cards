@@ -6,6 +6,8 @@
     <string name="menu_card_delete">Delete Card</string>
     <string name="menu_card_set_setup">Setup</string>
     <string name="menu_card_set_external">Flash Card Exchange</string>
+    <string name="menu_card_set_about">About</string>
+    <string name="menu_card_set_help">Help</string>
     <string name="card_information">Card Set: %1$s</string>
     <string name="list_menu_add">Add Card</string>
     <string name="list_meanu_delete">Delete</string>
@@ -37,7 +39,14 @@
     <string name="util_flash_card_exchange_api_error">Flash Card Exchange Error</string>
     <string name="delete_last_card_message">Deleted last card from card set:\n%1$s</string>
     
+    <string name="about_title">Flash Cards</string>
+    <string name="about_author">Thomas Amsler\ntamsler@gmail.com</string>
+    <string name="about_version">Version\n</string>
+    
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_close">Close</string>
+    
+    <string name="help_dialog_title">Help</string>
 
 </resources>

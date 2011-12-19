@@ -28,7 +28,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class ListActivity extends FragmentActivity {
+public class ListActivity extends FragmentActivity implements AppConstants {
 	
 	private ListActionbarFragment mListActionbarFragment;
 	private SetupActionbarFragment mSetupActionbarFragment;
@@ -36,6 +36,9 @@ public class ListActivity extends FragmentActivity {
 	private ArrayListFragment mArrayListFragment;
 	private AddCardFragment mAddCardFragment;
 	private SetupFragment mSetupFragment;
+	private AboutFragment mAboutFragment;
+
+	private int mHelpContext;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +69,23 @@ public class ListActivity extends FragmentActivity {
 	    case R.id.menu_card_set_external:
 	    	mArrayListFragment.getFlashCardExchangeCardSets();
 	    	return true;
-
+	    	
+	    case R.id.menu_card_set_about:
+	    	showAboutFragment();
+	    	return true;
+	    	
+	    case R.id.menu_card_set_help:
+	    	showHelp();
+	    	return true;
+	    	
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	public void setHelpContext(int context) {
+		
+		this.mHelpContext = context;
 	}
 	
 	protected void showArrayListFragment(boolean addToBackStack) {
@@ -96,6 +112,8 @@ public class ListActivity extends FragmentActivity {
         }
         
         fragmentTransaction.commit();
+        
+        mHelpContext = HELP_CONTEXT_CARD_SET_LIST;
 	}
 	
 	protected void showAddCardFragment(CardSet cardSet) {
@@ -118,6 +136,8 @@ public class ListActivity extends FragmentActivity {
         fragmentTransaction.replace(R.id.fragmentContainer, mAddCardFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        
+        mHelpContext = HELP_CONTEXT_ADD_CARD;
 	}
 	
 	protected void showSetupFragment() {
@@ -139,6 +159,31 @@ public class ListActivity extends FragmentActivity {
         fragmentTransaction.replace(R.id.fragmentContainer, mSetupFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        
+        mHelpContext = HELP_CONTEXT_SETUP;
+	}
+	
+	protected void showAboutFragment() {
+		
+		FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        
+        if(null == mAboutFragment) {
+        	
+        	mAboutFragment = new AboutFragment();
+        }
+
+        if(null == mSetupActionbarFragment) {
+
+        	mSetupActionbarFragment = new SetupActionbarFragment();
+        }
+        
+        fragmentTransaction.replace(R.id.actionbarContainer, mSetupActionbarFragment);
+        fragmentTransaction.replace(R.id.fragmentContainer, mAboutFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+        
+        mHelpContext = HELP_CONTEXT_DEFAULT;
 	}
 	
 	protected void showCardsPagerActivity(String cardSetName) {
@@ -148,6 +193,35 @@ public class ListActivity extends FragmentActivity {
 		bundle.putString(AppConstants.CARD_SET_NAME_KEY, cardSetName);
 		intent.putExtras(bundle);
 		startActivity(intent);
+	}
+	
+	protected void showHelp() {
+		
+		HelpDialog helpDialog = new HelpDialog(this);
+		
+		switch(mHelpContext) {
+		
+			case HELP_CONTEXT_DEFAULT:
+				helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+				break;
+			
+			case HELP_CONTEXT_SETUP:
+				helpDialog.setHelp(getResources().getString(R.string.help_content_setup));
+				break;
+			
+			case HELP_CONTEXT_CARD_SET_LIST:
+				helpDialog.setHelp(getResources().getString(R.string.help_content_card_set_list));
+				break;
+			
+			case HELP_CONTEXT_ADD_CARD:
+				helpDialog.setHelp(getResources().getString(R.string.help_content_add_card));
+				break;
+			
+			default:
+				helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+		}
+		
+		helpDialog.show();
 	}
 	
 	protected void addCardSet(CardSet cardSet) {

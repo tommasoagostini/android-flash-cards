@@ -69,7 +69,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 		mEditTextUserName = (EditText)getActivity().findViewById(R.id.editTextSetupUserName);
 		mEditTextUserName.setText(mPreferenceUserName);
 		
-		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBarSetup);
+		mProgressBar = (ProgressBar)getActivity().findViewById(R.id.progressBarSetup);
 		
 		ImageButton imageButtonSave = (ImageButton)getActivity().findViewById(R.id.imageButtonSetupSave);
 		imageButtonSave.setOnClickListener(new OnClickListener() {
@@ -109,6 +109,12 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 		});
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		((ListActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_SETUP);
+	}
 	
 	/*
      * Helper method to check if there is network connectivity
