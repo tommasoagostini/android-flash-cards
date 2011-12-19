@@ -8,5 +8,10 @@
     <item android:id="@+id/menu_card_delete"
           android:icon="@android:drawable/ic_menu_delete"
           android:title="@string/menu_card_delete" />
+    
+    <item
+        android:id="@+id/menu_card_help"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="@string/menu_card_set_help" />
 
 </menu>
