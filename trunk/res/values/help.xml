@@ -33,4 +33,9 @@
         and returns to the card set list view.</p>
         ]]>
     </string>
+    <string name="help_content_view_card">
+        <![CDATA[
+        <p>Tap and hold on the card to switch between the front and backside of the card.</p>
+        ]]>
+    </string>
 </resources>

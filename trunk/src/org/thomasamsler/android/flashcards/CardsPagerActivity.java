@@ -47,7 +47,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class CardsPagerActivity extends FragmentActivity implements FlashCardExchangeData {
+public class CardsPagerActivity extends FragmentActivity implements AppConstants, FlashCardExchangeData {
 
 	private static final Integer NEG_ONE = Integer.valueOf(-1);
 	
@@ -61,12 +61,16 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 	private boolean mMagnify = false;
 	private int mNumberOfCards;
 	
+	private int mHelpContext;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cards);
 		
+		mHelpContext = HELP_CONTEXT_VIEW_CARD;
+
 		ImageButton imageButtonList = (ImageButton)findViewById(R.id.imageButtonList);
 		imageButtonList.setOnClickListener(new OnClickListener() {
 
@@ -209,13 +213,37 @@ public class CardsPagerActivity extends FragmentActivity implements FlashCardExc
 	    case R.id.menu_card_delete:
 	    	deleteCard();
 	    	return true;
+	    case R.id.menu_card_help:
+	    	showHelp();
+	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-	
+
+	protected void showHelp() {
+
+		HelpDialog helpDialog = new HelpDialog(this);
+
+		switch(mHelpContext) {
+
+		case HELP_CONTEXT_DEFAULT:
+			helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+			break;
+
+		case HELP_CONTEXT_VIEW_CARD:
+			helpDialog.setHelp(getResources().getString(R.string.help_content_view_card));
+			break;
+
+		default:
+			helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+		}
+
+		helpDialog.show();
+	}
+
 	public void updateCard(int index, String card) {
-		
+
 		/*
 		 * First, we update the in memory list of words
 		 */
