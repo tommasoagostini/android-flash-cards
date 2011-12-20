@@ -42,10 +42,16 @@
     <string name="about_title">Flash Cards</string>
     <string name="about_author">Thomas Amsler\ntamsler@gmail.com</string>
     <string name="about_version">Version\n</string>
-    
+
+   <!--  Content Descriptors -->
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_close">Close</string>
+    <string name="button_list">Show Card Sets</string>
+    <string name="button_new_card_set">New Card Set</string>
+    <string name="button_edit">Edit</string>
+	<string name="button_magnify">Magnify</string>
+    <string name="image_divider">Divider</string>
     
     <string name="help_dialog_title">Help</string>
 
