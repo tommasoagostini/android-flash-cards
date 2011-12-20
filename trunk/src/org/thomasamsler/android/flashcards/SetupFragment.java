@@ -135,14 +135,29 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 			uriBuilder.append(API_GET_USER).append(userName).append(API_KEY);
 			
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(uriBuilder.toString());
+			HttpGet httpGet = null;
+			
+			try {
+			
+				httpGet = new HttpGet(uriBuilder.toString());
+			}
+			catch(IllegalArgumentException e) {
+			
+				Log.e(AppConstants.LOG_TAG, "IllegalArgumentException", e);
+			}
+			
 			HttpResponse response;
 
 			JSONObject jsonObject = null;
 			
+			if(null == httpGet) {
+				
+				return jsonObject;
+			}
+			
 			try {
 				
-				response = httpclient.execute(httpget);
+				response = httpclient.execute(httpGet);
 				HttpEntity entity = response.getEntity();
 
 				if (entity != null) {
@@ -202,6 +217,12 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 
 			mProgressBar.setVisibility(ProgressBar.GONE);
 
+			if(null == jsonObject) {
+				
+				Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
+				return;
+			}
+			
 			try {
 				
 				String responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);

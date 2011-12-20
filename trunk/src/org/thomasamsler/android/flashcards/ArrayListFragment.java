@@ -222,6 +222,10 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 			Log.w(AppConstants.LOG_TAG, "IOException: while reading words from file", e);
 		}
+		catch(IllegalArgumentException e) {
+			
+			Log.w(AppConstants.LOG_TAG, "IllegalArgumentException: while reading words from file", e);
+		}
 
 		return hasCards;
 	}
@@ -383,14 +387,28 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			uriBuilder.append(API_GET_USER).append(userName).append(API_KEY);
 			
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(uriBuilder.toString());
+			HttpGet httpGet = null;
+			
+			try {
+				
+				httpGet = new HttpGet(uriBuilder.toString());
+			}
+			catch(IllegalArgumentException e) {
+				
+				Log.e(AppConstants.LOG_TAG, "IllegalArgumentException", e);
+			}
+			
 			HttpResponse response;
-			//List<CardSet> cardSets = null;
 			JSONObject jsonObject = null;
+			
+			if(null == httpGet) {
+				
+				return jsonObject;
+			}
 
 			try {
 				
-				response = httpclient.execute(httpget);
+				response = httpclient.execute(httpGet);
 				HttpEntity entity = response.getEntity();
 
 				if (entity != null) {
@@ -535,14 +553,30 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			uriBuilder.append(API_GET_CARD_SET).append(cardSets[0].getId()).append(API_KEY);
 			
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet httpget = new HttpGet(uriBuilder.toString());
+			
+			HttpGet httpGet = null;
+			
+			try {
+				
+			 httpGet = new HttpGet(uriBuilder.toString());
+			}
+			catch(IllegalArgumentException e) {
+				
+				Log.e(AppConstants.LOG_TAG, "IllegalArgumentException", e);
+			}
+			
 			HttpResponse response;
 			
 			JSONObject jsonObject = null;
 
+			if(null == httpGet) {
+				
+				return jsonObject;
+			}
+			
 			try {
 				
-				response = httpclient.execute(httpget);
+				response = httpclient.execute(httpGet);
 				HttpEntity entity = response.getEntity();
 
 				if (entity != null) {
@@ -600,6 +634,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		protected void onPostExecute(JSONObject jsonObject) {
 
 			mProgressBar.setVisibility(ProgressBar.GONE);
+			
+			if(null == jsonObject) {
+				
+				Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
+				return;
+			}
+			
 			CardSet cardSet = null;
 
 			FileOutputStream fos = null;

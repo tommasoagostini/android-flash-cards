@@ -24,7 +24,7 @@
     <string name="new_card_set_dialog_message_warning1">Name already exists</string>
     <string name="new_card_set_dialog_message_warning2">Invalid name</string>
     <string name="view_cards_emtpy_set_message">This card set is empty</string>
-    <string name="view_cards_fetch_remote_error">Was not able to get card sets from Flash Card Exchange</string>
+    <string name="view_cards_fetch_remote_error">Was not able to get data from Flash Card Exchange</string>
     <string name="input_validation_warning">Input contains invalid \':\' character</string>
     <string name="delete_card_set_dialog_message">Are you sure you want to delete the card set?</string>
     <string name="delete_card_set_dialog_ok">Yes</string>
