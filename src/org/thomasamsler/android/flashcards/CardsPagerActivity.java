@@ -288,7 +288,10 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 		}
 		finally {
 			
-			ps.close();
+			if(null != ps) {
+				
+				ps.close();
+			}
 		}
 	}
 	
