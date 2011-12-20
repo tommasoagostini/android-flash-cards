@@ -2,9 +2,9 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF"
     android:padding="@dimen/DialogLayoutPadding"
-    android:scrollbars="vertical" >
+    android:scrollbars="vertical"
+    style="@style/Theme.WhiteBackground" >
 
     <TextView
         android:id="@+id/textViewHelp"
@@ -13,7 +13,7 @@
         android:layout_marginBottom="@dimen/DialogTitleBottomPadding"
         android:autoLink="web"
         android:text="@string/new_card_set_message"
-        android:textColor="#000000"
+        android:textColor="@color/font_color"
         android:textSize="@dimen/HelpDialogFontSize" />
 
 </ScrollView>

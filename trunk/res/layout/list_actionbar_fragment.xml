@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/ActionBarItemLeftPadding"
         android:text="@string/app_name"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/font_color_action_bar"
         android:textSize="@dimen/ActionBarFontSize"
         android:typeface="normal" />
 
@@ -36,7 +36,8 @@
         android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
         android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
         android:scaleType="fitXY"
-        android:src="@android:drawable/divider_horizontal_bright" />
+        android:src="@android:drawable/divider_horizontal_bright"
+        android:contentDescription="@string/image_divider" />
 
     <ImageButton
         android:id="@+id/imageButtonNewCardSet"
@@ -46,6 +47,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
         android:background="@null"
-        android:src="@drawable/ic_action_new" />
+        android:src="@drawable/ic_action_new"
+        android:contentDescription="@string/button_new_card_set" />
 
 </RelativeLayout>

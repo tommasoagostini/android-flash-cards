@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/relativeLayoutSetup"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF" >
+    android:layout_height="match_parent" >
 
     <TextView
         android:id="@+id/textViewSetupTitle"
@@ -14,7 +13,7 @@
         android:layout_marginTop="@dimen/SetupTopPadding"
         android:textSize="@dimen/SetupFontSize"
         android:text="@string/setup_title"
-        android:textColor="#000000"  />
+        android:textColor="@color/font_color" />
     
     <TextView
         android:id="@+id/textViewSetupUserName"
@@ -26,7 +25,7 @@
         android:layout_marginLeft="@dimen/SetupLeftPadding"
         android:textSize="@dimen/SetupFontSize"
         android:text="@string/setup_user_name"
-        android:textColor="#000000" />
+        android:textColor="@color/font_color" />
     
     <EditText
         android:id="@+id/editTextSetupUserName"
