@@ -105,7 +105,10 @@ public class ListActionbarFragment extends Fragment {
 								}
 								finally {
 									
-									ps.close();
+									if(null != ps) {
+										
+										ps.close();
+									}
 								}
 								
 								((ListActivity)getActivity()).addCardSet(new CardSet(newFileName));

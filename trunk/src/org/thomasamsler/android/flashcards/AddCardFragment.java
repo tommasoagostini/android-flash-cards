@@ -249,7 +249,10 @@ public class AddCardFragment extends Fragment {
 		}
 		finally {
 
-			ps.close();
+			if(null != ps) {
+				
+				ps.close();
+			}
 		}
 		
 		return true;

@@ -653,7 +653,10 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			}
 			finally {
 				
-				ps.close();
+				if(null != ps) {
+					
+					ps.close();
+				}
 			}
 			
 			switch(cardSet.getFragmentId()) {
