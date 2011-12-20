@@ -103,6 +103,10 @@ public class ListActionbarFragment extends Fragment {
 									
 									Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create new file", e);
 								}
+								catch(IllegalArgumentException e) {
+									
+									Log.w(AppConstants.LOG_TAG, "IllegalArgumentException: Was not able to create new file", e);
+								}
 								finally {
 									
 									if(null != ps) {
