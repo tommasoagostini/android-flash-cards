@@ -60,7 +60,6 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 	private String mCardSetName;
 	private boolean mMagnify = false;
 	private int mNumberOfCards;
-	
 	private int mHelpContext;
 	
 	@Override
@@ -328,7 +327,10 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 			
 			try {
 				
-				reader.close();
+				if(null != reader) {
+				
+					reader.close();
+				}
 			}
 			catch (IOException e) {
 				

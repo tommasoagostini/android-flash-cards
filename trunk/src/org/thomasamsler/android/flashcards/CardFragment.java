@@ -106,7 +106,6 @@ public class CardFragment extends Fragment {
 				/*
 				 * Check if the user changed anything, and only update if there is a change
 				 */
-				
 				if(!mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewWord.getText().toString())) {
 
 					mTextViewWord.setText(mEditTextWord.getText());

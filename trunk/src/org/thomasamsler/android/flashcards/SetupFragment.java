@@ -183,7 +183,10 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 
 						try {
 
-							reader.close();
+							if(null != reader) {
+							
+								reader.close();
+							}
 
 						}
 						catch(IOException e) {
