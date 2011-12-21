@@ -322,13 +322,19 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 					ps.println(word);
 				}
-				
-				ps.close();
 			}
 			catch(FileNotFoundException e) {
 
 				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
 			}
+			finally {
+				
+				if(null != ps) {
+					
+					ps.close();
+				}
+			}
+
 			
 			words = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.mWordSets.get(Integer.valueOf(1)))));
 			
@@ -342,11 +348,17 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					ps.println(word);
 				}
 				
-				ps.close();
 			}
 			catch (FileNotFoundException e) {
 
 				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
+			}
+			finally {
+				
+				if(null != ps) {
+					
+					ps.close();
+				}
 			}
 		}
 	}
@@ -461,7 +473,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 				Log.e(AppConstants.LOG_TAG, "General Exception", e);
 			}
- 
 
 			return jsonObject;
 		}

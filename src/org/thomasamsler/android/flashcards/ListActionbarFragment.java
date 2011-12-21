@@ -37,8 +37,7 @@ import android.widget.Toast;
 public class ListActionbarFragment extends Fragment {
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
 		return inflater.inflate(R.layout.list_actionbar_fragment, container, false);
 	}
