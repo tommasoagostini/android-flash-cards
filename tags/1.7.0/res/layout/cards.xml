@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:keepScreenOn="true" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutCardsActionBar"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/ActionBarHeight"
+        android:background="@drawable/actionbar_gradient" >
+
+        <TextView
+            android:id="@+id/textViewCardsActionBarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="@string/app_name"
+            android:textColor="@color/font_color_action_bar"
+            android:textSize="@dimen/ActionBarFontSize"
+            android:typeface="normal"
+            android:layout_marginLeft="@dimen/ActionBarItemLeftPadding" />
+        
+     	<ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonEdit"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright"
+            android:contentDescription="@string/image_divider" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/imageButtonMagnify"
+            android:layout_marginRight="@dimen/ActionBarItemRightPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_edit"
+            android:contentDescription="@string/button_edit" />
+        
+		<ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonMagnify"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright"
+            android:contentDescription="@string/image_divider" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonMagnify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/imageButtonList"
+            android:layout_marginRight="@dimen/ActionBarItemRightPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_magnify"
+            android:contentDescription="@string/button_magnify" />
+        
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_toLeftOf="@+id/imageButtonList"
+            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
+            android:scaleType="fitXY"
+            android:src="@android:drawable/divider_horizontal_bright"
+            android:contentDescription="@string/image_divider" />
+        
+        <ImageButton
+            android:id="@+id/imageButtonList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
+            android:background="@null"
+            android:src="@drawable/ic_action_list"
+            android:contentDescription="@string/button_list" />
+
+    </RelativeLayout>
+
+	<android.support.v4.view.ViewPager
+    	android:layout_width="match_parent" 
+    	android:layout_height="match_parent" 
+    	android:id="@+id/viewpager" />
+
+</LinearLayout>
