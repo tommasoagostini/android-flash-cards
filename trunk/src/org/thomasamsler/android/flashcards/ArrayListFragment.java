@@ -43,6 +43,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -51,10 +52,12 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ArrayListFragment extends ListFragment implements FlashCardExchangeData {
@@ -87,7 +90,28 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 		Collections.sort(mCardSets);
 
-		mArrayAdapter = new ArrayAdapter<CardSet>(getActivity(), android.R.layout.simple_list_item_1, mCardSets);
+		mArrayAdapter = new ArrayAdapter<CardSet>(getActivity(), android.R.layout.simple_list_item_1, mCardSets) {
+			
+			/*
+			 * Overwriting getView method to style the list item font. If it's a remote item
+			 * that hasn't been clicked on, we style it bold
+			 */
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				View view = super.getView(position, convertView, parent);
+				
+				if(mCardSets.get(position).isRemote()) {
+
+					((TextView)view).setTypeface(Typeface.DEFAULT_BOLD);
+				}
+				else {
+					
+					((TextView)view).setTypeface(Typeface.DEFAULT);
+				}
+				
+				return view;
+			}
+		};
 
 		setListAdapter(mArrayAdapter);
 	
@@ -98,13 +122,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		CardSet cardSet = mCardSets.get(position);
 
-		if((null == cardSet.getId() || "".equals(cardSet.getId())) && !hasCards(cardSet.getName())) {
+		if(!cardSet.isRemote() && !hasCards(cardSet.getName())) {
 		
 			Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		
-		if(null != cardSet.getId() && !"".equals(cardSet.getId())) {
+		if(cardSet.isRemote()) {
 
 			mProgressBar.setVisibility(ProgressBar.VISIBLE);
 			cardSet.setFragmentId(CardSet.CARDS_PAGER_FRAGMENT);
@@ -234,7 +258,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		CardSet cardSet = mCardSets.get(listItemPosition);
 		
-		if(null != cardSet.getId() && !"".equals(cardSet.getId())) {
+		if(cardSet.isRemote()) {
 			
 			mProgressBar.setVisibility(ProgressBar.VISIBLE);
 			
@@ -480,77 +504,84 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		@Override
 		protected void onPostExecute(JSONObject jsonObject) {
 			
-			mProgressBar.setVisibility(ProgressBar.GONE);
+			try {
 			
-			if(null != jsonObject) {
-				
-				String responseType = null;
-				
-				try {
-				
-					responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);
-				}
-				catch(JSONException e) {
-					
-					Log.e(AppConstants.LOG_TAG, "JSONException", e);
-				}
-				
-				if(null == responseType || !RESPONSE_OK.equals(responseType)) {
-				
-					Toast.makeText(getActivity().getApplicationContext(), R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
-					return;
-				}
-				
-				// Get all the card sets which are stored locally
-				ArrayList<String> existingCardSetNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
-				
-				/*
-				 *  Adding card sets from the list that have been retrieved from 
-				 *  Flash Card Exchange, and havne't been stored locally yet
-				 */
-				for(CardSet cardSet : mCardSets) {
+				mProgressBar.setVisibility(ProgressBar.GONE);
 
-					if(!existingCardSetNames.contains(cardSet.getName())) {
+				if(null != jsonObject) {
 
-						existingCardSetNames.add(cardSet.getName());
+					String responseType = null;
+
+					try {
+
+						responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);
 					}
-				}
+					catch(JSONException e) {
 
-				try {
-					
-					JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FILED_SETS);
+						Log.e(AppConstants.LOG_TAG, "JSONException", e);
+					}
+
+					if(null == responseType || !RESPONSE_OK.equals(responseType)) {
+
+						Toast.makeText(getActivity().getApplicationContext(), R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
+						return;
+					}
+
+					// Get all the card sets which are stored locally
+					ArrayList<String> existingCardSetNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
 
 					/*
-					 * Only add "new" cards to the list
+					 *  Adding card sets from the list that have been retrieved from 
+					 *  Flash Card Exchange, and havne't been stored locally yet
 					 */
-					for(int i = 0; i < jsonArray.length(); i++) {
+					for(CardSet cardSet : mCardSets) {
 
-						JSONObject data = jsonArray.getJSONObject(i);
+						if(!existingCardSetNames.contains(cardSet.getName())) {
 
-						if(!existingCardSetNames.contains(data.getString(FIELD_TITLE))) {
-
-							mCardSets.add(new CardSet(data.getString(FIELD_CARD_SET_ID), data.getString(FIELD_TITLE)));
+							existingCardSetNames.add(cardSet.getName());
 						}
 					}
 
-				} catch (JSONException e) {
-					
-					Log.e(AppConstants.LOG_TAG, "JSONException", e);
-				}
+					try {
 
-				/*
-				 * Sorting the list and refresh it
-				 */
-				Collections.sort(mCardSets);
-				mArrayAdapter.notifyDataSetChanged();
+						JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FILED_SETS);
+
+						/*
+						 * Only add "new" cards to the list
+						 */
+						for(int i = 0; i < jsonArray.length(); i++) {
+
+							JSONObject data = jsonArray.getJSONObject(i);
+
+							if(!existingCardSetNames.contains(data.getString(FIELD_TITLE))) {
+
+								mCardSets.add(new CardSet(data.getString(FIELD_CARD_SET_ID), data.getString(FIELD_TITLE)));
+							}
+						}
+
+					} catch (JSONException e) {
+
+						Log.e(AppConstants.LOG_TAG, "JSONException", e);
+					}
+
+					/*
+					 * Sorting the list and refresh it
+					 */
+					Collections.sort(mCardSets);
+					mArrayAdapter.notifyDataSetChanged();
+				}
+				else {
+
+					/*
+					 * In case the cardSet list is null, an exception occurred in 
+					 * doInBackground().
+					 */
+					Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
+				}
 			}
-			else {
+			catch(Exception e) {
 				
-				/*
-				 * In case the cardSet list is null, an exception occurred in 
-				 * doInBackground().
-				 */
-				Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
+				Log.e(AppConstants.LOG_TAG, "General Exception", e);
 			}
 		}
 	}
@@ -564,18 +595,18 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			uriBuilder.append(API_GET_CARD_SET).append(cardSets[0].getId()).append(API_KEY);
 			
 			HttpClient httpclient = new DefaultHttpClient();
-			
+
 			HttpGet httpGet = null;
-			
+
 			try {
-				
-			 httpGet = new HttpGet(uriBuilder.toString());
+
+				httpGet = new HttpGet(uriBuilder.toString());
 			}
 			catch(IllegalArgumentException e) {
-				
+
 				Log.e(AppConstants.LOG_TAG, "IllegalArgumentException", e);
 			}
-			
+
 			HttpResponse response;
 			
 			JSONObject jsonObject = null;
@@ -644,82 +675,90 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		@Override
 		protected void onPostExecute(JSONObject jsonObject) {
 
-			mProgressBar.setVisibility(ProgressBar.GONE);
-			
-			if(null == jsonObject) {
-				
-				Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
-				return;
-			}
-			
-			CardSet cardSet = null;
-
-			FileOutputStream fos = null;
-			PrintStream ps = null;
-			
 			try {
 				
-				// Check REST call response
-				String responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);
+				mProgressBar.setVisibility(ProgressBar.GONE);
 
-				if(null == responseType || !RESPONSE_OK.equals(responseType)) {
-					
-					Toast.makeText(getActivity().getApplicationContext(), R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
+				if(null == jsonObject) {
+
+					Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
 					return;
 				}
-				
-				
-				JSONObject cardSetJson = jsonObject.getJSONObject(FIELD_FC_ARG);
-				cardSet = new CardSet("", cardSetJson.getString(CardSet.NAME_KEY), cardSetJson.getInt(CardSet.FRAGMENT_KEY));
-				
-				// Card Set Cards
-				JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FIELD_FLASHCARDS);
-				
-				// Write the card set to a file
-				fos = getActivity().getApplicationContext().openFileOutput(cardSet.getName(), Context.MODE_PRIVATE);
-				ps = new PrintStream(fos);
 
-				for(int i = 0; i < jsonArray.length(); i++) {
+				CardSet cardSet = null;
 
-					JSONObject data = jsonArray.getJSONObject(i);
-					ps.print(data.getString(FIELD_QUESTION));
-					ps.print(AppConstants.WORD_DELIMITER_TOKEN);
-					ps.println(data.getString(FIELD_ANSWER));
+				FileOutputStream fos = null;
+				PrintStream ps = null;
+
+				try {
+
+					// Check REST call response
+					String responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);
+
+					if(null == responseType || !RESPONSE_OK.equals(responseType)) {
+
+						Toast.makeText(getActivity().getApplicationContext(), R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
+						return;
+					}
+
+
+					JSONObject cardSetJson = jsonObject.getJSONObject(FIELD_FC_ARG);
+					cardSet = new CardSet("", cardSetJson.getString(CardSet.NAME_KEY), cardSetJson.getInt(CardSet.FRAGMENT_KEY));
+
+					// Card Set Cards
+					JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FIELD_FLASHCARDS);
+
+					// Write the card set to a file
+					fos = getActivity().getApplicationContext().openFileOutput(cardSet.getName(), Context.MODE_PRIVATE);
+					ps = new PrintStream(fos);
+
+					for(int i = 0; i < jsonArray.length(); i++) {
+
+						JSONObject data = jsonArray.getJSONObject(i);
+						ps.print(data.getString(FIELD_QUESTION));
+						ps.print(AppConstants.WORD_DELIMITER_TOKEN);
+						ps.println(data.getString(FIELD_ANSWER));
+					}
+
+					/* 
+					 * Now that we have the cards, we indicate that we don't need to get 
+					 * them anymore, thus setting the card set's id to an empty string
+					 */
+					int position = mCardSets.indexOf(cardSet);
+					mCardSets.get(position).setId("");
+					mArrayAdapter.notifyDataSetChanged();
+
 				}
-				
-				/* 
-				 * Now that we have the cards, we indicate that we don't need to get 
-				 * them anymore, thus setting the card set's id to an empty string
-				 */
-				int position = mCardSets.indexOf(cardSet);
-				mCardSets.get(position).setId("");
-				
-			}
-			catch(JSONException e) {
+				catch(JSONException e) {
 
-				Log.e(AppConstants.LOG_TAG, "JSONException", e);
-			}
-			catch(FileNotFoundException e) {
-
-				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
-			}
-			finally {
-				
-				if(null != ps) {
-					
-					ps.close();
+					Log.e(AppConstants.LOG_TAG, "JSONException", e);
 				}
-			}
-			
-			switch(cardSet.getFragmentId()) {
-			
+				catch(FileNotFoundException e) {
+
+					Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
+				}
+				finally {
+
+					if(null != ps) {
+
+						ps.close();
+					}
+				}
+
+				switch(cardSet.getFragmentId()) {
+
 				case CardSet.ADD_CARD_FRAGMENT:
 					((ListActivity)getActivity()).showAddCardFragment(cardSet);
 					return;
-			
+
 				case CardSet.CARDS_PAGER_FRAGMENT:
 					((ListActivity)getActivity()).showCardsPagerActivity(cardSet.getName());
 					return;
+				}
+			}
+			catch(Exception e) { 
+
+				Log.e(AppConstants.LOG_TAG, "General Exception", e);
 			}
 		}
 	}

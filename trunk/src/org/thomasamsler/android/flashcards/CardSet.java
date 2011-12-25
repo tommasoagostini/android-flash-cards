@@ -76,6 +76,18 @@ public class CardSet implements Comparable<CardSet> {
 	public void setFragmentId(int fragmentId) {
 		this.mFragmentId = fragmentId;
 	}
+	
+	public boolean isRemote() {
+
+		if(null != mId && !"".equals(mId)) {
+			
+			return true;
+		}
+		else {
+			
+			return false;
+		}
+	}
 
 	@Override
 	public String toString() {
