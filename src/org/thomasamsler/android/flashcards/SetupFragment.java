@@ -218,40 +218,47 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 		@Override
 		protected void onPostExecute(JSONObject jsonObject) {
 
-			mProgressBar.setVisibility(ProgressBar.GONE);
-
-			if(null == jsonObject) {
-				
-				Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
-				return;
-			}
-			
 			try {
 				
-				String responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);
-				
-				if(null != responseType && RESPONSE_OK.equals(responseType)) {
-					
-					Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_success, Toast.LENGTH_SHORT).show();
-					SharedPreferences settings = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString(AppConstants.PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
-                    editor.commit();
-                    
-                    ((ListActivity)getActivity()).showArrayListFragment(true);
+				mProgressBar.setVisibility(ProgressBar.GONE);
+
+				if(null == jsonObject) {
+
+					Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
+					return;
 				}
-				else if(null != responseType && RESPONSE_ERROR.equals(responseType)) {
-					
-					Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_error, Toast.LENGTH_LONG).show();
+
+				try {
+
+					String responseType = jsonObject.getString(FIELD_RESPONSE_TYPE);
+
+					if(null != responseType && RESPONSE_OK.equals(responseType)) {
+
+						Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_success, Toast.LENGTH_SHORT).show();
+						SharedPreferences settings = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = settings.edit();
+						editor.putString(AppConstants.PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
+						editor.commit();
+
+						((ListActivity)getActivity()).showArrayListFragment(true);
+					}
+					else if(null != responseType && RESPONSE_ERROR.equals(responseType)) {
+
+						Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_error, Toast.LENGTH_LONG).show();
+					}
+					else {
+
+						Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_failure, Toast.LENGTH_LONG).show();
+					}
 				}
-				else {
-					
-					Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_failure, Toast.LENGTH_LONG).show();
+				catch(JSONException e) {
+
+					Log.e(AppConstants.LOG_TAG, "JSONException", e);
 				}
 			}
-			catch(JSONException e) {
-
-				Log.e(AppConstants.LOG_TAG, "JSONException", e);
+			catch(Exception e) {
+				
+				Log.e(AppConstants.LOG_TAG, "General Exception", e);
 			}
 		}
 	}

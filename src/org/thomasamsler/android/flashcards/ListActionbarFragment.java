@@ -105,6 +105,7 @@ public class ListActionbarFragment extends Fragment {
 								catch(IllegalArgumentException e) {
 									
 									Log.w(AppConstants.LOG_TAG, "IllegalArgumentException: Was not able to create new file", e);
+									Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning2, Toast.LENGTH_SHORT).show();
 								}
 								finally {
 									
