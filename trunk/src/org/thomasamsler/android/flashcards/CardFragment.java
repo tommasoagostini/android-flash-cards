@@ -79,11 +79,27 @@ public class CardFragment extends Fragment {
 		
 		mTextViewWord = (TextView)view.findViewById(R.id.textViewWord);
 		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
-		mTextViewWord.setText(words[0]);
+		
+		if(1 <= words.length) {
+		
+			mTextViewWord.setText(words[0]);
+		}
+		else {
+			
+			mTextViewWord.setText("");
+		}
 
 		mTextViewWord2 = (TextView)view.findViewById(R.id.textViewWord2);
 		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
-		mTextViewWord2.setText(words[1]);
+		
+		if(2 == words.length) {
+			
+			mTextViewWord2.setText(words[1]);
+		}
+		else {
+			
+			mTextViewWord2.setText("");
+		}
 
 		mEditTextWord = (EditText)view.findViewById(R.id.editTextWord);
 		mEditTextWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
