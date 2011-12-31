@@ -47,7 +47,10 @@ public class CardFragment extends Fragment {
 	private LinearLayout mLinearLayoutEditButtons;
 	private ImageButton mImageButtonSave;
 	private ImageButton mImageButtonCancel;
+	private ImageButton mImageButtonFoldPage;
 	private int mCardPosition;
+	
+	private View mCardView;
 
 	public static CardFragment newInstance(String word, int wordIndex, int totalWords) {
 
@@ -71,13 +74,13 @@ public class CardFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View view = inflater.inflate(R.layout.card, container, false);
+		mCardView = inflater.inflate(R.layout.card, container, false);
 
 		mCardPosition = getArguments().getInt(CARD_POSITION_KEY);
 		
 		String[] words = getArguments().getString(CARD_KEY).split(AppConstants.WORD_DELIMITER_TOKEN);
 		
-		mTextViewWord = (TextView)view.findViewById(R.id.textViewWord);
+		mTextViewWord = (TextView)mCardView.findViewById(R.id.textViewWord);
 		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 		
 		if(1 <= words.length) {
@@ -89,7 +92,7 @@ public class CardFragment extends Fragment {
 			mTextViewWord.setText("");
 		}
 
-		mTextViewWord2 = (TextView)view.findViewById(R.id.textViewWord2);
+		mTextViewWord2 = (TextView)mCardView.findViewById(R.id.textViewWord2);
 		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 		
 		if(2 == words.length) {
@@ -101,12 +104,12 @@ public class CardFragment extends Fragment {
 			mTextViewWord2.setText("");
 		}
 
-		mEditTextWord = (EditText)view.findViewById(R.id.editTextWord);
+		mEditTextWord = (EditText)mCardView.findViewById(R.id.editTextWord);
 		mEditTextWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 
-		mLinearLayoutEditButtons = (LinearLayout)view.findViewById(R.id.linearLayoutEditButtons);
+		mLinearLayoutEditButtons = (LinearLayout)mCardView.findViewById(R.id.linearLayoutEditButtons);
 
-		mImageButtonSave = (ImageButton)view.findViewById(R.id.imageButtonSave);
+		mImageButtonSave = (ImageButton)mCardView.findViewById(R.id.imageButtonSave);
 		mImageButtonSave.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -153,7 +156,7 @@ public class CardFragment extends Fragment {
 			}
 		});
 
-		mImageButtonCancel = (ImageButton)view.findViewById(R.id.imageButtonCancel);
+		mImageButtonCancel = (ImageButton)mCardView.findViewById(R.id.imageButtonCancel);
 		mImageButtonCancel.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -173,8 +176,17 @@ public class CardFragment extends Fragment {
 			}
 		});
 
+		mImageButtonFoldPage = (ImageButton)mCardView.findViewById(R.id.imageButtonWordFoldPage);
+		mImageButtonFoldPage.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(final View v) {
+				
+				turnPage(mCardView);
+			}
+		});
+		
 		// Set the bottom word counter
-		mCounterTextView = (TextView) view.findViewById(R.id.textViewWordNumber);
+		mCounterTextView = (TextView) mCardView.findViewById(R.id.textViewWordNumber);
 		mCounterStringBuilder = new StringBuilder();
 		mCounterStringBuilder.append(mCardPosition + 1);
 		mCounterStringBuilder.append(AppConstants._OF_);
@@ -182,57 +194,15 @@ public class CardFragment extends Fragment {
 		mCounterTextView.setText(mCounterStringBuilder.toString());
 		mCounterTextView.append(AppConstants.FRONT);
 
-		view.setOnLongClickListener(new OnLongClickListener() {
+		mCardView.setOnLongClickListener(new OnLongClickListener() {
 
 			public boolean onLongClick(final View v) {
 
-				/*
-				 * If in edit mode, we don't allow the user to switch between the front and back page.
-				 */
-				if(mEditTextWord.isShown()) {
-					
-					return false;
-				}
-				
-				final Animation flip1 = AnimationUtils.loadAnimation(v.getContext(), R.anim.flip1);
-				final Animation flip2 = AnimationUtils.loadAnimation(v.getContext(), R.anim.flip2);
-				
-				flip1.setAnimationListener(new AnimationListener() {
-					
-					public void onAnimationStart(Animation animation) { /* Nothing to do here */ }
-					
-					public void onAnimationRepeat(Animation animation) { /* Nothing to do here */ }
-					
-					public void onAnimationEnd(Animation animation) {
-						
-						mWordToggle ^= true;
-
-						if(mWordToggle) {
-
-							mTextViewWord.setVisibility(View.INVISIBLE);
-							mTextViewWord2.setVisibility(View.VISIBLE);
-							mCounterTextView.setText(mCounterStringBuilder.toString());
-							mCounterTextView.append(AppConstants.BACK);
-						}
-						else {
-
-							mTextViewWord.setVisibility(View.VISIBLE);
-							mTextViewWord2.setVisibility(View.INVISIBLE);
-							mCounterTextView.setText(mCounterStringBuilder.toString());
-							mCounterTextView.append(AppConstants.FRONT);
-						}
-						
-						v.startAnimation(flip2);
-					}
-				});
-				
-				v.startAnimation(flip1);
-
-				return false;
+				return turnPage(mCardView);
 			}
 		});
 		
-		return view;
+		return mCardView;
 	}
 
 	public void onEdit() {
@@ -263,6 +233,67 @@ public class CardFragment extends Fragment {
 		
 		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
 		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+	}
+	
+	private boolean turnPage(final View view) {
+	
+		/*
+		 * If in edit mode, we don't allow the user to switch between the front and back page.
+		 */
+		if(mEditTextWord.isShown()) {
+			
+			return false;
+		}
+		
+		mImageButtonFoldPage.setVisibility(View.INVISIBLE);
+		
+		final Animation flip1 = AnimationUtils.loadAnimation(view.getContext(), R.anim.flip1);
+		final Animation flip2 = AnimationUtils.loadAnimation(view.getContext(), R.anim.flip2);
+		
+		flip1.setAnimationListener(new AnimationListener() {
+			
+			public void onAnimationStart(Animation animation) { /* Nothing to do here */ }
+			
+			public void onAnimationRepeat(Animation animation) { /* Nothing to do here */ }
+			
+			public void onAnimationEnd(Animation animation) {
+				
+				mWordToggle ^= true;
+
+				if(mWordToggle) {
+
+					mTextViewWord.setVisibility(View.INVISIBLE);
+					mTextViewWord2.setVisibility(View.VISIBLE);
+					mCounterTextView.setText(mCounterStringBuilder.toString());
+					mCounterTextView.append(AppConstants.BACK);
+				}
+				else {
+
+					mTextViewWord.setVisibility(View.VISIBLE);
+					mTextViewWord2.setVisibility(View.INVISIBLE);
+					mCounterTextView.setText(mCounterStringBuilder.toString());
+					mCounterTextView.append(AppConstants.FRONT);
+				}
+				
+				view.startAnimation(flip2);
+			}
+		});
+		
+		view.startAnimation(flip1);
+		
+		flip2.setAnimationListener(new AnimationListener() {
+			
+			public void onAnimationStart(Animation animation) { /* Nothing to do here */}
+			
+			public void onAnimationRepeat(Animation animation) { /* Nothing to do here */}
+			
+			public void onAnimationEnd(Animation animation) {
+				
+				mImageButtonFoldPage.setVisibility(View.VISIBLE);
+			}
+		});
+
+		return false;
 	}
 	
 	private boolean isValid(String input) {
