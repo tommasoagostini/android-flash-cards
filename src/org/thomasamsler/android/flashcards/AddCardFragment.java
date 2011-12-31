@@ -99,11 +99,6 @@ public class AddCardFragment extends Fragment {
 						Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_warning1, Toast.LENGTH_LONG).show();
 						return;
 					}
-					else if(null == mBackPageWord || "".equals(mBackPageWord)) {
-						
-						Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_warning2, Toast.LENGTH_LONG).show();
-						return;
-					}
 				}
 				else { // Front side
 					
