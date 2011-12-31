@@ -114,8 +114,21 @@ public class CardFragment extends Fragment {
 
 			public void onClick(View v) {
 
+				/*
+				 * General input validation
+				 */
 				if(!isValid(mEditTextWord.getText().toString().trim())) {
 					
+					return;
+				}
+				
+				/*
+				 * User has to enter non empty string for front of card
+				 */
+				String editText = mEditTextWord.getText().toString();
+				if(!mWordToggle && (null == editText || "".equals(editText))) {
+					
+					Toast.makeText(getActivity().getApplicationContext(), R.string.input_validation_warning2, Toast.LENGTH_SHORT).show();
 					return;
 				}
 				
