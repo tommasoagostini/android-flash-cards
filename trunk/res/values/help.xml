@@ -35,7 +35,8 @@
     </string>
     <string name="help_content_view_card">
         <![CDATA[
-        <p>Tap and hold on the card to switch between the front and backside of the card.</p>
+        <p>Tap on the bottom right hand side fold page icon to switch between the front and backside 
+        of the card. Alternatively, you can tap and hold on the card to do the same.</p>
         ]]>
     </string>
 </resources>
