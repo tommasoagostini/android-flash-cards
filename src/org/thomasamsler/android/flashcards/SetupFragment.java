@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Thomas Amsler
+ * Copyright 2011, 2012 Thomas Amsler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -47,9 +50,15 @@ import android.widget.Toast;
 
 public class SetupFragment extends Fragment implements FlashCardExchangeData {
 
+	private ProgressBar mProgressBar;
+	
+	private SharedPreferences mPreferences;
+	
 	private EditText mEditTextUserName;
 	private String mPreferenceUserName;
-	private ProgressBar mProgressBar;
+	
+	private CheckBox mCheckBoxShowSample;
+	private boolean mPreferenceShowSample;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,13 +72,13 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 	
 		super.onCreate(savedInstanceState);
 		
-		SharedPreferences preferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
-		mPreferenceUserName = preferences.getString(AppConstants.PREFERENCE_FCEX_USER_NAME, "");
+		mPreferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+		mPreferenceUserName = mPreferences.getString(AppConstants.PREFERENCE_FCEX_USER_NAME, "");
+		
+		mProgressBar = (ProgressBar)getActivity().findViewById(R.id.progressBarSetup);
 		
 		mEditTextUserName = (EditText)getActivity().findViewById(R.id.editTextSetupUserName);
 		mEditTextUserName.setText(mPreferenceUserName);
-		
-		mProgressBar = (ProgressBar)getActivity().findViewById(R.id.progressBarSetup);
 		
 		ImageButton imageButtonSave = (ImageButton)getActivity().findViewById(R.id.imageButtonSetupSave);
 		imageButtonSave.setOnClickListener(new OnClickListener() {
@@ -107,6 +116,20 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 				((ListActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
+		
+		mCheckBoxShowSample = (CheckBox)getActivity().findViewById(R.id.checkBoxSetupShowSample);
+		mCheckBoxShowSample.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				
+				SharedPreferences.Editor editor = mPreferences.edit();
+				editor.putBoolean(AppConstants.PREFERENCE_SHOW_SAMPLE, isChecked);
+				editor.commit();
+			}
+		});
+		
+		mPreferenceShowSample = mPreferences.getBoolean(AppConstants.PREFERENCE_SHOW_SAMPLE, AppConstants.PREFERENCE_SHOW_SAMPLE_DEFAULT);
+		mCheckBoxShowSample.setChecked(mPreferenceShowSample);
 	}
 	
 	@Override
@@ -235,8 +258,8 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 					if(null != responseType && RESPONSE_OK.equals(responseType)) {
 
 						Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_success, Toast.LENGTH_SHORT).show();
-						SharedPreferences settings = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
-						SharedPreferences.Editor editor = settings.edit();
+						SharedPreferences sharedPreferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = sharedPreferences.edit();
 						editor.putString(AppConstants.PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
 						editor.commit();
 

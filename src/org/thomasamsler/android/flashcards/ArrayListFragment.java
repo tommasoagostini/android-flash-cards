@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Thomas Amsler
+ * Copyright 2011, 2012 Thomas Amsler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,18 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		if(0 == mCardSets.size()) {
 			
-			createDefaultCardSets();
-			mCardSets = getCardSetItems();
+			SharedPreferences sharedPreferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+			boolean showSample = sharedPreferences.getBoolean(AppConstants.PREFERENCE_SHOW_SAMPLE, AppConstants.PREFERENCE_SHOW_SAMPLE_DEFAULT);
+
+			if(showSample) {
+				
+				createDefaultCardSets();
+				mCardSets = getCardSetItems();
+			}
+			else {
+				
+				Toast.makeText(getActivity().getApplicationContext(), R.string.list_no_card_sets_message, Toast.LENGTH_SHORT).show();
+			}
 		}
 
 		Collections.sort(mCardSets);

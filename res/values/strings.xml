@@ -11,6 +11,7 @@
     <string name="card_information">Card Set: %1$s</string>
     <string name="list_menu_add">Add Card</string>
     <string name="list_meanu_delete">Delete</string>
+    <string name="list_no_card_sets_message">There are no card sets</string>
     <string name="add_card_front_title">Front Side</string>
     <string name="add_card_back_title">Back Side</string>
     <string name="add_card_save_message_error">ERROR: Was not able to save card</string>
@@ -36,6 +37,7 @@
     <string name="setup_save_user_name_error">Flashcard Exchange Error: User name is unknown</string>
     <string name="setup_save_user_name_failure">Was not able to verify user name</string>
     <string name="setup_no_user_name_defined">Please provide your Flashcard Exchange user name.</string>
+    <string name="setup_show_sample_title">Show sample card sets</string>
     <string name="util_connectivity_error">Cannot connect to the Internet</string>
     <string name="util_flash_card_exchange_api_error">Flashcard Exchange Error</string>
     <string name="delete_last_card_message">Deleted last card from card set:\n%1$s</string>

@@ -20,6 +20,9 @@
     <dimen name="SetupFontSize">20sp</dimen>
     <dimen name="SetupTopPadding">16dp</dimen>
     <dimen name="SetupLeftPadding">10dp</dimen>
+    <dimen name="SetupRightPadding">10dp</dimen>
     <dimen name="DialogFontSize">20sp</dimen>
     <dimen name="HelpDialogFontSize">20sp</dimen>
+    <dimen name="SetupDividerPaddingLeftRight">5dp</dimen>
+    <dimen name="SetupDividerPaddingTopBottom">10dp</dimen>
 </resources>
