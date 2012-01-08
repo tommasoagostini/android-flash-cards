@@ -63,4 +63,47 @@
             android:contentDescription="@string/button_save" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/imageViewSetupDivider"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayoutSetupEditButtons"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/image_divider"
+        android:paddingBottom="@dimen/SetupDividerPaddingTopBottom"
+        android:paddingLeft="@dimen/SetupDividerPaddingLeftRight"
+        android:paddingRight="@dimen/SetupDividerPaddingLeftRight"
+        android:paddingTop="@dimen/SetupDividerPaddingTopBottom"
+        android:scaleType="fitXY"
+        android:src="@android:drawable/divider_horizontal_textfield" />
+    
+    <RelativeLayout
+        android:id="@+id/relativeLayoutSetupSampleData"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageViewSetupDivider"
+        android:layout_centerHorizontal="true" >
+
+        <TextView
+            android:id="@+id/textViewSetupShowSample"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/SetupFontSize"
+        	android:text="@string/setup_show_sample_title"
+        	android:textColor="@color/font_color"
+        	android:layout_marginLeft="@dimen/SetupLeftPadding" />
+        
+        <CheckBox
+            android:id="@+id/checkBoxSetupShowSample"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="@dimen/SetupRightPadding" />
+
+    </RelativeLayout>
+    
+
 </RelativeLayout>

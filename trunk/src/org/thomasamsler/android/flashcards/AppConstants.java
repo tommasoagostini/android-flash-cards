@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Thomas Amsler
+ * Copyright 2011, 2012 Thomas Amsler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ public interface AppConstants {
 	
 	public static final String PREFERENCE_NAME = "FlashCardsPrefsFile";
 	public static final String PREFERENCE_FCEX_USER_NAME = "fcexun";
+	public static final String PREFERENCE_SHOW_SAMPLE = "showSample";
+	
+	public static final boolean PREFERENCE_SHOW_SAMPLE_DEFAULT = true;
 	
 	
 	public static final String SELECTED_LIST_ITEM_KEY = "words";
