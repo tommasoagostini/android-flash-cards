@@ -57,4 +57,11 @@ public interface AppConstants {
 	
 	// CardsPagerActivity
 	public static final int HELP_CONTEXT_VIEW_CARD = 4;
+	
+	// CardFragemnt Actions
+	public static final int ACTION_SHOW_FOLD_PAGE = 0;
+	public static final int ACTION_HIDE_FOLD_PAGE = 1;
+	public static final int ACTION_MAGNIFY_FONT = 2;
+	public static final int ACTION_REDUCE_FONT = 3;
+	
 }

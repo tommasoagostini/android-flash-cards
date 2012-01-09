@@ -755,6 +755,11 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					}
 				}
 
+				if(null == cardSet) {
+					
+					return;
+				}
+				
 				switch(cardSet.getFragmentId()) {
 
 				case CardSet.ADD_CARD_FRAGMENT:
