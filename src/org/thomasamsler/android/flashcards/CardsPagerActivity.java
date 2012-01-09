@@ -112,11 +112,11 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 				
 				if(mMagnify) {
 					
-					cardFragment.onMagnifyFont();
+					cardFragment.doAction(ACTION_MAGNIFY_FONT);
 				}
 				else {
 					
-					cardFragment.onReduceFont();
+					cardFragment.doAction(ACTION_REDUCE_FONT);
 				}
 			}
 		});
@@ -178,17 +178,30 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 				
 				if(mMagnify) {
 					
-					cardFragment.onMagnifyFont();
+					cardFragment.doAction(ACTION_MAGNIFY_FONT);
 				}
 				else {
 					
-					cardFragment.onReduceFont();
+					cardFragment.doAction(ACTION_REDUCE_FONT);
 				}
 			}
 
 			public void onPageScrolled(int arg0, float arg1, int arg2) { /* Nothing to do here */ }
 			
-			public void onPageScrollStateChanged(int arg0) { /* Nothing to do here */ }
+			public void onPageScrollStateChanged(int state) {
+				
+				int currentIndex = mViewPager.getCurrentItem();
+				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
+
+				if(null != cardFragment && ViewPager.SCROLL_STATE_DRAGGING == state) {
+
+					cardFragment.doAction(ACTION_HIDE_FOLD_PAGE);
+				}
+				else if(null != cardFragment && ViewPager.SCROLL_STATE_IDLE == state) {
+
+					cardFragment.doAction(ACTION_SHOW_FOLD_PAGE);
+				}
+			}
 		});
 		
 		mRandom = new Random();
@@ -396,7 +409,19 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 			String message = String.format(getResources().getString(R.string.delete_last_card_message), mCardSetName);
 			Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 			
+			// Since there are no cards, show the card set(s) list activity
 			finish();
+		}
+		else {
+			
+			// Make sure that we show the fold page  button
+			currentIndex = mViewPager.getCurrentItem();
+			CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
+
+			if(null != cardFragment) {
+
+				cardFragment.doAction(ACTION_SHOW_FOLD_PAGE);
+			}
 		}
 	}
 	

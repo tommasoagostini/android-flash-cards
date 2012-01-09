@@ -32,7 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CardFragment extends Fragment {
+public class CardFragment extends Fragment implements AppConstants {
 
 	private final static String CARD_KEY = "c";
 	private final static String MAX_KEY = "m";
@@ -78,10 +78,10 @@ public class CardFragment extends Fragment {
 
 		mCardPosition = getArguments().getInt(CARD_POSITION_KEY);
 		
-		String[] words = getArguments().getString(CARD_KEY).split(AppConstants.WORD_DELIMITER_TOKEN);
+		String[] words = getArguments().getString(CARD_KEY).split(WORD_DELIMITER_TOKEN);
 		
 		mTextViewWord = (TextView)mCardView.findViewById(R.id.textViewWord);
-		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mTextViewWord.setTextSize(NORMAL_TEXT_SIZE);
 		
 		if(1 <= words.length) {
 		
@@ -93,7 +93,7 @@ public class CardFragment extends Fragment {
 		}
 
 		mTextViewWord2 = (TextView)mCardView.findViewById(R.id.textViewWord2);
-		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mTextViewWord2.setTextSize(NORMAL_TEXT_SIZE);
 		
 		if(2 == words.length) {
 			
@@ -105,7 +105,7 @@ public class CardFragment extends Fragment {
 		}
 
 		mEditTextWord = (EditText)mCardView.findViewById(R.id.editTextWord);
-		mEditTextWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mEditTextWord.setTextSize(NORMAL_TEXT_SIZE);
 
 		mLinearLayoutEditButtons = (LinearLayout)mCardView.findViewById(R.id.linearLayoutEditButtons);
 
@@ -144,7 +144,7 @@ public class CardFragment extends Fragment {
 					mTextViewWord.setVisibility(View.VISIBLE);
 					StringBuilder sb = new StringBuilder();
 					sb.append(mEditTextWord.getText().toString());
-					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
+					sb.append(WORD_DELIMITER_TOKEN);
 					sb.append(mTextViewWord2.getText().toString());
 					((CardsPagerActivity)getActivity()).updateCard(mCardPosition, sb.toString());
 				}
@@ -154,7 +154,7 @@ public class CardFragment extends Fragment {
 					mTextViewWord2.setVisibility(View.VISIBLE);
 					StringBuilder sb = new StringBuilder();
 					sb.append(mTextViewWord.getText().toString());
-					sb.append(AppConstants.WORD_DELIMITER_TOKEN);
+					sb.append(WORD_DELIMITER_TOKEN);
 					sb.append(mEditTextWord.getText().toString());
 					((CardsPagerActivity)getActivity()).updateCard(mCardPosition, sb.toString());
 				}
@@ -190,6 +190,17 @@ public class CardFragment extends Fragment {
 		});
 
 		mImageButtonFoldPage = (ImageButton)mCardView.findViewById(R.id.imageButtonWordFoldPage);
+		
+		/*
+		 * We show the fold page button for the first card and hide if for the 
+		 * other ones. The view pager's onPageScrollStateChanged() event will 
+		 * hide/show the button as needed
+		 */
+		if(0 != mCardPosition) {
+		
+			mImageButtonFoldPage.setVisibility(View.INVISIBLE);
+		}
+		
 		mImageButtonFoldPage.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(final View v) {
@@ -202,10 +213,10 @@ public class CardFragment extends Fragment {
 		mCounterTextView = (TextView) mCardView.findViewById(R.id.textViewWordNumber);
 		mCounterStringBuilder = new StringBuilder();
 		mCounterStringBuilder.append(mCardPosition + 1);
-		mCounterStringBuilder.append(AppConstants._OF_);
+		mCounterStringBuilder.append(_OF_);
 		mCounterStringBuilder.append(getArguments().getInt(MAX_KEY));
 		mCounterTextView.setText(mCounterStringBuilder.toString());
-		mCounterTextView.append(AppConstants.FRONT);
+		mCounterTextView.append(FRONT);
 
 		mCardView.setOnLongClickListener(new OnLongClickListener() {
 
@@ -236,16 +247,38 @@ public class CardFragment extends Fragment {
 		mLinearLayoutEditButtons.setVisibility(View.VISIBLE);
 	}
 	
-	public void onMagnifyFont() {
+	private void onMagnifyFont() {
 		
-		mTextViewWord.setTextSize(AppConstants.LARGE_TEXT_SIZE);
-		mTextViewWord2.setTextSize(AppConstants.LARGE_TEXT_SIZE);
+		mTextViewWord.setTextSize(LARGE_TEXT_SIZE);
+		mTextViewWord2.setTextSize(LARGE_TEXT_SIZE);
 	}
 	
-	public void onReduceFont() {
+	private void onReduceFont() {
 		
-		mTextViewWord.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
-		mTextViewWord2.setTextSize(AppConstants.NORMAL_TEXT_SIZE);
+		mTextViewWord.setTextSize(NORMAL_TEXT_SIZE);
+		mTextViewWord2.setTextSize(NORMAL_TEXT_SIZE);
+	}
+	
+	public void doAction(int action) {
+		
+		switch(action) {
+		
+		case ACTION_HIDE_FOLD_PAGE:
+			mImageButtonFoldPage.setVisibility(View.INVISIBLE);
+			break;
+			
+		case ACTION_SHOW_FOLD_PAGE:
+			mImageButtonFoldPage.setVisibility(View.VISIBLE);
+			break;
+			
+		case ACTION_MAGNIFY_FONT:
+			onMagnifyFont();
+			break;
+			
+		case ACTION_REDUCE_FONT:
+			onReduceFont();
+			break;
+		}
 	}
 	
 	private boolean turnPage(final View view) {
@@ -278,14 +311,14 @@ public class CardFragment extends Fragment {
 					mTextViewWord.setVisibility(View.INVISIBLE);
 					mTextViewWord2.setVisibility(View.VISIBLE);
 					mCounterTextView.setText(mCounterStringBuilder.toString());
-					mCounterTextView.append(AppConstants.BACK);
+					mCounterTextView.append(BACK);
 				}
 				else {
 
 					mTextViewWord.setVisibility(View.VISIBLE);
 					mTextViewWord2.setVisibility(View.INVISIBLE);
 					mCounterTextView.setText(mCounterStringBuilder.toString());
-					mCounterTextView.append(AppConstants.FRONT);
+					mCounterTextView.append(FRONT);
 				}
 				
 				view.startAnimation(flip2);
@@ -311,7 +344,7 @@ public class CardFragment extends Fragment {
 	
 	private boolean isValid(String input) {
 		
-		if(null != input && input.contains(AppConstants.WORD_DELIMITER_TOKEN)) {
+		if(null != input && input.contains(WORD_DELIMITER_TOKEN)) {
 			
 			Toast.makeText(getActivity().getApplicationContext(), R.string.input_validation_warning, Toast.LENGTH_SHORT).show();
 			return false;
