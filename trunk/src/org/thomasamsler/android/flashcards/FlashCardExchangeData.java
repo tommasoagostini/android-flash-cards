@@ -34,8 +34,11 @@ public interface FlashCardExchangeData {
 	public static final String FILED_SETS = "sets";
 	public static final String FIELD_CARD_SET_ID = "card_set_id";
 	public static final String FIELD_TITLE = "title";
+	public static final String FIELD_FLASHCARD_COUNT = "flashcard_count";
 	public static final String FIELD_FLASHCARDS = "flashcards";
+	public static final String FIELD_CARD_ID = "card_id";
 	public static final String FIELD_QUESTION = "question";
 	public static final String FIELD_ANSWER = "answer";
+	public static final String FIELD_DISPLAY_ORDER = "display_order";
 
 }

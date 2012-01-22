@@ -16,20 +16,12 @@
 
 package org.thomasamsler.android.flashcards;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -47,26 +39,32 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class CardsPagerActivity extends FragmentActivity implements AppConstants, FlashCardExchangeData {
+public class CardsActivity extends FragmentActivity implements AppConstants, FlashCardExchangeData {
 
 	private static final Integer NEG_ONE = Integer.valueOf(-1);
 	
 	private ViewPager mViewPager;
 	private MyFragmentPagerAdapter mMyFragmentPagerAdapter;
 	private Random mRandom;
-	private List<String> mCards;
+	private List<Card> mCards;
 	private List<Integer> mRandomCardPositionList;
 	private List<Integer> mAvailableCardPositionList;
-	private String mCardSetName;
+	private long mCardSetId;
+	private String mCardSetTitle;
 	private boolean mMagnify = false;
 	private int mNumberOfCards;
 	private int mHelpContext;
+	
+	private DataSource mDataSource;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.cards);
+		
+		mDataSource = new DataSource(this);
+        mDataSource.open();
 		
 		mHelpContext = HELP_CONTEXT_VIEW_CARD;
 
@@ -138,12 +136,14 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 		
 		// Get intent data
 		Bundle bundle = getIntent().getExtras();
-		mCardSetName = bundle.getString(AppConstants.CARD_SET_NAME_KEY);
+		mCardSetId = bundle.getLong(AppConstants.CARD_SET_ID_KEY);
+		mCardSetTitle = bundle.getString(AppConstants.CARD_SET_TITLE_KEY);
 		
-		mCards = getCards(mCardSetName);
+		mCards = mDataSource.getCards(mCardSetId);
 		
 		if(0 == mCards.size()) {
 			
+			Log.i("DEBUG", "mCards size = " + mCards.size());
 			Toast.makeText(getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 		}
 		
@@ -208,6 +208,18 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 	}
 	
 	@Override
+	protected void onResume() {
+		mDataSource.open();
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		mDataSource.close();
+		super.onPause();
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
 	    MenuInflater inflater = getMenuInflater();
@@ -233,6 +245,11 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 	    }
 	}
 
+	protected DataSource getDataSource() {
+		
+		return mDataSource;
+	}
+	
 	protected void showHelp() {
 
 		HelpDialog helpDialog = new HelpDialog(this);
@@ -254,112 +271,24 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 		helpDialog.show();
 	}
 
-	public void updateCard(int index, String card) {
+	public void updateCard(int index, String question, String answer) {
 
 		/*
 		 * First, we update the in memory list of words
 		 */
-		mCards.set(mRandomCardPositionList.get(index), card);
+		Card card = mCards.get(mRandomCardPositionList.get(index));
+		card.setQuestion(question);
+		card.setAnswer(answer);
 		
-		/*
-		 * Then, we update the file
-		 */
-		saveCards(mCardSetName, mCards);
+		mDataSource.updateCard(card);
 	}
 
-	private void saveCards(String fileName, List<String> cards) {
-		
-		/*
-		 * First, we delete the exiting file
-		 */
-		if(!getApplicationContext().deleteFile(fileName)) {
-			
-			Log.w(AppConstants.LOG_TAG, "Was not able to delete file with name = " + fileName);
-			return;
-		}
-		
-		FileOutputStream fos;
-		PrintStream ps = null;
-		
-		try {
-
-			fos = getApplicationContext().openFileOutput(fileName, Context.MODE_PRIVATE);
-			ps = new PrintStream(fos);
-			
-			for(String card : cards) {
-
-				if(null != card && !"".equals(card)) {
-					
-					ps.println(card);
-				}
-			}
-		}
-		catch(FileNotFoundException e) {
-
-			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
-		}
-		finally {
-			
-			if(null != ps) {
-				
-				ps.close();
-			}
-		}
-	}
-	
-	private ArrayList<String> getCards(String cardSetName) {
-
-		ArrayList<String> cards = new ArrayList<String>();
-
-		FileInputStream fis;
-		BufferedReader reader = null;
-		
-		try {
-
-			fis =  getApplicationContext().openFileInput(cardSetName);
-			reader = new BufferedReader(new InputStreamReader(fis));
-			String card;
-
-			while((card = reader.readLine()) != null) {
-
-				if(null != card && !"".equals(card) && AppConstants.MIN_DATA_LENGTH <= card.length()) {
-
-					cards.add(card);
-				}
-			}
-		}
-		catch(FileNotFoundException e) {
-
-			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: while reading words from file", e);
-		}
-		catch(IOException e) {
-
-			Log.w(AppConstants.LOG_TAG, "IOException: while reading words from file", e);
-		}
-		finally {
-			
-			try {
-				
-				if(null != reader) {
-				
-					reader.close();
-				}
-			}
-			catch (IOException e) {
-				
-				Log.e(AppConstants.LOG_TAG, "IOException", e);
-			}
-		}
-
-		return cards;
-	}
-	
 	/*
 	 * Menu method
 	 */
 	private void showCardInformation() {
 		
-		String message = String.format(getResources().getString(R.string.card_information), mCardSetName);
+		String message = String.format(getResources().getString(R.string.card_information), mCardSetTitle);
 		
 		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 	}
@@ -373,13 +302,13 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 		int currentIndex = mViewPager.getCurrentItem();
 		
 		// Reduce the card counter by one
-		mNumberOfCards -=1;
+		mNumberOfCards -= 1;
 		
 		// Mark card as deleted. The saveCards(...) method ignores null or empty string cards
-		mCards.set(mRandomCardPositionList.get(currentIndex), null);
+		Card card = mCards.set(mRandomCardPositionList.get(currentIndex), null);
 		
-		// Save cards
-		saveCards(mCardSetName, mCards);
+		// Delete card
+		mDataSource.deleteCard(card);
 		
 		// Remove the deleted card position
 		mRandomCardPositionList.remove(currentIndex);
@@ -406,7 +335,7 @@ public class CardsPagerActivity extends FragmentActivity implements AppConstants
 		// When we delete the last card in a card set, we return to the list
 		if(mRandomCardPositionList.size() == 0) {
 			
-			String message = String.format(getResources().getString(R.string.delete_last_card_message), mCardSetName);
+			String message = String.format(getResources().getString(R.string.delete_last_card_message), mCardSetTitle);
 			Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 			
 			// Since there are no cards, show the card set(s) list activity

@@ -41,7 +41,7 @@ public class SetupActionbarFragment extends Fragment {
 			
 			public void onClick(View v) {
 
-				((ListActivity)getActivity()).showArrayListFragment(true);
+				((CardSetsActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
 	}

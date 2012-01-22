@@ -27,46 +27,45 @@ public class CardSet implements Comparable<CardSet> {
 	public static final int ADD_CARD_FRAGMENT = 1;
 	public static final int CARDS_PAGER_FRAGMENT = 2;
 	
+	/*
+	 * These KEYs are used to access the CardSet JSON data
+	 */
 	public static final String ID_KEY = "i";
-	public static final String NAME_KEY = "n";
+	public static final String EXTERNAL_ID_KEY = "e";
+	public static final String TITLE_KEY = "n";
 	public static final String FRAGMENT_KEY = "f";
+	public static final String CARD_COUNT_KEY = "c";
 	
-	private String mName;
-	private String mId;
+	private long mId;
+	private String mTitle;
+	private String mExternalId;
 	private int mFragmentId;
+	private int mCardCount = 0;
 	
-	public CardSet(String name) {
-		
-		this.mName = name;
-	}
+	public CardSet() { }
 	
-	public CardSet(String id, String name) {
-		
-		this.mId = id;
-		this.mName = name;
-	}
-	
-	public CardSet(String id, String name, int fragmentId) {
-		
-		this.mId = id;
-		this.mName = name;
-		this.mFragmentId = fragmentId;
-	}
-	
-	public String getName() {
-		return mName;
-	}
-	
-	public void setName(String name) {
-		this.mName = name;
-	}
-	
-	public String getId() {
+	public long getId() {
 		return mId;
 	}
-	
-	public void setId(String id) {
+
+	public void setId(long id) {
 		this.mId = id;
+	}
+
+	public String getTitle() {
+		return mTitle;
+	}
+	
+	public void setTitle(String title) {
+		this.mTitle = title;
+	}
+	
+	public String getExternalId() {
+		return mExternalId;
+	}
+	
+	public void setExternalId(String externalId) {
+		this.mExternalId = externalId;
 	}
 
 	public int getFragmentId() {
@@ -77,9 +76,17 @@ public class CardSet implements Comparable<CardSet> {
 		this.mFragmentId = fragmentId;
 	}
 	
+	public int getCardCount() {
+		return mCardCount;
+	}
+
+	public void setCardCount(int cardCount) {
+		this.mCardCount = cardCount;
+	}
+
 	public boolean isRemote() {
 
-		if(null != mId && !"".equals(mId)) {
+		if(null != mExternalId && !"".equals(mExternalId)) {
 			
 			return true;
 		}
@@ -89,15 +96,27 @@ public class CardSet implements Comparable<CardSet> {
 		}
 	}
 
+	public boolean hasCards() {
+		
+		if(0 < mCardCount) {
+			
+			return true;
+		}
+		else {
+			
+			return false;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		
-		return mName;
+		return mTitle;
 	}
 
 	public int compareTo(CardSet listItem) {
 		
-		return mName.compareTo(listItem.getName());
+		return mTitle.compareTo(listItem.getTitle());
 	}
 	
 	public JSONObject getJSON() {
@@ -106,9 +125,10 @@ public class CardSet implements Comparable<CardSet> {
 		
 		try {
 		
-			json.put(ID_KEY, mId);
-			json.put(NAME_KEY, mName);
+			json.put(EXTERNAL_ID_KEY, mExternalId);
+			json.put(TITLE_KEY, mTitle);
 			json.put(FRAGMENT_KEY, mFragmentId);
+			json.put(CARD_COUNT_KEY, mCardCount);
 			
 		}
 		catch(JSONException e) {
@@ -124,7 +144,7 @@ public class CardSet implements Comparable<CardSet> {
 		
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+		result = prime * result + ((mTitle == null) ? 0 : mTitle.hashCode());
 		return result;
 	}
 
@@ -138,10 +158,10 @@ public class CardSet implements Comparable<CardSet> {
 		if (getClass() != obj.getClass())
 			return false;
 		CardSet other = (CardSet) obj;
-		if (mName == null) {
-			if (other.mName != null)
+		if (mTitle == null) {
+			if (other.mTitle != null)
 				return false;
-		} else if (!mName.equals(other.mName))
+		} else if (!mTitle.equals(other.mTitle))
 			return false;
 		return true;
 	}

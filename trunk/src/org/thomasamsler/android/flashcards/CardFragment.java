@@ -34,14 +34,15 @@ import android.widget.Toast;
 
 public class CardFragment extends Fragment implements AppConstants {
 
-	private final static String CARD_KEY = "c";
+	private final static String CARD_QUESTION = "q";
+	private final static String CARD_ANSWER = "a";
 	private final static String MAX_KEY = "m";
 	private final static String CARD_POSITION_KEY = "p";
 	
 	private boolean mWordToggle = false;
 	private StringBuilder mCounterStringBuilder;
-	private TextView mTextViewWord;
-	private TextView mTextViewWord2;
+	private TextView mTextViewQuestion;
+	private TextView mTextViewAnswer;
 	private TextView mCounterTextView;
 	private EditText mEditTextWord;
 	private LinearLayout mLinearLayoutEditButtons;
@@ -49,15 +50,18 @@ public class CardFragment extends Fragment implements AppConstants {
 	private ImageButton mImageButtonCancel;
 	private ImageButton mImageButtonFoldPage;
 	private int mCardPosition;
+	private String mCardQuestion;
+	private String mCardAnswer;
 	
 	private View mCardView;
 
-	public static CardFragment newInstance(String word, int wordIndex, int totalWords) {
+	public static CardFragment newInstance(Card card, int wordIndex, int totalWords) {
 
 		CardFragment pageFragment = new CardFragment();
 		Bundle bundle = new Bundle();
 
-		bundle.putString(CARD_KEY, word);
+		bundle.putString(CARD_QUESTION, card.getQuestion());
+		bundle.putString(CARD_ANSWER, card.getAnswer());
 		bundle.putInt(CARD_POSITION_KEY, wordIndex);
 		bundle.putInt(MAX_KEY, totalWords);
 		pageFragment.setArguments(bundle);
@@ -76,32 +80,34 @@ public class CardFragment extends Fragment implements AppConstants {
 
 		mCardView = inflater.inflate(R.layout.card, container, false);
 
+		mCardQuestion = getArguments().getString(CARD_QUESTION);
+		mCardAnswer = getArguments().getString(CARD_ANSWER);
 		mCardPosition = getArguments().getInt(CARD_POSITION_KEY);
 		
-		String[] words = getArguments().getString(CARD_KEY).split(WORD_DELIMITER_TOKEN);
+		mTextViewQuestion = (TextView)mCardView.findViewById(R.id.textViewWord);
+		// TODO: Make font size configurable
+		mTextViewQuestion.setTextSize(NORMAL_TEXT_SIZE);
 		
-		mTextViewWord = (TextView)mCardView.findViewById(R.id.textViewWord);
-		mTextViewWord.setTextSize(NORMAL_TEXT_SIZE);
+		if(null != mCardQuestion) {
 		
-		if(1 <= words.length) {
-		
-			mTextViewWord.setText(words[0]);
+			mTextViewQuestion.setText(mCardQuestion);
 		}
 		else {
 			
-			mTextViewWord.setText("");
+			mTextViewQuestion.setText("");
 		}
 
-		mTextViewWord2 = (TextView)mCardView.findViewById(R.id.textViewWord2);
-		mTextViewWord2.setTextSize(NORMAL_TEXT_SIZE);
+		mTextViewAnswer = (TextView)mCardView.findViewById(R.id.textViewWord2);
+		// TODO: Make font size configurable
+		mTextViewAnswer.setTextSize(NORMAL_TEXT_SIZE);
 		
-		if(2 == words.length) {
+		if(null != mCardAnswer) {
 			
-			mTextViewWord2.setText(words[1]);
+			mTextViewAnswer.setText(mCardAnswer);
 		}
 		else {
 			
-			mTextViewWord2.setText("");
+			mTextViewAnswer.setText("");
 		}
 
 		mEditTextWord = (EditText)mCardView.findViewById(R.id.editTextWord);
@@ -138,33 +144,25 @@ public class CardFragment extends Fragment implements AppConstants {
 				/*
 				 * Check if the user changed anything, and only update if there is a change
 				 */
-				if(!mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewWord.getText().toString())) {
+				if(!mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewQuestion.getText().toString())) {
 
-					mTextViewWord.setText(mEditTextWord.getText());
-					mTextViewWord.setVisibility(View.VISIBLE);
-					StringBuilder sb = new StringBuilder();
-					sb.append(mEditTextWord.getText().toString());
-					sb.append(WORD_DELIMITER_TOKEN);
-					sb.append(mTextViewWord2.getText().toString());
-					((CardsPagerActivity)getActivity()).updateCard(mCardPosition, sb.toString());
+					mTextViewQuestion.setText(mEditTextWord.getText());
+					mTextViewQuestion.setVisibility(View.VISIBLE);
+					((CardsActivity)getActivity()).updateCard(mCardPosition, mEditTextWord.getText().toString(), mTextViewAnswer.getText().toString());
 				}
-				else if(mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewWord2.getText().toString())) {
+				else if(mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewAnswer.getText().toString())) {
 					
-					mTextViewWord2.setText(mEditTextWord.getText());
-					mTextViewWord2.setVisibility(View.VISIBLE);
-					StringBuilder sb = new StringBuilder();
-					sb.append(mTextViewWord.getText().toString());
-					sb.append(WORD_DELIMITER_TOKEN);
-					sb.append(mEditTextWord.getText().toString());
-					((CardsPagerActivity)getActivity()).updateCard(mCardPosition, sb.toString());
+					mTextViewAnswer.setText(mEditTextWord.getText());
+					mTextViewAnswer.setVisibility(View.VISIBLE);
+					((CardsActivity)getActivity()).updateCard(mCardPosition, mTextViewQuestion.getText().toString(), mEditTextWord.getText().toString());
 				}
 				else if(!mWordToggle) {
 
-					mTextViewWord.setVisibility(View.VISIBLE);
+					mTextViewQuestion.setVisibility(View.VISIBLE);
 				}
 				else if(mWordToggle) {
 					
-					mTextViewWord2.setVisibility(View.VISIBLE);
+					mTextViewAnswer.setVisibility(View.VISIBLE);
 				}
 			}
 		});
@@ -178,11 +176,11 @@ public class CardFragment extends Fragment implements AppConstants {
 				
 				if(mWordToggle) {
 					
-					mTextViewWord2.setVisibility(View.VISIBLE);
+					mTextViewAnswer.setVisibility(View.VISIBLE);
 				}
 				else {
 					
-					mTextViewWord.setVisibility(View.VISIBLE);
+					mTextViewQuestion.setVisibility(View.VISIBLE);
 				}
 				
 				mLinearLayoutEditButtons.setVisibility(View.INVISIBLE);
@@ -231,16 +229,16 @@ public class CardFragment extends Fragment implements AppConstants {
 
 	public void onEdit() {
 		
-		mTextViewWord.setVisibility(View.INVISIBLE);
-		mTextViewWord2.setVisibility(View.INVISIBLE);
+		mTextViewQuestion.setVisibility(View.INVISIBLE);
+		mTextViewAnswer.setVisibility(View.INVISIBLE);
 		
 		if(mWordToggle) {
 			
-			mEditTextWord.setText(mTextViewWord2.getText());
+			mEditTextWord.setText(mTextViewAnswer.getText());
 		}
 		else {
 		
-			mEditTextWord.setText(mTextViewWord.getText());
+			mEditTextWord.setText(mTextViewQuestion.getText());
 		}
  		
 		mEditTextWord.setVisibility(View.VISIBLE);
@@ -249,14 +247,14 @@ public class CardFragment extends Fragment implements AppConstants {
 	
 	private void onMagnifyFont() {
 		
-		mTextViewWord.setTextSize(LARGE_TEXT_SIZE);
-		mTextViewWord2.setTextSize(LARGE_TEXT_SIZE);
+		mTextViewQuestion.setTextSize(LARGE_TEXT_SIZE);
+		mTextViewAnswer.setTextSize(LARGE_TEXT_SIZE);
 	}
 	
 	private void onReduceFont() {
 		
-		mTextViewWord.setTextSize(NORMAL_TEXT_SIZE);
-		mTextViewWord2.setTextSize(NORMAL_TEXT_SIZE);
+		mTextViewQuestion.setTextSize(NORMAL_TEXT_SIZE);
+		mTextViewAnswer.setTextSize(NORMAL_TEXT_SIZE);
 	}
 	
 	public void doAction(int action) {
@@ -308,15 +306,15 @@ public class CardFragment extends Fragment implements AppConstants {
 
 				if(mWordToggle) {
 
-					mTextViewWord.setVisibility(View.INVISIBLE);
-					mTextViewWord2.setVisibility(View.VISIBLE);
+					mTextViewQuestion.setVisibility(View.INVISIBLE);
+					mTextViewAnswer.setVisibility(View.VISIBLE);
 					mCounterTextView.setText(mCounterStringBuilder.toString());
 					mCounterTextView.append(BACK);
 				}
 				else {
 
-					mTextViewWord.setVisibility(View.VISIBLE);
-					mTextViewWord2.setVisibility(View.INVISIBLE);
+					mTextViewQuestion.setVisibility(View.VISIBLE);
+					mTextViewAnswer.setVisibility(View.INVISIBLE);
 					mCounterTextView.setText(mCounterStringBuilder.toString());
 					mCounterTextView.append(FRONT);
 				}
@@ -344,7 +342,7 @@ public class CardFragment extends Fragment implements AppConstants {
 	
 	private boolean isValid(String input) {
 		
-		if(null != input && input.contains(WORD_DELIMITER_TOKEN)) {
+		if(null == input) {
 			
 			Toast.makeText(getActivity().getApplicationContext(), R.string.input_validation_warning, Toast.LENGTH_SHORT).show();
 			return false;

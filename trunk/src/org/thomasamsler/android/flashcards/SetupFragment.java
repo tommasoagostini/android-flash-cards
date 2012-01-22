@@ -113,7 +113,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 			
 			public void onClick(View v) {
 				
-				((ListActivity)getActivity()).showArrayListFragment(true);
+				((CardSetsActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
 		
@@ -136,7 +136,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 	public void onResume() {
 		super.onResume();
 		
-		((ListActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_SETUP);
+		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_SETUP);
 	}
 	
 	/*
@@ -144,7 +144,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
      */
 	private boolean hasConnectivity() {
 		
-		return ((ListActivity)getActivity()).hasConnectivity();
+		return ((CardSetsActivity)getActivity()).hasConnectivity();
 	}
 	
 	private class GetExternalCardSetsTask extends AsyncTask<String, Void, JSONObject> {
@@ -263,7 +263,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 						editor.putString(AppConstants.PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
 						editor.commit();
 
-						((ListActivity)getActivity()).showArrayListFragment(true);
+						((CardSetsActivity)getActivity()).showArrayListFragment(true);
 					}
 					else if(null != responseType && RESPONSE_ERROR.equals(responseType)) {
 

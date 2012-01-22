@@ -26,7 +26,7 @@
     <string name="new_card_set_dialog_message_warning2">Invalid name</string>
     <string name="view_cards_emtpy_set_message">Card set is empty</string>
     <string name="view_cards_fetch_remote_error">Was not able to get data from Flashcard Exchange</string>
-    <string name="input_validation_warning">Input contains invalid \':\' character</string>
+    <string name="input_validation_warning">Invalid input</string>
     <string name="input_validation_warning2">The card\'s front side cannot be empty</string>
     <string name="delete_card_set_dialog_message">Are you sure you want to delete the card set?</string>
     <string name="delete_card_set_dialog_ok">Yes</string>

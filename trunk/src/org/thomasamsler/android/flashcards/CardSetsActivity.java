@@ -24,11 +24,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class ListActivity extends FragmentActivity implements AppConstants {
+public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	
 	private ListActionbarFragment mListActionbarFragment;
 	private SetupActionbarFragment mSetupActionbarFragment;
@@ -40,13 +41,31 @@ public class ListActivity extends FragmentActivity implements AppConstants {
 
 	private int mHelpContext;
 	
+	private DataSource mDataSource;
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.list);        
+        
+        mDataSource = new DataSource(this);
+        mDataSource.open();
+        
         showArrayListFragment(false);
     }
+	
+	@Override
+	protected void onResume() {
+		mDataSource.open();
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		mDataSource.close();
+		super.onPause();
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -186,11 +205,13 @@ public class ListActivity extends FragmentActivity implements AppConstants {
         mHelpContext = HELP_CONTEXT_DEFAULT;
 	}
 	
-	protected void showCardsPagerActivity(String cardSetName) {
+	protected void showCardsPagerActivity(CardSet cardSet) {
 		
-		Intent intent = new Intent(getApplicationContext(), CardsPagerActivity.class);
+		Log.i("DEBUG", "showCardsPagerActivity id " + cardSet.getId());
+		Intent intent = new Intent(getApplicationContext(), CardsActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putString(AppConstants.CARD_SET_NAME_KEY, cardSetName);
+		bundle.putLong(AppConstants.CARD_SET_ID_KEY, cardSet.getId());
+		bundle.putString(AppConstants.CARD_SET_TITLE_KEY, cardSet.getTitle());
 		intent.putExtras(bundle);
 		startActivity(intent);
 	}
@@ -227,6 +248,11 @@ public class ListActivity extends FragmentActivity implements AppConstants {
 	protected void addCardSet(CardSet cardSet) {
 		
 		mArrayListFragment.addCardSet(cardSet);
+	}
+	
+	protected DataSource getDataSource() {
+		
+		return mDataSource;
 	}
 	
 	/*
