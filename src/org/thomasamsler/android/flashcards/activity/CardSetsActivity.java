@@ -14,7 +14,20 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.activity;
+
+import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.db.DataSource;
+import org.thomasamsler.android.flashcards.dialog.HelpDialog;
+import org.thomasamsler.android.flashcards.fragment.AboutFragment;
+import org.thomasamsler.android.flashcards.fragment.AddActionbarFragment;
+import org.thomasamsler.android.flashcards.fragment.AddCardFragment;
+import org.thomasamsler.android.flashcards.fragment.ArrayListFragment;
+import org.thomasamsler.android.flashcards.fragment.ListActionbarFragment;
+import org.thomasamsler.android.flashcards.fragment.SetupActionbarFragment;
+import org.thomasamsler.android.flashcards.fragment.SetupFragment;
+import org.thomasamsler.android.flashcards.model.CardSet;
 
 import android.content.Context;
 import android.content.Intent;
@@ -101,13 +114,28 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-	
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		/*
+		 * If the user deleted the last Card we make sure that we update the
+		 * CardSet accordingly 
+		 */
+		if(ACTIVITY_RESULT == requestCode && null != data && null != mArrayListFragment) {
+
+			long cardSetId = data.getLongExtra(CARD_SET_ID, INVALID_CARD_SET_ID);
+			mArrayListFragment.setCardSetCardCountToZero(cardSetId);
+		}
+	}
+
 	public void setHelpContext(int context) {
 		
 		this.mHelpContext = context;
 	}
 	
-	protected void showArrayListFragment(boolean addToBackStack) {
+	public void showArrayListFragment(boolean addToBackStack) {
 		
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -135,7 +163,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         mHelpContext = HELP_CONTEXT_CARD_SET_LIST;
 	}
 	
-	protected void showAddCardFragment(CardSet cardSet) {
+	public void showAddCardFragment(CardSet cardSet) {
 		
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -159,7 +187,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         mHelpContext = HELP_CONTEXT_ADD_CARD;
 	}
 	
-	protected void showSetupFragment() {
+	public void showSetupFragment() {
 		
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -205,7 +233,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         mHelpContext = HELP_CONTEXT_DEFAULT;
 	}
 	
-	protected void showCardsPagerActivity(CardSet cardSet) {
+	public void showCardsPagerActivity(CardSet cardSet) {
 		
 		Log.i("DEBUG", "showCardsPagerActivity id " + cardSet.getId());
 		Intent intent = new Intent(getApplicationContext(), CardsActivity.class);
@@ -213,7 +241,8 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		bundle.putLong(AppConstants.CARD_SET_ID_KEY, cardSet.getId());
 		bundle.putString(AppConstants.CARD_SET_TITLE_KEY, cardSet.getTitle());
 		intent.putExtras(bundle);
-		startActivity(intent);
+		//startActivity(intent);
+		startActivityForResult(intent, 0);
 	}
 	
 	protected void showHelp() {
@@ -245,12 +274,12 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		helpDialog.show();
 	}
 	
-	protected void addCardSet(CardSet cardSet) {
+	public void addCardSet(CardSet cardSet) {
 		
 		mArrayListFragment.addCardSet(cardSet);
 	}
 	
-	protected DataSource getDataSource() {
+	public DataSource getDataSource() {
 		
 		return mDataSource;
 	}
@@ -258,7 +287,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	/*
 	 * Helper method to check if there is network connectivity
 	 */
-	protected boolean hasConnectivity() {
+	public boolean hasConnectivity() {
 
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 

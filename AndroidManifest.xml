@@ -12,7 +12,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:name=".CardSetsActivity"
+            android:name=".activity.CardSetsActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Light.NoTitleBar"
             android:configChanges="orientation|keyboardHidden" >
@@ -25,7 +25,7 @@
         <activity
             android:configChanges="orientation|keyboardHidden"
             android:theme="@android:style/Theme.Light.NoTitleBar"
-            android:name=".CardsActivity" >
+            android:name=".activity.CardsActivity" >
         </activity>
     </application>
 

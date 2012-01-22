@@ -53,4 +53,10 @@ public interface AppConstants {
 	public static final int ACTION_MAGNIFY_FONT = 2;
 	public static final int ACTION_REDUCE_FONT = 3;
 	
+	// Activity Result
+	public static final int ACTIVITY_RESULT = 0;
+	public static final String CARD_SET_ID = "csi";
+	
+	public static final int INVALID_CARD_SET_ID = -1;
+	
 }

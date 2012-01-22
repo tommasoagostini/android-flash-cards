@@ -14,7 +14,9 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.dialog;
+
+import org.thomasamsler.android.flashcards.R;
 
 import android.app.Dialog;
 import android.content.Context;

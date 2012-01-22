@@ -14,10 +14,13 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.db;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.thomasamsler.android.flashcards.model.Card;
+import org.thomasamsler.android.flashcards.model.CardSet;
 
 import android.content.ContentValues;
 import android.content.Context;

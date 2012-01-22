@@ -14,7 +14,7 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.fragment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,6 +34,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.db.DataSource;
+import org.thomasamsler.android.flashcards.external.FlashCardExchangeData;
+import org.thomasamsler.android.flashcards.model.Card;
+import org.thomasamsler.android.flashcards.model.CardSet;
+import org.thomasamsler.android.flashcards.sample.WordSets;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -195,14 +203,28 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_CARD_SET_LIST);
 	}
 
-	protected void addCardSet(CardSet cardSet) {
+	public void addCardSet(CardSet cardSet) {
 		
 		mCardSets.add(cardSet);
 		Collections.sort(mCardSets);
 		mArrayAdapter.notifyDataSetChanged();
 	}
 	
-	protected void getFlashCardExchangeCardSets() {
+	public void setCardSetCardCountToZero(long cardSetId) {
+		
+		if(AppConstants.INVALID_CARD_SET_ID != cardSetId) {
+			
+			for(CardSet cardSet : mCardSets) {
+				
+				if(cardSet.getId() == cardSetId) {
+					
+					cardSet.setCardCount(0);
+				}
+			}
+		}
+	}
+	
+	public void getFlashCardExchangeCardSets() {
 		
 		mProgressBar.setVisibility(ProgressBar.VISIBLE);
 		

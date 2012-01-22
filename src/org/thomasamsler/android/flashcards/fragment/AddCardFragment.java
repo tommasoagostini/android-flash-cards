@@ -14,7 +14,14 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.fragment;
+
+import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.db.DataSource;
+import org.thomasamsler.android.flashcards.model.Card;
+import org.thomasamsler.android.flashcards.model.CardSet;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -151,7 +158,7 @@ public class AddCardFragment extends Fragment {
 		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_ADD_CARD);
 	}
 	
-	protected void setCardSet(CardSet cardSet) {
+	public void setCardSet(CardSet cardSet) {
 		
 		this.mCardSet = cardSet;
 	}

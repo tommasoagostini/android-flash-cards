@@ -14,10 +14,11 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.thomasamsler.android.flashcards.AppConstants;
 
 import android.util.Log;
 
