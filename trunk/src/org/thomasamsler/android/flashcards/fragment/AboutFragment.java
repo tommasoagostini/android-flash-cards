@@ -14,7 +14,11 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.fragment;
+
+import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
 
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -22,8 +26,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 

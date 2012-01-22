@@ -14,12 +14,14 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.sample;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.thomasamsler.android.flashcards.R;
 
 
 public class WordSets {

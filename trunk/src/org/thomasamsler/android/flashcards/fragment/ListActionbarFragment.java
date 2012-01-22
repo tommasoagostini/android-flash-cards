@@ -14,9 +14,14 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.fragment;
 
 import java.util.List;
+
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.db.DataSource;
+import org.thomasamsler.android.flashcards.model.CardSet;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

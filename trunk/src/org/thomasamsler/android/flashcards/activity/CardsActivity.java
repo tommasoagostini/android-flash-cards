@@ -14,7 +14,7 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.db.DataSource;
+import org.thomasamsler.android.flashcards.dialog.HelpDialog;
+import org.thomasamsler.android.flashcards.external.FlashCardExchangeData;
+import org.thomasamsler.android.flashcards.fragment.CardFragment;
+import org.thomasamsler.android.flashcards.model.Card;
+
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -338,7 +348,16 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 			String message = String.format(getResources().getString(R.string.delete_last_card_message), mCardSetTitle);
 			Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 			
-			// Since there are no cards, show the card set(s) list activity
+			/* 
+			 * Since there are no more cards, show the CardSet list activity.
+			 * We also notify the CardSetActivity hat it needs to update the 
+			 * related CardSet's card count.
+			 */
+			Intent resultIntent = new Intent();
+			Bundle bundle = new Bundle();
+			bundle.putLong(CARD_SET_ID, card.getCardSetId());
+			resultIntent.putExtras(bundle);
+			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 		}
 		else {

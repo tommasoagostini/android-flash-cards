@@ -14,14 +14,18 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.fragment;
+
+import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.activity.CardsActivity;
+import org.thomasamsler.android.flashcards.model.Card;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -216,11 +220,11 @@ public class CardFragment extends Fragment implements AppConstants {
 		mCounterTextView.setText(mCounterStringBuilder.toString());
 		mCounterTextView.append(FRONT);
 
-		mCardView.setOnLongClickListener(new OnLongClickListener() {
+		mCardView.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
 
-			public boolean onLongClick(final View v) {
-
-				return turnPage(mCardView);
+				turnPage(mCardView);
 			}
 		});
 		
@@ -279,14 +283,14 @@ public class CardFragment extends Fragment implements AppConstants {
 		}
 	}
 	
-	private boolean turnPage(final View view) {
+	private void turnPage(final View view) {
 	
 		/*
 		 * If in edit mode, we don't allow the user to switch between the front and back page.
 		 */
 		if(mEditTextWord.isShown()) {
 			
-			return false;
+			return;
 		}
 		
 		mImageButtonFoldPage.setVisibility(View.INVISIBLE);
@@ -336,8 +340,6 @@ public class CardFragment extends Fragment implements AppConstants {
 				mImageButtonFoldPage.setVisibility(View.VISIBLE);
 			}
 		});
-
-		return false;
 	}
 	
 	private boolean isValid(String input) {

@@ -14,7 +14,7 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.fragment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +29,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.external.FlashCardExchangeData;
 
 import android.content.Context;
 import android.content.SharedPreferences;

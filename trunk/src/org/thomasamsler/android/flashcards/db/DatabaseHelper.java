@@ -14,7 +14,7 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards;
+package org.thomasamsler.android.flashcards.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
