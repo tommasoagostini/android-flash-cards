@@ -17,13 +17,9 @@
 package org.thomasamsler.android.flashcards;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,21 +61,25 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	private static final int MENU_ITEM_ADD = 1;
 	private static final int MENU_ITEM_DELETE = 2;
 	
-	private ArrayList<CardSet> mCardSets;
+	private List<CardSet> mCardSets;
 	private ArrayAdapter<CardSet> mArrayAdapter;
 	private ProgressBar mProgressBar;
+	
+	private DataSource mDataSource;
 	
 	@Override
 	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		mDataSource = ((CardSetsActivity)getActivity()).getDataSource();
+		
 		registerForContextMenu(getListView());
 		
 		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
 		
 		if(null == mCardSets) {
 			
-			mCardSets = getCardSetItems();
+			mCardSets = mDataSource.getCardSets();
 		}
 		
 		if(0 == mCardSets.size()) {
@@ -90,7 +90,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			if(showSample) {
 				
 				createDefaultCardSets();
-				mCardSets = getCardSetItems();
+				mCardSets = mDataSource.getCardSets();
 			}
 			else {
 				
@@ -132,7 +132,8 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		CardSet cardSet = mCardSets.get(position);
 
-		if(!cardSet.isRemote() && !hasCards(cardSet.getName())) {
+		Log.i("DEBUG", "isRemote = " + cardSet.isRemote() + " : has cards = " + cardSet.hasCards());
+		if(!cardSet.isRemote() && !cardSet.hasCards()) {
 		
 			Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 			return;
@@ -155,7 +156,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		}
 		else {
 
-			((ListActivity)getActivity()).showCardsPagerActivity(mCardSets.get(position).getName());
+			((CardSetsActivity)getActivity()).showCardsPagerActivity(cardSet);
 		}
 	}
 	
@@ -191,7 +192,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	public void onResume() {
 		super.onResume();
 		
-		((ListActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_CARD_SET_LIST);
+		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_CARD_SET_LIST);
 	}
 
 	protected void addCardSet(CardSet cardSet) {
@@ -223,45 +224,8 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		else {
 			
 			Toast.makeText(getActivity().getApplicationContext(), R.string.setup_no_user_name_defined, Toast.LENGTH_SHORT).show();
-			((ListActivity)getActivity()).showSetupFragment();
+			((CardSetsActivity)getActivity()).showSetupFragment();
 		}
-	}
-	
-	private boolean hasCards(String cardSetName) {
-
-		boolean hasCards = false;
-		
-		try {
-
-			FileInputStream fis =  getActivity().getApplicationContext().openFileInput(cardSetName);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-			String word;
-
-			while((word = reader.readLine()) != null) {
-
-				if(null != word && !"".equals(word) && AppConstants.MIN_DATA_LENGTH <= word.length()) {
-
-					hasCards = true;
-					break;
-				}
-			}
-
-			reader.close();
-		}
-		catch(FileNotFoundException e) {
-
-			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: while reading words from file", e);
-		}
-		catch(IOException e) {
-
-			Log.w(AppConstants.LOG_TAG, "IOException: while reading words from file", e);
-		}
-		catch(IllegalArgumentException e) {
-			
-			Log.w(AppConstants.LOG_TAG, "IllegalArgumentException: while reading words from file", e);
-		}
-
-		return hasCards;
 	}
 	
 	private void addCard(int listItemPosition) {
@@ -286,7 +250,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		}
 		else {
 
-			((ListActivity)getActivity()).showAddCardFragment(cardSet);
+			((CardSetsActivity)getActivity()).showAddCardFragment(cardSet);
 		}
 	}
 	
@@ -299,22 +263,12 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			
 			public void onClick(DialogInterface dialog, int which) {
 				
-				// Check if we have the card set stored in the file system
-				String[] fileNames = getActivity().getApplicationContext().fileList();
+				CardSet cardSet = mCardSets.get(listItemPosition);
+				List<CardSet> cardSets = mDataSource.getCardSets();
 				
-				for(String fileName : fileNames) {
+				if(cardSets.contains(cardSet)) {
 					
-					if(fileName.equals(mCardSets.get(listItemPosition).getName())) {
-						
-						boolean isDeleted = getActivity().getApplicationContext().deleteFile(mCardSets.get(listItemPosition).getName());
-						
-						if(!isDeleted) {
-							
-							Log.w(AppConstants.LOG_TAG, "Was not able to delete card set");
-						}
-						
-						break;
-					}
+					mDataSource.deleteCardSet(cardSet);
 				}
 				
 				mCardSets.remove(listItemPosition);
@@ -337,89 +291,64 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	
 	private void createDefaultCardSets() {
 
-		// Get a list of files if there are any
-		String[] files = getActivity().getApplicationContext().fileList();
+		List<CardSet> cardSets = mDataSource.getCardSets();
 
-		if(0 == files.length) {
-
-			// Get the words from resources
-			List<String> words = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.mWordSets.get(Integer.valueOf(0)))));
-			FileOutputStream fos = null;
-			PrintStream ps = null;
+		// Loading first sample CardSet
+		CardSet sampleCardSet = new CardSet();
+		sampleCardSet.setTitle(WordSets.mWordSetNames.get(0));
+		
+		if(!cardSets.contains(sampleCardSet)) {
 			
-			try {
-
-				fos = getActivity().getApplicationContext().openFileOutput(WordSets.mWordSetNames.get(0), Context.MODE_PRIVATE);
-				ps = new PrintStream(fos);
-				
-				for(String word : words) {
-
-					ps.println(word);
-				}
-			}
-			catch(FileNotFoundException e) {
-
-				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
-			}
-			finally {
-				
-				if(null != ps) {
-					
-					ps.close();
-				}
-			}
-
+			List<String> samples = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.mWordSets.get(Integer.valueOf(0)))));
 			
-			words = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.mWordSets.get(Integer.valueOf(1)))));
+			sampleCardSet.setCardCount(samples.size());
+			mDataSource.createCardSet(sampleCardSet);
+			int displayOrder = 1;
+			for(String sample : samples) {
+				
+				String[] parts = sample.split(":");
+				Card newCard = new Card();
+				newCard.setQuestion(parts[0]);
+				newCard.setAnswer(parts[1]);
+				newCard.setCardSetId(sampleCardSet.getId());
+				newCard.setDisplayOrder(displayOrder);
+				displayOrder += 1;
+				mDataSource.createCard(newCard);
+			}
+		}
+		
+		// Loading second sample CardSet
+		sampleCardSet = new CardSet();
+		sampleCardSet.setTitle(WordSets.mWordSetNames.get(1));
+		
+		if(!cardSets.contains(sampleCardSet)) {
 			
-			try {
-
-				fos = getActivity().getApplicationContext().openFileOutput(WordSets.mWordSetNames.get(1), Context.MODE_PRIVATE);
-				ps = new PrintStream(fos);
+			List<String> samples = new ArrayList<String>(Arrays.asList(getResources().getStringArray(WordSets.mWordSets.get(Integer.valueOf(1)))));
+			
+			sampleCardSet.setCardCount(samples.size());
+			mDataSource.createCardSet(sampleCardSet);
+			int displayOrder = 1;
+			for(String sample : samples) {
 				
-				for(String word : words) {
-
-					ps.println(word);
-				}
-				
-			}
-			catch (FileNotFoundException e) {
-
-				Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
-			}
-			finally {
-				
-				if(null != ps) {
-					
-					ps.close();
-				}
+				String[] parts = sample.split(":");
+				Card newCard = new Card();
+				newCard.setQuestion(parts[0]);
+				newCard.setAnswer(parts[1]);
+				newCard.setCardSetId(sampleCardSet.getId());
+				newCard.setDisplayOrder(displayOrder);
+				displayOrder += 1;
+				mDataSource.createCard(newCard);
 			}
 		}
 	}
-	
-	/*
-	 * Helper method:
-	 * Taking an array of file names, and turn them into a list of ListItem
-	 */
-	private ArrayList<CardSet> getCardSetItems() {
-		
-		ArrayList<CardSet> fileNameList = new ArrayList<CardSet>() ;
-		String[] fileNames = getActivity().getApplicationContext().fileList();
-		
-		for(String fileName : fileNames) {
-			
-			fileNameList.add(new CardSet(fileName));
-		}
-		
-		return fileNameList;
-	}
+
 	
 	/*
      * Helper method to check if there is network connectivity
      */
 	private boolean hasConnectivity() {
 		
-		return ((ListActivity)getActivity()).hasConnectivity();
+		return ((CardSetsActivity)getActivity()).hasConnectivity();
 	}
 	
 	private class GetExternalCardSetsTask extends AsyncTask<String, Void, JSONObject> {
@@ -537,21 +466,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 						return;
 					}
 
-					// Get all the card sets which are stored locally
-					ArrayList<String> existingCardSetNames = new ArrayList<String>(Arrays.asList(getActivity().getApplicationContext().fileList()));
-
-					/*
-					 *  Adding card sets from the list that have been retrieved from 
-					 *  Flash Card Exchange, and havne't been stored locally yet
-					 */
-					for(CardSet cardSet : mCardSets) {
-
-						if(!existingCardSetNames.contains(cardSet.getName())) {
-
-							existingCardSetNames.add(cardSet.getName());
-						}
-					}
-
 					try {
 
 						JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FILED_SETS);
@@ -562,14 +476,19 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 						for(int i = 0; i < jsonArray.length(); i++) {
 
 							JSONObject data = jsonArray.getJSONObject(i);
+							
+							CardSet newCardSet = new CardSet();
+							newCardSet.setTitle(data.getString(FIELD_TITLE));
+							newCardSet.setExternalId(data.getString(FIELD_CARD_SET_ID));
+							newCardSet.setCardCount(data.getInt(FIELD_FLASHCARD_COUNT));
+							
+							if(!mCardSets.contains(newCardSet)) {
 
-							if(!existingCardSetNames.contains(data.getString(FIELD_TITLE))) {
-
-								mCardSets.add(new CardSet(data.getString(FIELD_CARD_SET_ID), data.getString(FIELD_TITLE)));
+								mCardSets.add(newCardSet);
 							}
 						}
-
-					} catch (JSONException e) {
+					}
+					catch (JSONException e) {
 
 						Log.e(AppConstants.LOG_TAG, "JSONException", e);
 					}
@@ -602,7 +521,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		protected JSONObject doInBackground(CardSet... cardSets) {
 			
 			StringBuilder uriBuilder = new StringBuilder();
-			uriBuilder.append(API_GET_CARD_SET).append(cardSets[0].getId()).append(API_KEY);
+			uriBuilder.append(API_GET_CARD_SET).append(cardSets[0].getExternalId()).append(API_KEY);
 			
 			HttpClient httpclient = new DefaultHttpClient();
 
@@ -663,6 +582,11 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					}
 
 					jsonObject = new JSONObject(content.toString());
+					
+					/*
+					 * Serialize CardSet to JSON so that we can pass it to the onPostExecute()
+					 * method along with all the cards data
+					 */
 					jsonObject.put(FIELD_FC_ARG, cardSets[0].getJSON());
 				}
 			}
@@ -697,9 +621,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 				CardSet cardSet = null;
 
-				FileOutputStream fos = null;
-				PrintStream ps = null;
-
 				try {
 
 					// Check REST call response
@@ -711,23 +632,41 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 						return;
 					}
 
-
+					/*
+					 * Since we passed in the CardSet to the AsyncTask, we had to serialize it 
+					 * to JSON in the doInBackground() method so that we can get it in this onPostExecute() method
+					 */
 					JSONObject cardSetJson = jsonObject.getJSONObject(FIELD_FC_ARG);
-					cardSet = new CardSet("", cardSetJson.getString(CardSet.NAME_KEY), cardSetJson.getInt(CardSet.FRAGMENT_KEY));
+					cardSet = new CardSet();
+					cardSet.setExternalId("");
+					cardSet.setTitle(cardSetJson.getString(CardSet.TITLE_KEY));
+					cardSet.setFragmentId(cardSetJson.getInt(CardSet.FRAGMENT_KEY));
+					cardSet.setCardCount(cardSetJson.getInt(CardSet.CARD_COUNT_KEY));
 
 					// Card Set Cards
 					JSONArray jsonArray = jsonObject.getJSONObject(FIELD_RESULT).getJSONArray(FIELD_FLASHCARDS);
+					
+					// Store the CardSet
+					mDataSource.createCardSet(cardSet);
+					
+					Log.i("DEBUG", "createCardSet after create id = " + cardSet.getId());
 
-					// Write the card set to a file
-					fos = getActivity().getApplicationContext().openFileOutput(cardSet.getName(), Context.MODE_PRIVATE);
-					ps = new PrintStream(fos);
-
+					// Store all the Cards
 					for(int i = 0; i < jsonArray.length(); i++) {
 
 						JSONObject data = jsonArray.getJSONObject(i);
-						ps.print(data.getString(FIELD_QUESTION));
-						ps.print(AppConstants.WORD_DELIMITER_TOKEN);
-						ps.println(data.getString(FIELD_ANSWER));
+						
+						Card card = new Card();
+						card.setId(data.getLong(FIELD_CARD_ID));
+						card.setExternalId(data.getString(FIELD_CARD_ID));
+						card.setQuestion(data.getString(FIELD_QUESTION));
+						card.setAnswer(data.getString(FIELD_ANSWER));
+						card.setDisplayOrder(data.getInt(FIELD_DISPLAY_ORDER));
+						card.setCardSetId(cardSet.getId());
+						
+						mDataSource.createCard(card);
+						
+						Log.i("DEBUG", "card id = " + card.getId());
 					}
 
 					/* 
@@ -735,7 +674,8 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					 * them anymore, thus setting the card set's id to an empty string
 					 */
 					int position = mCardSets.indexOf(cardSet);
-					mCardSets.get(position).setId("");
+					mCardSets.get(position).setExternalId("");
+					mCardSets.get(position).setId(cardSet.getId());
 					mArrayAdapter.notifyDataSetChanged();
 
 				}
@@ -743,18 +683,8 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 					Log.e(AppConstants.LOG_TAG, "JSONException", e);
 				}
-				catch(FileNotFoundException e) {
-
-					Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create default file", e);
-				}
-				finally {
-
-					if(null != ps) {
-
-						ps.close();
-					}
-				}
-
+				
+				
 				if(null == cardSet) {
 					
 					return;
@@ -763,11 +693,11 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				switch(cardSet.getFragmentId()) {
 
 				case CardSet.ADD_CARD_FRAGMENT:
-					((ListActivity)getActivity()).showAddCardFragment(cardSet);
+					((CardSetsActivity)getActivity()).showAddCardFragment(cardSet);
 					return;
 
 				case CardSet.CARDS_PAGER_FRAGMENT:
-					((ListActivity)getActivity()).showCardsPagerActivity(cardSet.getName());
+					((CardSetsActivity)getActivity()).showCardsPagerActivity(cardSet);
 					return;
 				}
 			}

@@ -16,16 +16,12 @@
 
 package org.thomasamsler.android.flashcards;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.util.List;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +31,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class ListActionbarFragment extends Fragment {
+	
+	private DataSource mDataSource;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,6 +43,8 @@ public class ListActionbarFragment extends Fragment {
 	@Override
 	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		
+		mDataSource = ((CardSetsActivity)getActivity()).getDataSource();
 		
 		ImageButton imageButtonNewCardSet = (ImageButton)getActivity().findViewById(R.id.imageButtonNewCardSet);
 		imageButtonNewCardSet.setOnClickListener(new OnClickListener() {
@@ -63,59 +63,33 @@ public class ListActionbarFragment extends Fragment {
 					
 					public void onClick(DialogInterface dialog, int which) {
 						
-						String newFileName = editText.getText().toString().trim();
+						String newTitle = editText.getText().toString().trim();
 						
-						if(null == newFileName || "".equals(newFileName)) {
+						if(null == newTitle || "".equals(newTitle)) {
 							
 							Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning2, Toast.LENGTH_LONG).show();
 						}
 						else {
 							
-							String [] fileNames = getActivity().getApplicationContext().fileList();
-							boolean fileNameExists = false;
-							
-							for(String fileName : fileNames) {
+							boolean titleExists = false;
+							List<CardSet> cardSets = mDataSource.getCardSets();
+							for(CardSet cardSet : cardSets) {
 								
-								if(newFileName.equals(fileName)) {
+								if(newTitle.equals(cardSet.getTitle())) {
 									
-									fileNameExists = true;
+									titleExists = true;
 									break;
 								}
 							}
 							
-							if(fileNameExists) {
+							if(titleExists) {
 								
 								Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning1, Toast.LENGTH_LONG).show();
 							}
 							else {
 								
-								FileOutputStream fos;
-								PrintStream ps = null;
-								
-								try {
-									
-									fos = getActivity().getApplicationContext().openFileOutput(newFileName, Context.MODE_PRIVATE);
-									ps = new PrintStream(fos);
-									
-								}
-								catch(FileNotFoundException e) {
-									
-									Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to create new file", e);
-								}
-								catch(IllegalArgumentException e) {
-									
-									Log.w(AppConstants.LOG_TAG, "IllegalArgumentException: Was not able to create new file", e);
-									Toast.makeText(getActivity().getApplicationContext(), R.string.new_card_set_dialog_message_warning2, Toast.LENGTH_SHORT).show();
-								}
-								finally {
-									
-									if(null != ps) {
-										
-										ps.close();
-									}
-								}
-								
-								((ListActivity)getActivity()).addCardSet(new CardSet(newFileName));
+								CardSet cardSet = mDataSource.createCardSet(newTitle);
+								((CardSetsActivity)getActivity()).addCardSet(cardSet);
 							}
 						}
 					}

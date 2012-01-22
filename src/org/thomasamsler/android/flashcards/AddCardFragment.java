@@ -16,14 +16,8 @@
 
 package org.thomasamsler.android.flashcards;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +44,8 @@ public class AddCardFragment extends Fragment {
 	private boolean mWordToggle;
 	private boolean mIsSaved;
 	
+	private DataSource mDataSource;
+	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,6 +58,8 @@ public class AddCardFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mDataSource = ((CardSetsActivity)getActivity()).getDataSource();
+		
 		mFrontPageWord = "";
 		mBackPageWord = "";
 		mWordToggle = false;
@@ -76,7 +74,7 @@ public class AddCardFragment extends Fragment {
 			
 			public void onClick(View v) {
 				
-				((ListActivity)getActivity()).showArrayListFragment(true);
+				((CardSetsActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
 		
@@ -118,12 +116,12 @@ public class AddCardFragment extends Fragment {
 					}
 				}
 
-				mIsSaved = addCard(mCardSet.getName(), mFrontPageWord, mBackPageWord);
+				mIsSaved = addCard(mCardSet, mFrontPageWord, mBackPageWord);
 
 				if(mIsSaved) {
 
 					Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_success, Toast.LENGTH_SHORT).show();
-					((ListActivity)getActivity()).showArrayListFragment(true);
+					((CardSetsActivity)getActivity()).showArrayListFragment(true);
 				}
 				else {
 
@@ -150,7 +148,7 @@ public class AddCardFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		
-		((ListActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_ADD_CARD);
+		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_ADD_CARD);
 	}
 	
 	protected void setCardSet(CardSet cardSet) {
@@ -214,47 +212,35 @@ public class AddCardFragment extends Fragment {
 		v.startAnimation(flip1);
 	}
 	
-	private boolean addCard(String fileName, String frontSideWord, String backSideWord) {
+	private boolean addCard(CardSet cardSet, String cardQuestion, String cardAnswer) {
 		
-		FileOutputStream fos;
-		PrintStream ps = null;
+		
+		cardSet.setCardCount(cardSet.getCardCount() + 1);
+		
+		Card card = new Card();
+		card.setQuestion(cardQuestion);
+		card.setAnswer(cardAnswer);
+		card.setCardSetId(cardSet.getId());
+		card.setDisplayOrder(cardSet.getCardCount());
 		
 		try {
 			
-			fos = getActivity().getApplicationContext().openFileOutput(fileName, Context.MODE_APPEND);
-			ps = new PrintStream(fos);
-			
-			StringBuilder sb = new StringBuilder();
-			sb.append(frontSideWord);
-			sb.append(AppConstants.WORD_DELIMITER_TOKEN);
-			sb.append(backSideWord);
-			ps.print(sb.toString());
-			ps.println();
-		}
-		catch(FileNotFoundException e) {
-
-			Log.w(AppConstants.LOG_TAG, "FileNotFoundException: Was not able to open file", e);
-			return false;
+			mDataSource.createCard(card);
 		}
 		catch(Exception e) {
-			
-			Log.w(AppConstants.LOG_TAG, "Exception: Was not able to write to file", e);
+		
+			cardSet.setCardCount(cardSet.getCardCount() - 1);
 			return false;
 		}
-		finally {
-
-			if(null != ps) {
-				
-				ps.close();
-			}
-		}
+		
+		mDataSource.updateCardSet(cardSet);
 		
 		return true;
 	}
 	
 	private boolean isValid(String input) {
 		
-		if(null != input && input.contains(AppConstants.WORD_DELIMITER_TOKEN)) {
+		if(null == input) {
 			
 			Toast.makeText(getActivity().getApplicationContext(), R.string.input_validation_warning, Toast.LENGTH_SHORT).show();
 			return false;
