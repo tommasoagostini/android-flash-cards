@@ -33,8 +33,8 @@ public interface AppConstants {
 	public static final String CARD_SET_TITLE_KEY = "csnk";
 	public static final String CARD_SET_ID_KEY = "csik";
 	
-	public static final int NORMAL_TEXT_SIZE = 60;
-	public static final int LARGE_TEXT_SIZE = 80;
+	public static final int NORMAL_TEXT_SIZE = 40;
+	public static final int LARGE_TEXT_SIZE = 60;
 	
 	public static final String _OF_ = " of ";
 	public static final String BACK = " Back";
