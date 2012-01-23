@@ -18,6 +18,7 @@ package org.thomasamsler.android.flashcards.activity;
 
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.conversion.FileToDbConversion;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.dialog.HelpDialog;
 import org.thomasamsler.android.flashcards.fragment.AboutFragment;
@@ -64,6 +65,10 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         
         mDataSource = new DataSource(this);
         mDataSource.open();
+        
+        // Conversion
+        FileToDbConversion conversion = new FileToDbConversion();
+        conversion.convert(getApplicationContext(), mDataSource);
         
         showArrayListFragment(false);
     }
