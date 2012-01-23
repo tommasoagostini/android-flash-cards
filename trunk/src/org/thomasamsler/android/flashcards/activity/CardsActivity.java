@@ -39,7 +39,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -153,7 +152,6 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 		
 		if(0 == mCards.size()) {
 			
-			Log.i("DEBUG", "mCards size = " + mCards.size());
 			Toast.makeText(getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 		}
 		

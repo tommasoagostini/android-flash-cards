@@ -27,7 +27,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 public class DataSource {
 
@@ -70,7 +69,6 @@ public class DataSource {
 		contentValues.put(DatabaseHelper.CST_CARD_COUNT, cardSet.getCardCount());
 		long id = mDb.insert(DatabaseHelper.TABLE_CARD_SETS, null, contentValues);
 		
-		Log.i("DEBUG", "createCardSet id = " + id);
 		cardSet.setId(id);
 	}
 	
@@ -78,9 +76,7 @@ public class DataSource {
 		
 		deleteCards(cardSet);
 		
-		int numRowsAffected = mDb.delete(DatabaseHelper.TABLE_CARD_SETS, "_id=?", new String[] { Long.toString(cardSet.getId()) });
-		
-		Log.i("DEBUG", "deleteCardSet id = " + cardSet.getId() + " : numRowsAffected = " + numRowsAffected);
+		mDb.delete(DatabaseHelper.TABLE_CARD_SETS, "_id=?", new String[] { Long.toString(cardSet.getId()) });
 	}
 	
 	public List<CardSet> getCardSets() {
@@ -106,9 +102,7 @@ public class DataSource {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseHelper.CST_TITLE, cardSet.getTitle());
 		contentValues.put(DatabaseHelper.CST_CARD_COUNT, cardSet.getCardCount());
-		int numAffectedRows = mDb.update(DatabaseHelper.TABLE_CARD_SETS, contentValues, "_id=?", new String[] { Long.toString(cardSet.getId()) });
-		
-		Log.i("DEBUG", "updateCardSet affected rows = " + numAffectedRows);
+		mDb.update(DatabaseHelper.TABLE_CARD_SETS, contentValues, "_id=?", new String[] { Long.toString(cardSet.getId()) });
 	}
 	
 	
@@ -127,9 +121,7 @@ public class DataSource {
 	
 	public void deleteCards(CardSet cardSet) {
 		
-		int numRowsAffected = mDb.delete(DatabaseHelper.TABLE_CARDS, "card_set_pk=?", new String[] { Long.toString(cardSet.getId()) });
-		
-		Log.i("DEBUG", "deleteCards id = " + cardSet.getId() + " : numRowsAffected = " + numRowsAffected);
+		mDb.delete(DatabaseHelper.TABLE_CARDS, "card_set_pk=?", new String[] { Long.toString(cardSet.getId()) });
 	}
 	
 	public void updateCard(Card card) {
@@ -137,16 +129,13 @@ public class DataSource {
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseHelper.CT_QUESTION, card.getQuestion());
 		contentValues.put(DatabaseHelper.CT_ANSWER, card.getAnswer());
-		int numAffectedRows = mDb.update(DatabaseHelper.TABLE_CARDS, contentValues, "_id=?", new String[] { Long.toString(card.getId()) });
-		
-		Log.i("DEBUG", "updateCard affected rows = " + numAffectedRows);
+		mDb.update(DatabaseHelper.TABLE_CARDS, contentValues, "_id=?", new String[] { Long.toString(card.getId()) });
 	}
 	
 	public void deleteCard(Card card) {
 		
-		int numAffectedRows = mDb.delete(DatabaseHelper.TABLE_CARDS, "_id=?", new String[] { Long.toString(card.getId()) });
+		mDb.delete(DatabaseHelper.TABLE_CARDS, "_id=?", new String[] { Long.toString(card.getId()) });
 		mDb.execSQL("update cardsets set card_count = card_count - 1 where _id=" + Long.toString(card.getCardSetId()));
-		Log.i("DEBUG", "deleteCard affected rows = " + numAffectedRows);
 	}
 	
 	public List<Card> getCards(long cardSetId) {

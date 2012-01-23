@@ -46,6 +46,8 @@
     <string name="about_author">Thomas Amsler\ntamsler@gmail.com</string>
     <string name="about_version">Version\n</string>
 
+    <string name="conversion">Converting Flash Cards &#8230;</string>
+    
    <!--  Content Descriptors -->
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>

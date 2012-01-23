@@ -32,13 +32,13 @@ import org.thomasamsler.android.flashcards.model.CardSet;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,10 +66,22 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         mDataSource = new DataSource(this);
         mDataSource.open();
         
-        // Conversion
-        FileToDbConversion conversion = new FileToDbConversion();
-        conversion.convert(getApplicationContext(), mDataSource);
-        
+        /*
+         * Determine if we need to run the File to DB conversion
+         */
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+		boolean runConversion = sharedPreferences.getBoolean(PREFERENCE_RUN_CONVERSION, PREFERENCE_RUN_CONVERSION_DEFAULT);
+		
+		if(runConversion) {
+
+			FileToDbConversion conversion = new FileToDbConversion();
+			conversion.convert(this, mDataSource);
+			
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putBoolean(PREFERENCE_RUN_CONVERSION, false);
+			editor.commit();
+		}
+		
         showArrayListFragment(false);
     }
 	
@@ -240,13 +252,11 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	
 	public void showCardsPagerActivity(CardSet cardSet) {
 		
-		Log.i("DEBUG", "showCardsPagerActivity id " + cardSet.getId());
 		Intent intent = new Intent(getApplicationContext(), CardsActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putLong(AppConstants.CARD_SET_ID_KEY, cardSet.getId());
-		bundle.putString(AppConstants.CARD_SET_TITLE_KEY, cardSet.getTitle());
+		bundle.putLong(CARD_SET_ID_KEY, cardSet.getId());
+		bundle.putString(CARD_SET_TITLE_KEY, cardSet.getTitle());
 		intent.putExtras(bundle);
-		//startActivity(intent);
 		startActivityForResult(intent, 0);
 	}
 	
