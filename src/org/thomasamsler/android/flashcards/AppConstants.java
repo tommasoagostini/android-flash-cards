@@ -21,8 +21,10 @@ public interface AppConstants {
 	public static final String PREFERENCE_NAME = "FlashCardsPrefsFile";
 	public static final String PREFERENCE_FCEX_USER_NAME = "fcexun";
 	public static final String PREFERENCE_SHOW_SAMPLE = "showSample";
+	public static final String PREFERENCE_RUN_CONVERSION = "convert";
 	
 	public static final boolean PREFERENCE_SHOW_SAMPLE_DEFAULT = true;
+	public static final boolean PREFERENCE_RUN_CONVERSION_DEFAULT = true;
 	
 	
 	public static final String SELECTED_LIST_ITEM_KEY = "words";

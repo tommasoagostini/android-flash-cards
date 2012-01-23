@@ -19,7 +19,6 @@ package org.thomasamsler.android.flashcards.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -62,7 +61,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				   .append(CST_TAGS).append(" TEXT,")
 				   .append(CST_CARD_COUNT).append(" INTEGER)");
 		
-		Log.i("DEBUG", "table cardsets = " + sb.toString());
 		db.execSQL(sb.toString());
 		
 		sb = new StringBuilder();
@@ -75,7 +73,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				   .append(CT_ANSWER).append(" TEXT,")
 				   .append(CT_CARD_SET_PK).append(" INTEGER REFERENCES ").append(TABLE_CARD_SETS).append("(").append(CST_ID).append("))");
 
-		Log.i("DEBUG", "table card = " + sb.toString());
 		db.execSQL(sb.toString());
 	}
 

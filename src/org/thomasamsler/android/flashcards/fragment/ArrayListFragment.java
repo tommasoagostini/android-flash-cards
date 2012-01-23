@@ -91,17 +91,17 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		}
 		
 		if(0 == mCardSets.size()) {
-			
+
 			SharedPreferences sharedPreferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
 			boolean showSample = sharedPreferences.getBoolean(AppConstants.PREFERENCE_SHOW_SAMPLE, AppConstants.PREFERENCE_SHOW_SAMPLE_DEFAULT);
 
 			if(showSample) {
-				
+
 				createDefaultCardSets();
 				mCardSets = mDataSource.getCardSets();
 			}
 			else {
-				
+
 				Toast.makeText(getActivity().getApplicationContext(), R.string.list_no_card_sets_message, Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -140,7 +140,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		CardSet cardSet = mCardSets.get(position);
 
-		Log.i("DEBUG", "isRemote = " + cardSet.isRemote() + " : has cards = " + cardSet.hasCards());
 		if(!cardSet.isRemote() && !cardSet.hasCards()) {
 		
 			Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
@@ -670,8 +669,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					
 					// Store the CardSet
 					mDataSource.createCardSet(cardSet);
-					
-					Log.i("DEBUG", "createCardSet after create id = " + cardSet.getId());
 
 					// Store all the Cards
 					for(int i = 0; i < jsonArray.length(); i++) {
@@ -687,8 +684,6 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 						card.setCardSetId(cardSet.getId());
 						
 						mDataSource.createCard(card);
-						
-						Log.i("DEBUG", "card id = " + card.getId());
 					}
 
 					/* 
