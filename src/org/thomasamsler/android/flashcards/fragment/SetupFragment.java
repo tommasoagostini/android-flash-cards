@@ -44,15 +44,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-public class SetupFragment extends Fragment implements FlashCardExchangeData {
+public class SetupFragment extends Fragment implements AppConstants, FlashCardExchangeData {
 
 	private ProgressBar mProgressBar;
 	
@@ -64,6 +68,9 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 	private CheckBox mCheckBoxShowSample;
 	private boolean mPreferenceShowSample;
 	
+	private Spinner mSpinner;
+	private ArrayAdapter<CharSequence> mSpinnerAdapter;
+	private int mPreferenceFontSize;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -76,8 +83,8 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 	
 		super.onCreate(savedInstanceState);
 		
-		mPreferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
-		mPreferenceUserName = mPreferences.getString(AppConstants.PREFERENCE_FCEX_USER_NAME, "");
+		mPreferences = getActivity().getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+		mPreferenceUserName = mPreferences.getString(PREFERENCE_FCEX_USER_NAME, "");
 		
 		mProgressBar = (ProgressBar)getActivity().findViewById(R.id.progressBarSetup);
 		
@@ -127,20 +134,52 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				
 				SharedPreferences.Editor editor = mPreferences.edit();
-				editor.putBoolean(AppConstants.PREFERENCE_SHOW_SAMPLE, isChecked);
+				editor.putBoolean(PREFERENCE_SHOW_SAMPLE, isChecked);
 				editor.commit();
 			}
 		});
 		
-		mPreferenceShowSample = mPreferences.getBoolean(AppConstants.PREFERENCE_SHOW_SAMPLE, AppConstants.PREFERENCE_SHOW_SAMPLE_DEFAULT);
+		mPreferenceShowSample = mPreferences.getBoolean(PREFERENCE_SHOW_SAMPLE, PREFERENCE_SHOW_SAMPLE_DEFAULT);
 		mCheckBoxShowSample.setChecked(mPreferenceShowSample);
+		
+		
+		mPreferenceFontSize = mPreferences.getInt(PREFERENCE_FONT_SIZE, NORMAL_FONT_SIZE);
+		mSpinner = (Spinner) getActivity().findViewById(R.id.spinnerFontSize);
+		mSpinnerAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.font_size_array, android.R.layout.simple_spinner_item);
+		mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mSpinner.setAdapter(mSpinnerAdapter);
+		mSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+				
+				Log.i("DEBUG" , "selection / position = " + parent.getItemAtPosition(pos).toString() + " / " + pos);
+				SharedPreferences.Editor editor = mPreferences.edit();
+				editor.putInt(PREFERENCE_FONT_SIZE, pos);
+				editor.commit();
+			}
+
+			public void onNothingSelected(AdapterView<?> arg0) { /* Nothing to do */}
+		});
+		
+		switch(mPreferenceFontSize) {
+		
+		case PREFERENCE_SMALL_FONT_SIZE:
+			mSpinner.setSelection(PREFERENCE_SMALL_FONT_SIZE);
+			break;
+		case PREFERENCE_NORMAL_FONT_SIZE:
+			mSpinner.setSelection(PREFERENCE_NORMAL_FONT_SIZE);
+			break;
+		case PREFERENCE_LARGE_FONT_SIZE:
+			mSpinner.setSelection(PREFERENCE_LARGE_FONT_SIZE);
+			break;
+		}
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
 		
-		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_SETUP);
+		((CardSetsActivity)getActivity()).setHelpContext(HELP_CONTEXT_SETUP);
 	}
 	
 	/*
@@ -170,7 +209,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 			}
 			catch(IllegalArgumentException e) {
 			
-				Log.e(AppConstants.LOG_TAG, "IllegalArgumentException", e);
+				Log.e(LOG_TAG, "IllegalArgumentException", e);
 			}
 			
 			HttpResponse response;
@@ -204,7 +243,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 					}
 					catch(IOException e) {
 
-						Log.e(AppConstants.LOG_TAG, "IOException", e);
+						Log.e(LOG_TAG, "IOException", e);
 					}
 					finally {
 
@@ -218,7 +257,7 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 						}
 						catch(IOException e) {
 
-							Log.e(AppConstants.LOG_TAG, "IOException", e);
+							Log.e(LOG_TAG, "IOException", e);
 						}
 					}
 
@@ -228,15 +267,15 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 			}
 			catch(ClientProtocolException e) {
 
-				Log.e(AppConstants.LOG_TAG, "ClientProtocolException", e);
+				Log.e(LOG_TAG, "ClientProtocolException", e);
 			}
 			catch(IOException e) {
 
-				Log.e(AppConstants.LOG_TAG, "IOException", e);
+				Log.e(LOG_TAG, "IOException", e);
 			}
 			catch(Exception e) {
 
-				Log.e(AppConstants.LOG_TAG, "General Exception", e);
+				Log.e(LOG_TAG, "General Exception", e);
 			}
 
 			return jsonObject;
@@ -262,9 +301,9 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 					if(null != responseType && RESPONSE_OK.equals(responseType)) {
 
 						Toast.makeText(getActivity().getApplicationContext(), R.string.setup_save_user_name_success, Toast.LENGTH_SHORT).show();
-						SharedPreferences sharedPreferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+						SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
 						SharedPreferences.Editor editor = sharedPreferences.edit();
-						editor.putString(AppConstants.PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
+						editor.putString(PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
 						editor.commit();
 
 						((CardSetsActivity)getActivity()).showArrayListFragment(true);
@@ -280,12 +319,12 @@ public class SetupFragment extends Fragment implements FlashCardExchangeData {
 				}
 				catch(JSONException e) {
 
-					Log.e(AppConstants.LOG_TAG, "JSONException", e);
+					Log.e(LOG_TAG, "JSONException", e);
 				}
 			}
 			catch(Exception e) {
 				
-				Log.e(AppConstants.LOG_TAG, "General Exception", e);
+				Log.e(LOG_TAG, "General Exception", e);
 			}
 		}
 	}

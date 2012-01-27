@@ -39,33 +39,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/imageButtonMagnify"
+            android:layout_toLeftOf="@+id/imageButtonList"
             android:layout_marginRight="@dimen/ActionBarItemRightPadding"
             android:background="@null"
             android:src="@drawable/ic_action_edit"
             android:contentDescription="@string/button_edit" />
-        
-		<ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_toLeftOf="@+id/imageButtonMagnify"
-            android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
-            android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
-            android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
-            android:scaleType="fitXY"
-            android:src="@android:drawable/divider_horizontal_bright"
-            android:contentDescription="@string/image_divider" />
-        
-        <ImageButton
-            android:id="@+id/imageButtonMagnify"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/imageButtonList"
-            android:layout_marginRight="@dimen/ActionBarItemRightPadding"
-            android:background="@null"
-            android:src="@drawable/ic_action_magnify"
-            android:contentDescription="@string/button_magnify" />
         
         <ImageView
             android:layout_width="wrap_content"

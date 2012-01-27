@@ -64,7 +64,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imageViewSetupDivider"
+        android:id="@+id/imageViewSetupDivider1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayoutSetupEditButtons"
@@ -81,7 +81,7 @@
         android:id="@+id/relativeLayoutSetupSampleData"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageViewSetupDivider"
+        android:layout_below="@+id/imageViewSetupDivider1"
         android:layout_centerHorizontal="true" >
 
         <TextView
@@ -105,5 +105,35 @@
 
     </RelativeLayout>
     
+    <ImageView
+        android:id="@+id/imageViewSetupDivider2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayoutSetupSampleData"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/image_divider"
+        android:paddingBottom="@dimen/SetupDividerPaddingTopBottom"
+        android:paddingLeft="@dimen/SetupDividerPaddingLeftRight"
+        android:paddingRight="@dimen/SetupDividerPaddingLeftRight"
+        android:paddingTop="@dimen/SetupDividerPaddingTopBottom"
+        android:scaleType="fitXY"
+        android:src="@android:drawable/divider_horizontal_textfield" />
+
+    <TextView
+        android:id="@+id/textViewFontSizePrompt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageViewSetupDivider2"
+        android:layout_marginLeft="@dimen/SetupLeftPadding"
+        android:textSize="@dimen/SetupFontSize"
+        android:text="@string/font_size_prompt"
+    />
+    <Spinner
+        android:id="@+id/spinnerFontSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewFontSizePrompt"
+        android:layout_centerHorizontal="true"
+        android:prompt="@string/font_size_prompt"/>
 
 </RelativeLayout>

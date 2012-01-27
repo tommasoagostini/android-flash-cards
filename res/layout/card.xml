@@ -79,14 +79,4 @@
         android:gravity="center_vertical|center_horizontal"
         android:textColor="@color/font_color_card_info" />
 
-    <ImageButton
-        android:id="@+id/imageButtonWordFoldPage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:background="@null"
-        android:contentDescription="@string/button_backside"
-        android:src="@drawable/page_fold" />
-
 </RelativeLayout>

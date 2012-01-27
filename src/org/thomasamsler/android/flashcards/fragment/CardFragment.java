@@ -52,16 +52,16 @@ public class CardFragment extends Fragment implements AppConstants {
 	private LinearLayout mLinearLayoutEditButtons;
 	private ImageButton mImageButtonSave;
 	private ImageButton mImageButtonCancel;
-	private ImageButton mImageButtonFoldPage;
 	private int mCardPosition;
 	private String mCardQuestion;
 	private String mCardAnswer;
-	
 	private View mCardView;
+	private int mFontSize;
 
-	public static CardFragment newInstance(Card card, int wordIndex, int totalWords) {
+	public static CardFragment newInstance(Card card, int wordIndex, int totalWords, int fontSize) {
 
 		CardFragment pageFragment = new CardFragment();
+		pageFragment.setFontSize(fontSize);
 		Bundle bundle = new Bundle();
 
 		bundle.putString(CARD_QUESTION, card.getQuestion());
@@ -89,8 +89,7 @@ public class CardFragment extends Fragment implements AppConstants {
 		mCardPosition = getArguments().getInt(CARD_POSITION_KEY);
 		
 		mTextViewQuestion = (TextView)mCardView.findViewById(R.id.textViewWord);
-		// TODO: Make font size configurable
-		mTextViewQuestion.setTextSize(NORMAL_TEXT_SIZE);
+		mTextViewQuestion.setTextSize(mFontSize);
 		
 		if(null != mCardQuestion) {
 		
@@ -102,8 +101,7 @@ public class CardFragment extends Fragment implements AppConstants {
 		}
 
 		mTextViewAnswer = (TextView)mCardView.findViewById(R.id.textViewWord2);
-		// TODO: Make font size configurable
-		mTextViewAnswer.setTextSize(NORMAL_TEXT_SIZE);
+		mTextViewAnswer.setTextSize(mFontSize);
 		
 		if(null != mCardAnswer) {
 			
@@ -115,7 +113,7 @@ public class CardFragment extends Fragment implements AppConstants {
 		}
 
 		mEditTextWord = (EditText)mCardView.findViewById(R.id.editTextWord);
-		mEditTextWord.setTextSize(NORMAL_TEXT_SIZE);
+		mEditTextWord.setTextSize(mFontSize);
 
 		mLinearLayoutEditButtons = (LinearLayout)mCardView.findViewById(R.id.linearLayoutEditButtons);
 
@@ -190,26 +188,6 @@ public class CardFragment extends Fragment implements AppConstants {
 				mLinearLayoutEditButtons.setVisibility(View.INVISIBLE);
 			}
 		});
-
-		mImageButtonFoldPage = (ImageButton)mCardView.findViewById(R.id.imageButtonWordFoldPage);
-		
-		/*
-		 * We show the fold page button for the first card and hide if for the 
-		 * other ones. The view pager's onPageScrollStateChanged() event will 
-		 * hide/show the button as needed
-		 */
-		if(0 != mCardPosition) {
-		
-			mImageButtonFoldPage.setVisibility(View.INVISIBLE);
-		}
-		
-		mImageButtonFoldPage.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(final View v) {
-				
-				turnPage(mCardView);
-			}
-		});
 		
 		// Set the bottom word counter
 		mCounterTextView = (TextView) mCardView.findViewById(R.id.textViewWordNumber);
@@ -231,6 +209,17 @@ public class CardFragment extends Fragment implements AppConstants {
 		return mCardView;
 	}
 
+	public void setFontSize(int size) {
+		
+		mFontSize = size;
+
+		if(null != mTextViewQuestion && null != mTextViewAnswer) {
+		
+			mTextViewQuestion.setTextSize(mFontSize);
+			mTextViewAnswer.setTextSize(mFontSize);
+		}
+	}
+	
 	public void onEdit() {
 		
 		mTextViewQuestion.setVisibility(View.INVISIBLE);
@@ -249,40 +238,6 @@ public class CardFragment extends Fragment implements AppConstants {
 		mLinearLayoutEditButtons.setVisibility(View.VISIBLE);
 	}
 	
-	private void onMagnifyFont() {
-		
-		mTextViewQuestion.setTextSize(LARGE_TEXT_SIZE);
-		mTextViewAnswer.setTextSize(LARGE_TEXT_SIZE);
-	}
-	
-	private void onReduceFont() {
-		
-		mTextViewQuestion.setTextSize(NORMAL_TEXT_SIZE);
-		mTextViewAnswer.setTextSize(NORMAL_TEXT_SIZE);
-	}
-	
-	public void doAction(int action) {
-		
-		switch(action) {
-		
-		case ACTION_HIDE_FOLD_PAGE:
-			mImageButtonFoldPage.setVisibility(View.INVISIBLE);
-			break;
-			
-		case ACTION_SHOW_FOLD_PAGE:
-			mImageButtonFoldPage.setVisibility(View.VISIBLE);
-			break;
-			
-		case ACTION_MAGNIFY_FONT:
-			onMagnifyFont();
-			break;
-			
-		case ACTION_REDUCE_FONT:
-			onReduceFont();
-			break;
-		}
-	}
-	
 	private void turnPage(final View view) {
 	
 		/*
@@ -292,8 +247,6 @@ public class CardFragment extends Fragment implements AppConstants {
 			
 			return;
 		}
-		
-		mImageButtonFoldPage.setVisibility(View.INVISIBLE);
 		
 		final Animation flip1 = AnimationUtils.loadAnimation(view.getContext(), R.anim.flip1);
 		final Animation flip2 = AnimationUtils.loadAnimation(view.getContext(), R.anim.flip2);
@@ -328,18 +281,6 @@ public class CardFragment extends Fragment implements AppConstants {
 		});
 		
 		view.startAnimation(flip1);
-		
-		flip2.setAnimationListener(new AnimationListener() {
-			
-			public void onAnimationStart(Animation animation) { /* Nothing to do here */}
-			
-			public void onAnimationRepeat(Animation animation) { /* Nothing to do here */}
-			
-			public void onAnimationEnd(Animation animation) {
-				
-				mImageButtonFoldPage.setVisibility(View.VISIBLE);
-			}
-		});
 	}
 	
 	private boolean isValid(String input) {
