@@ -31,7 +31,9 @@ import org.thomasamsler.android.flashcards.fragment.CardFragment;
 import org.thomasamsler.android.flashcards.model.Card;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -60,9 +62,9 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 	private List<Integer> mAvailableCardPositionList;
 	private long mCardSetId;
 	private String mCardSetTitle;
-	private boolean mMagnify = false;
 	private int mNumberOfCards;
 	private int mHelpContext;
+	private int mFontSize;
 	
 	private DataSource mDataSource;
 	
@@ -83,48 +85,6 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 			public void onClick(View v) {
 				
 				finish();
-			}
-		});
-		
-		/*
-		 * When the user taps on the magnify image button, it will increase the 
-		 * text size of the words.
-		 */
-		final ImageButton imageButtonMagnify = (ImageButton)findViewById(R.id.imageButtonMagnify);
-		imageButtonMagnify.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-
-				// Create a boolean toggle
-				mMagnify ^= true;
-
-				// Change button image between magnify and reduce
-				if(mMagnify) {
-				
-					imageButtonMagnify.setImageResource(R.drawable.ic_action_reduce);
-				}
-				else {
-					
-					imageButtonMagnify.setImageResource(R.drawable.ic_action_magnify);
-				}
-
-				// Get CardFragment and magnify or reduce its font size
-				int currentIndex = mViewPager.getCurrentItem();
-				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
-				
-				if(null == cardFragment) {
-					
-					return;
-				}
-				
-				if(mMagnify) {
-					
-					cardFragment.doAction(ACTION_MAGNIFY_FONT);
-				}
-				else {
-					
-					cardFragment.doAction(ACTION_REDUCE_FONT);
-				}
 			}
 		});
 		
@@ -184,32 +144,13 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 					return;
 				}
 				
-				if(mMagnify) {
-					
-					cardFragment.doAction(ACTION_MAGNIFY_FONT);
-				}
-				else {
-					
-					cardFragment.doAction(ACTION_REDUCE_FONT);
-				}
+				cardFragment.setFontSize(mFontSize);
 			}
 
 			public void onPageScrolled(int arg0, float arg1, int arg2) { /* Nothing to do here */ }
 			
-			public void onPageScrollStateChanged(int state) {
-				
-				int currentIndex = mViewPager.getCurrentItem();
-				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
+			public void onPageScrollStateChanged(int state) { /* Nothing to do here */ }
 
-				if(null != cardFragment && ViewPager.SCROLL_STATE_DRAGGING == state) {
-
-					cardFragment.doAction(ACTION_HIDE_FOLD_PAGE);
-				}
-				else if(null != cardFragment && ViewPager.SCROLL_STATE_IDLE == state) {
-
-					cardFragment.doAction(ACTION_SHOW_FOLD_PAGE);
-				}
-			}
 		});
 		
 		mRandom = new Random();
@@ -247,6 +188,12 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 	    	return true;
 	    case R.id.menu_card_help:
 	    	showHelp();
+	    	return true;
+	    case R.id.menu_card_magnify:
+	    	zoom(ACTION_MAGNIFY_FONT);
+	    	return true;
+	    case R.id.menu_card_reduce:
+	    	zoom(ACTION_REDUCE_FONT);
 	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -291,6 +238,31 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 		mDataSource.updateCard(card);
 	}
 
+	/*
+	 * Menu method
+	 */
+	private void zoom(int action) {
+		
+		int currentIndex = mViewPager.getCurrentItem();
+		CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
+	
+		if(null == cardFragment) {
+			
+			return;
+		}
+		
+		if(ACTION_MAGNIFY_FONT == action) {
+			
+			mFontSize += FONT_SIZE_ZOOM_CHANGE;
+		}
+		else if(ACTION_REDUCE_FONT == action) {
+			
+			mFontSize -= FONT_SIZE_ZOOM_CHANGE;
+		}
+		
+		cardFragment.setFontSize(mFontSize);
+	}
+	
 	/*
 	 * Menu method
 	 */
@@ -358,17 +330,6 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 		}
-		else {
-			
-			// Make sure that we show the fold page  button
-			currentIndex = mViewPager.getCurrentItem();
-			CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
-
-			if(null != cardFragment) {
-
-				cardFragment.doAction(ACTION_SHOW_FOLD_PAGE);
-			}
-		}
 	}
 	
 	/*
@@ -378,8 +339,25 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 
 		private Map<Integer, CardFragment> mPageReferenceMap = new HashMap<Integer, CardFragment>();
 		
+		SharedPreferences mSharedPreferences = null;
+		
 		public MyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
+			
+			mSharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+			int fontSizePreference = mSharedPreferences.getInt(PREFERENCE_FONT_SIZE, NORMAL_FONT_SIZE);
+			
+			switch(fontSizePreference) {
+			case PREFERENCE_SMALL_FONT_SIZE:
+				mFontSize = SMALL_FONT_SIZE;
+				break;
+			case PREFERENCE_NORMAL_FONT_SIZE:
+				mFontSize = NORMAL_FONT_SIZE;
+				break;
+			case PREFERENCE_LARGE_FONT_SIZE:
+				mFontSize = LARGE_FONT_SIZE;
+				break;
+			}
 		}
 
 		@Override
@@ -393,7 +371,7 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 				mRandomCardPositionList.set(index, mAvailableCardPositionList.remove(randomNum));
 			}
 			
-			CardFragment cardFragment = CardFragment.newInstance(mCards.get(mRandomCardPositionList.get(index)), index, mNumberOfCards);
+			CardFragment cardFragment = CardFragment.newInstance(mCards.get(mRandomCardPositionList.get(index)), index, mNumberOfCards, mFontSize);
 			mPageReferenceMap.put(Integer.valueOf(index), cardFragment);
 			
 			return cardFragment;

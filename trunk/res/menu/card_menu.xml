@@ -13,5 +13,14 @@
         android:id="@+id/menu_card_help"
         android:icon="@android:drawable/ic_menu_help"
         android:title="@string/menu_card_set_help" />
+    
+    <item
+        android:id="@+id/menu_card_magnify"
+        android:icon="@drawable/ic_menu_zoom"
+        android:title="@string/menu_card_magnify" />
 
+	<item
+        android:id="@+id/menu_card_reduce"
+        android:icon="@drawable/ic_menu_zoom"
+        android:title="@string/menu_card_reduce" />
 </menu>
