@@ -33,7 +33,7 @@
     <string name="delete_card_set_dialog_message">Are you sure you want to delete the card set?</string>
     <string name="delete_card_set_dialog_ok">Yes</string>
     <string name="delete_card_set_dialog_cancel">Cancel</string>
-    <string name="setup_user_name">User Name:</string>
+    <string name="setup_user_name">Enter User Name</string>
     <string name="setup_title">Flashcard Exchange</string>
     <string name="setup_save_user_name_success">Saved User Name</string>
     <string name="setup_save_user_name_error">Flashcard Exchange Error: User name is unknown</string>
