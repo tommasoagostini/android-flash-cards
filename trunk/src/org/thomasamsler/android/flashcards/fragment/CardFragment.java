@@ -88,7 +88,7 @@ public class CardFragment extends Fragment implements AppConstants {
 		mCardAnswer = getArguments().getString(CARD_ANSWER);
 		mCardPosition = getArguments().getInt(CARD_POSITION_KEY);
 		
-		mTextViewQuestion = (TextView)mCardView.findViewById(R.id.textViewWord);
+		mTextViewQuestion = (TextView)mCardView.findViewById(R.id.textViewQuestion);
 		mTextViewQuestion.setTextSize(mFontSize);
 		
 		if(null != mCardQuestion) {
@@ -100,7 +100,7 @@ public class CardFragment extends Fragment implements AppConstants {
 			mTextViewQuestion.setText("");
 		}
 
-		mTextViewAnswer = (TextView)mCardView.findViewById(R.id.textViewWord2);
+		mTextViewAnswer = (TextView)mCardView.findViewById(R.id.textViewAnswer);
 		mTextViewAnswer.setTextSize(mFontSize);
 		
 		if(null != mCardAnswer) {
@@ -235,6 +235,7 @@ public class CardFragment extends Fragment implements AppConstants {
 		}
  		
 		mEditTextWord.setVisibility(View.VISIBLE);
+		mEditTextWord.setSelection(mEditTextWord.getText().length());
 		mLinearLayoutEditButtons.setVisibility(View.VISIBLE);
 	}
 	

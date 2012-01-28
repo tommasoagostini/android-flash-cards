@@ -5,22 +5,18 @@
     android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/textViewWord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:id="@+id/textViewQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="@color/font_color"
         android:textStyle="bold"
         android:typeface="normal" />
     
     <TextView
-        android:id="@+id/textViewWord2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:id="@+id/textViewAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center_vertical|center_horizontal"
         android:textColor="@color/font_color"
         android:textStyle="bold"
@@ -29,23 +25,24 @@
 
     <EditText
         android:id="@+id/editTextWord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:gravity="center_vertical|center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|left"
+        android:layout_marginBottom="@dimen/EditWordPaddingTopBottom"
+        android:layout_marginTop="@dimen/EditWordPaddingTopBottom"
+        android:layout_marginLeft="@dimen/EditWordPaddingLeftRight"
+        android:layout_marginRight="@dimen/EditWordPaddingLeftRight"
         android:textColor="@color/font_color"
-        android:textStyle="bold"
         android:typeface="normal"
         android:visibility="invisible"
-        android:inputType="text" />
+        android:inputType="textMultiLine" />
 
     
     <LinearLayout
         android:id="@+id/linearLayoutEditButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextWord"
+        android:layout_above="@+id/textViewWordNumber"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/SaveButtonTopPadding"
         android:visibility="invisible" >
