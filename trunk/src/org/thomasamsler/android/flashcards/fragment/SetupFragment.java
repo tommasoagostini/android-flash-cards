@@ -143,7 +143,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 		mCheckBoxShowSample.setChecked(mPreferenceShowSample);
 		
 		
-		mPreferenceFontSize = mPreferences.getInt(PREFERENCE_FONT_SIZE, NORMAL_FONT_SIZE);
+		mPreferenceFontSize = mPreferences.getInt(PREFERENCE_FONT_SIZE, PREFERENCE_NORMAL_FONT_SIZE);
 		mSpinner = (Spinner) getActivity().findViewById(R.id.spinnerFontSize);
 		mSpinnerAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.font_size_array, android.R.layout.simple_spinner_item);
 		mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -152,7 +152,6 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 
 			public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 				
-				Log.i("DEBUG" , "selection / position = " + parent.getItemAtPosition(pos).toString() + " / " + pos);
 				SharedPreferences.Editor editor = mPreferences.edit();
 				editor.putInt(PREFERENCE_FONT_SIZE, pos);
 				editor.commit();
