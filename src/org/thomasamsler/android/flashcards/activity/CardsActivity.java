@@ -345,7 +345,7 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 			super(fm);
 			
 			mSharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-			int fontSizePreference = mSharedPreferences.getInt(PREFERENCE_FONT_SIZE, NORMAL_FONT_SIZE);
+			int fontSizePreference = mSharedPreferences.getInt(PREFERENCE_FONT_SIZE, PREFERENCE_NORMAL_FONT_SIZE);
 			
 			switch(fontSizePreference) {
 			case PREFERENCE_SMALL_FONT_SIZE:
@@ -356,6 +356,9 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 				break;
 			case PREFERENCE_LARGE_FONT_SIZE:
 				mFontSize = LARGE_FONT_SIZE;
+				break;
+			default:
+				mFontSize = NORMAL_FONT_SIZE;
 				break;
 			}
 		}
