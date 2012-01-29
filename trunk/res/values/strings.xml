@@ -43,6 +43,7 @@
     <string name="util_connectivity_error">Cannot connect to the Internet</string>
     <string name="util_flash_card_exchange_api_error">Flashcard Exchange Error</string>
     <string name="delete_last_card_message">Deleted last card from card set:\n%1$s</string>
+    <string name="external_data_message_error">Application error: Getting external data</string>
     
     <string name="about_title">Flash Cards</string>
     <string name="about_author">Thomas Amsler\ntamsler@gmail.com</string>
