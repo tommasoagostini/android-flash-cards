@@ -42,6 +42,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	
@@ -116,7 +117,15 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	        return true;
 
 	    case R.id.menu_card_set_external:
-	    	mArrayListFragment.getFlashCardExchangeCardSets();
+	    	
+	    	if(null == mArrayListFragment) {
+	    		
+	    		Toast.makeText(getApplicationContext(), R.string.external_data_message_error, Toast.LENGTH_SHORT).show();
+	    	}
+	    	else {
+	    		
+	    		mArrayListFragment.getFlashCardExchangeCardSets();
+	    	}
 	    	return true;
 	    	
 	    case R.id.menu_card_set_about:
