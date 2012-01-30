@@ -53,10 +53,10 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	private AddCardFragment mAddCardFragment;
 	private SetupFragment mSetupFragment;
 	private AboutFragment mAboutFragment;
-
 	private int mHelpContext;
-	
 	private DataSource mDataSource;
+	private int mActiveFragmentReference;
+	
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,15 +117,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	        return true;
 
 	    case R.id.menu_card_set_external:
-	    	
-	    	if(null == mArrayListFragment) {
-	    		
-	    		Toast.makeText(getApplicationContext(), R.string.external_data_message_error, Toast.LENGTH_SHORT).show();
-	    	}
-	    	else {
-	    		
-	    		mArrayListFragment.getFlashCardExchangeCardSets();
-	    	}
+	    	getExternal();
 	    	return true;
 	    	
 	    case R.id.menu_card_set_about:
@@ -187,6 +179,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         fragmentTransaction.commit();
         
         mHelpContext = HELP_CONTEXT_CARD_SET_LIST;
+        mActiveFragmentReference = LIST_FRAGMENT;
 	}
 	
 	public void showAddCardFragment(CardSet cardSet) {
@@ -211,6 +204,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         fragmentTransaction.commit();
         
         mHelpContext = HELP_CONTEXT_ADD_CARD;
+        mActiveFragmentReference = ADD_FRAGMENT;
 	}
 	
 	public void showSetupFragment() {
@@ -234,6 +228,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         fragmentTransaction.commit();
         
         mHelpContext = HELP_CONTEXT_SETUP;
+        mActiveFragmentReference = SETUP_FRAGMENT;
 	}
 	
 	protected void showAboutFragment() {
@@ -257,6 +252,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         fragmentTransaction.commit();
         
         mHelpContext = HELP_CONTEXT_DEFAULT;
+        mActiveFragmentReference = ABOUT_FRAGMENT;
 	}
 	
 	public void showCardsPagerActivity(CardSet cardSet) {
@@ -330,5 +326,22 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 
 			return false;
 		}
+	}
+	
+	private void getExternal() {
+		
+		if(mActiveFragmentReference == SETUP_FRAGMENT) {
+			
+			showArrayListFragment(true);
+		}
+		
+		if(null == mArrayListFragment) {
+    		
+    		Toast.makeText(getApplicationContext(), R.string.external_data_message_error, Toast.LENGTH_SHORT).show();
+    	}
+    	else {
+    		
+    		mArrayListFragment.getFlashCardExchangeCardSets();
+    	}
 	}
 }
