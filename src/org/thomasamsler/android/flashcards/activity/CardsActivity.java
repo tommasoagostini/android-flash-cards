@@ -17,10 +17,10 @@
 package org.thomasamsler.android.flashcards.activity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
@@ -139,12 +139,10 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 
 				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
 				
-				if(null == cardFragment) {
+				if(null != cardFragment) {
 					
-					return;
+					cardFragment.setFontSize(mFontSize);
 				}
-				
-				cardFragment.setFontSize(mFontSize);
 			}
 
 			public void onPageScrolled(int arg0, float arg1, int arg2) { /* Nothing to do here */ }
@@ -337,7 +335,7 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 	 */
 	private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-		private Map<Integer, CardFragment> mPageReferenceMap = new HashMap<Integer, CardFragment>();
+		private Map<Integer, CardFragment> mPageReferenceMap = new WeakHashMap<Integer, CardFragment>();
 		
 		SharedPreferences mSharedPreferences = null;
 		

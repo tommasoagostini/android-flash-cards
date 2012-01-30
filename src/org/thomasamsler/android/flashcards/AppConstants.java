@@ -65,4 +65,9 @@ public interface AppConstants {
 	
 	public static final int INVALID_CARD_SET_ID = -1;
 	
+	// Fragment References
+	public static final int LIST_FRAGMENT = 0;
+	public static final int ADD_FRAGMENT = 1;
+	public static final int SETUP_FRAGMENT = 2;
+	public static final int ABOUT_FRAGMENT = 3;
 }
