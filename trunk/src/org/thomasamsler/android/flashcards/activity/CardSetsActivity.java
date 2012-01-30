@@ -39,9 +39,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 public class CardSetsActivity extends FragmentActivity implements AppConstants {
@@ -98,41 +95,6 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		super.onPause();
 	}
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.card_set_menu, menu);
-	    return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		
-	    // Handle item selection
-	    switch (item.getItemId()) {
-	    
-	    case R.id.menu_card_set_setup:
-	    	showSetupFragment();
-	        return true;
-
-	    case R.id.menu_card_set_external:
-	    	getExternal();
-	    	return true;
-	    	
-	    case R.id.menu_card_set_about:
-	    	showAboutFragment();
-	    	return true;
-	    	
-	    case R.id.menu_card_set_help:
-	    	showHelp();
-	    	return true;
-	    	
-	    default:
-	        return super.onOptionsItemSelected(item);
-	    }
-	}
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -231,7 +193,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         mActiveFragmentReference = SETUP_FRAGMENT;
 	}
 	
-	protected void showAboutFragment() {
+	public void showAboutFragment() {
 		
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -265,7 +227,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		startActivityForResult(intent, 0);
 	}
 	
-	protected void showHelp() {
+	public void showHelp() {
 		
 		HelpDialog helpDialog = new HelpDialog(this);
 		
@@ -292,6 +254,23 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		}
 		
 		helpDialog.show();
+	}
+	
+	public void getExternal() {
+		
+		if(mActiveFragmentReference == SETUP_FRAGMENT) {
+			
+			showArrayListFragment(true);
+		}
+		
+		if(null == mArrayListFragment) {
+    		
+    		Toast.makeText(getApplicationContext(), R.string.external_data_message_error, Toast.LENGTH_SHORT).show();
+    	}
+    	else {
+    		
+    		mArrayListFragment.getFlashCardExchangeCardSets();
+    	}
 	}
 	
 	public void addCardSet(CardSet cardSet) {
@@ -326,22 +305,5 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 
 			return false;
 		}
-	}
-	
-	private void getExternal() {
-		
-		if(mActiveFragmentReference == SETUP_FRAGMENT) {
-			
-			showArrayListFragment(true);
-		}
-		
-		if(null == mArrayListFragment) {
-    		
-    		Toast.makeText(getApplicationContext(), R.string.external_data_message_error, Toast.LENGTH_SHORT).show();
-    	}
-    	else {
-    		
-    		mArrayListFragment.getFlashCardExchangeCardSets();
-    	}
 	}
 }

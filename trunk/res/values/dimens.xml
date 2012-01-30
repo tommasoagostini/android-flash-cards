@@ -27,4 +27,6 @@
     <dimen name="SetupDividerPaddingTopBottom">10dp</dimen>
     <dimen name="EditWordPaddingTopBottom">70dp</dimen>
     <dimen name="EditWordPaddingLeftRight">10dp</dimen>
+    <dimen name="ListOverflowPaddingRight">10dp</dimen>
+    <dimen name="ListOverflowWidth">150dp</dimen>
 </resources>

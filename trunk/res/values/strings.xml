@@ -60,6 +60,7 @@
     <string name="button_edit">Edit</string>
 	<string name="button_magnify">Magnify</string>
 	<string name="button_backside">Backside</string>
+	<string name="button_overflow">Overflow</string>
     <string name="image_divider">Divider</string>
     
     <string name="help_dialog_title">Help</string>

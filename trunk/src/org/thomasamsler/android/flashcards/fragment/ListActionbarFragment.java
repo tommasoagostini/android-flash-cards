@@ -25,20 +25,36 @@ import org.thomasamsler.android.flashcards.model.CardSet;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ListActionbarFragment extends Fragment {
 	
+	/*
+	 * These values need to be in sync with values present in card_set_menu.xml
+	 */
+	private final int ACTION_SETUP = 0;
+	private final int ACTION_ABOUT = 1;
+	private final int ACTION_FCE = 2;
+	private final int ACTION_HELP = 3;
+	
 	private DataSource mDataSource;
-
+	private ListView mListViewOverflow;
+	private String[] mOverflowActions;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
@@ -110,6 +126,68 @@ public class ListActionbarFragment extends Fragment {
 				
 				AlertDialog alert = builder.create();
 				alert.show();
+			}
+		});
+		
+		ImageButton imageButtonOverflow = (ImageButton)getActivity().findViewById(R.id.imageButtonOverflow);
+		imageButtonOverflow.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				
+				if(mListViewOverflow.getVisibility() == View.VISIBLE) {
+					
+					mListViewOverflow.setVisibility(View.GONE);
+				}
+				else {
+					
+					mListViewOverflow.setVisibility(View.VISIBLE);
+				}
+			}
+		});
+		
+		mOverflowActions = getResources().getStringArray(R.array.card_set_actions);
+		
+		mListViewOverflow = (ListView)getActivity().findViewById(R.id.listViewOverflow);
+		mListViewOverflow.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, mOverflowActions) {
+			
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				
+				View view = super.getView(position, convertView, parent);
+				
+				((TextView)view).setTextColor(Color.WHITE);
+				
+				return view;
+			}
+		});
+		mListViewOverflow.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+				mListViewOverflow.setVisibility(View.GONE);
+				
+				switch(position) {
+				
+				case ACTION_SETUP:
+					((CardSetsActivity)getActivity()).showSetupFragment();
+					break;
+					
+				case ACTION_ABOUT:
+					((CardSetsActivity)getActivity()).showAboutFragment();
+					break;
+					
+				case ACTION_FCE:
+					((CardSetsActivity)getActivity()).getExternal();
+					break;
+					
+				case ACTION_HELP:
+					((CardSetsActivity)getActivity()).showHelp();
+					break;
+					
+				default:
+					// TODO:
+					break;
+				}
 			}
 		});
 	}

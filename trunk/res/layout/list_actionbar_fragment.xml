@@ -23,12 +23,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/imageView1"
-        android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+        android:layout_toLeftOf="@+id/imageButtonNewCardSet"
+        android:paddingRight="@dimen/ActionBarItemRightPadding"
         android:visibility="gone" />
 
     <ImageView
-        android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_toLeftOf="@+id/imageButtonNewCardSet"
@@ -43,11 +42,33 @@
         android:id="@+id/imageButtonNewCardSet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/imageButtonOverflow"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/ActionBarItemRightPadding"
+        android:background="@null"
+        android:src="@drawable/ic_action_new"
+        android:contentDescription="@string/button_new_card_set" />
+    
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_toLeftOf="@+id/imageButtonOverflow"
+        android:paddingBottom="@dimen/ActionBarSeparatorBottomPadding"
+        android:paddingRight="@dimen/ActionBarSeparatorRightPadding"
+        android:paddingTop="@dimen/ActionBarSeparatorTopPadding"
+        android:scaleType="fitXY"
+        android:src="@android:drawable/divider_horizontal_bright"
+        android:contentDescription="@string/image_divider" />
+    
+    <ImageButton
+        android:id="@+id/imageButtonOverflow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/ActionBarItemRightBorderPadding"
         android:background="@null"
-        android:src="@drawable/ic_action_new"
-        android:contentDescription="@string/button_new_card_set" />
+        android:src="@drawable/ic_action_overflow"
+        android:contentDescription="@string/button_overflow" />
 
 </RelativeLayout>
