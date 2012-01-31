@@ -18,6 +18,7 @@ package org.thomasamsler.android.flashcards.fragment;
 
 import java.util.List;
 
+import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
 import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
@@ -41,7 +42,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ListActionbarFragment extends Fragment {
+public class ActionbarFragment extends Fragment implements AppConstants {
 	
 	/*
 	 * These values need to be in sync with values present in card_set_menu.xml
@@ -55,10 +56,25 @@ public class ListActionbarFragment extends Fragment {
 	private ListView mListViewOverflow;
 	private String[] mOverflowActions;
 	
+	private ImageButton mImageButtonEdit;
+	private ImageButton mImageButtonNewCardSet;
+	private ImageButton mImageButtonList;
+	private ImageButton mImageButtonOverflow;
+	
+	private int mFragmentType;
+	
+	public static ActionbarFragment newInstance(int fragmentType) {
+	
+		ActionbarFragment listActionbarFragment = new ActionbarFragment();
+		listActionbarFragment.setFragmentType(fragmentType);
+
+		return listActionbarFragment;
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
-		return inflater.inflate(R.layout.list_actionbar_fragment, container, false);
+		return inflater.inflate(R.layout.actionbar_fragment, container, false);
 	}
 	
 	@Override
@@ -67,8 +83,33 @@ public class ListActionbarFragment extends Fragment {
 		
 		mDataSource = ((CardSetsActivity)getActivity()).getDataSource();
 		
-		ImageButton imageButtonNewCardSet = (ImageButton)getActivity().findViewById(R.id.imageButtonNewCardSet);
-		imageButtonNewCardSet.setOnClickListener(new OnClickListener() {
+		mImageButtonEdit = (ImageButton)getActivity().findViewById(R.id.imageButtonEdit);
+		mImageButtonEdit.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+
+//				int currentIndex = mViewPager.getCurrentItem();
+//				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
+//
+//				if(null != cardFragment) {
+//
+//					cardFragment.onEdit();
+//				}
+			}
+		});
+		
+		mImageButtonList = (ImageButton)getActivity().findViewById(R.id.imageButtonList);
+		mImageButtonList.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				
+				((CardSetsActivity)getActivity()).showArrayListFragment(true);
+			}
+		});
+		
+		
+		mImageButtonNewCardSet = (ImageButton)getActivity().findViewById(R.id.imageButtonNewCardSet);
+		mImageButtonNewCardSet.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
 				
@@ -129,8 +170,8 @@ public class ListActionbarFragment extends Fragment {
 			}
 		});
 		
-		ImageButton imageButtonOverflow = (ImageButton)getActivity().findViewById(R.id.imageButtonOverflow);
-		imageButtonOverflow.setOnClickListener(new OnClickListener() {
+		mImageButtonOverflow = (ImageButton)getActivity().findViewById(R.id.imageButtonOverflow);
+		mImageButtonOverflow.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
 				
@@ -160,6 +201,7 @@ public class ListActionbarFragment extends Fragment {
 				return view;
 			}
 		});
+		
 		mListViewOverflow.setOnItemClickListener(new OnItemClickListener() {
 
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -190,5 +232,72 @@ public class ListActionbarFragment extends Fragment {
 				}
 			}
 		});
+		
+		/*
+		 * Now we configure the actionbar for the associated fragment
+		 */
+		switch(mFragmentType) {
+			
+			case SETUP_FRAGMENT:
+				configureForSetup();
+				break;
+			case LIST_FRAGMENT:
+				configureForList();
+				break;
+			case ADD_FRAGMENT:
+				configureForAdd();
+				break;
+			case ABOUT_FRAGMENT:
+				configureForAbout();
+				break;
+			default:
+				// TODO:
+				break;
+		}
+	}
+	
+	public void configureForAdd() {
+		
+		mImageButtonEdit.setVisibility(View.GONE);
+		mImageButtonNewCardSet.setVisibility(View.GONE);
+		mImageButtonList.setVisibility(View.VISIBLE);
+		mImageButtonOverflow.setVisibility(View.VISIBLE);
+	}
+	
+	public void configureForList() {
+		
+		mImageButtonEdit.setVisibility(View.GONE);
+		mImageButtonNewCardSet.setVisibility(View.VISIBLE);
+		mImageButtonList.setVisibility(View.GONE);
+		mImageButtonOverflow.setVisibility(View.VISIBLE);
+	}
+	
+	public void configureForSetup() {
+		
+		mImageButtonEdit.setVisibility(View.GONE);
+		mImageButtonNewCardSet.setVisibility(View.GONE);
+		mImageButtonList.setVisibility(View.VISIBLE);
+		mImageButtonOverflow.setVisibility(View.VISIBLE);
+	}
+	
+	public void configureForAbout() {
+		
+		mImageButtonEdit.setVisibility(View.GONE);
+		mImageButtonNewCardSet.setVisibility(View.GONE);
+		mImageButtonList.setVisibility(View.VISIBLE);
+		mImageButtonOverflow.setVisibility(View.VISIBLE);
+	}
+	
+	public void configureForeCards() {
+		
+		mImageButtonEdit.setVisibility(View.VISIBLE);
+		mImageButtonNewCardSet.setVisibility(View.GONE);
+		mImageButtonList.setVisibility(View.VISIBLE);
+		mImageButtonOverflow.setVisibility(View.VISIBLE);
+	}
+	
+	public void setFragmentType(int fragmentType) {
+		
+		this.mFragmentType = fragmentType;
 	}
 }
