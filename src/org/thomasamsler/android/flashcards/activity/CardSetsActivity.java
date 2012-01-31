@@ -22,11 +22,9 @@ import org.thomasamsler.android.flashcards.conversion.FileToDbConversion;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.dialog.HelpDialog;
 import org.thomasamsler.android.flashcards.fragment.AboutFragment;
-import org.thomasamsler.android.flashcards.fragment.AddActionbarFragment;
 import org.thomasamsler.android.flashcards.fragment.AddCardFragment;
 import org.thomasamsler.android.flashcards.fragment.ArrayListFragment;
-import org.thomasamsler.android.flashcards.fragment.ListActionbarFragment;
-import org.thomasamsler.android.flashcards.fragment.SetupActionbarFragment;
+import org.thomasamsler.android.flashcards.fragment.ActionbarFragment;
 import org.thomasamsler.android.flashcards.fragment.SetupFragment;
 import org.thomasamsler.android.flashcards.model.CardSet;
 
@@ -43,9 +41,7 @@ import android.widget.Toast;
 
 public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	
-	private ListActionbarFragment mListActionbarFragment;
-	private SetupActionbarFragment mSetupActionbarFragment;
-	private AddActionbarFragment mAddActionbarFragment;
+	private ActionbarFragment mListActionbarFragment;
 	private ArrayListFragment mArrayListFragment;
 	private AddCardFragment mAddCardFragment;
 	private SetupFragment mSetupFragment;
@@ -120,17 +116,21 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         
+        if(null == mListActionbarFragment) {
+
+        	mListActionbarFragment = ActionbarFragment.newInstance(LIST_FRAGMENT);
+        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
+        }
+        else {
+        	
+        	mListActionbarFragment.configureForList();
+        }
+        
         if(null == mArrayListFragment) {
         	
         	mArrayListFragment = new ArrayListFragment();
         }
 
-        if(null == mListActionbarFragment) {
-
-        	mListActionbarFragment = new ListActionbarFragment();
-        }
-
-        fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
         fragmentTransaction.replace(R.id.fragmentContainer, mArrayListFragment);
         
         if(addToBackStack) {
@@ -149,18 +149,23 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         
+        if(null == mListActionbarFragment) {
+
+        	mListActionbarFragment = ActionbarFragment.newInstance(ADD_FRAGMENT);
+        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
+        }
+        else {
+        	
+        	 mListActionbarFragment.configureForAdd();
+        }
+        
         if(null == mAddCardFragment) {
         	
         	mAddCardFragment = new AddCardFragment();
         }
         
-        if(null == mAddActionbarFragment) {
-        	
-        	mAddActionbarFragment = new AddActionbarFragment();
-        }
-        
         mAddCardFragment.setCardSet(cardSet);
-        fragmentTransaction.replace(R.id.actionbarContainer, mAddActionbarFragment);
+        
         fragmentTransaction.replace(R.id.fragmentContainer, mAddCardFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -174,17 +179,21 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         
+        if(null == mListActionbarFragment) {
+
+        	mListActionbarFragment = ActionbarFragment.newInstance(SETUP_FRAGMENT);
+        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
+        }
+        else {
+        	
+        	mListActionbarFragment.configureForSetup();
+        }
+        
         if(null == mSetupFragment) {
         	
         	mSetupFragment = new SetupFragment();
         }
 
-        if(null == mSetupActionbarFragment) {
-
-        	mSetupActionbarFragment = new SetupActionbarFragment();
-        }
-        
-        fragmentTransaction.replace(R.id.actionbarContainer, mSetupActionbarFragment);
         fragmentTransaction.replace(R.id.fragmentContainer, mSetupFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -198,17 +207,20 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 		FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         
+        if(null == mListActionbarFragment) {
+
+        	mListActionbarFragment = ActionbarFragment.newInstance(ABOUT_FRAGMENT);
+        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
+        }
+        else {
+        	 mListActionbarFragment.configureForAbout();
+        }
+        
         if(null == mAboutFragment) {
         	
         	mAboutFragment = new AboutFragment();
         }
 
-        if(null == mSetupActionbarFragment) {
-
-        	mSetupActionbarFragment = new SetupActionbarFragment();
-        }
-        
-        fragmentTransaction.replace(R.id.actionbarContainer, mSetupActionbarFragment);
         fragmentTransaction.replace(R.id.fragmentContainer, mAboutFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
