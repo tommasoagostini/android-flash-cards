@@ -70,6 +70,7 @@ public interface AppConstants {
 	public static final int ADD_FRAGMENT = 1;
 	public static final int SETUP_FRAGMENT = 2;
 	public static final int ABOUT_FRAGMENT = 3;
+	public static final int CARDS_FRAGMENT = 4;
 	
 	public static final String FRAGMENT_TYPE = "ft";
 }

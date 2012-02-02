@@ -14,7 +14,7 @@
  * limitations under the License. 
  */
 
-package org.thomasamsler.android.flashcards.activity;
+package org.thomasamsler.android.flashcards.pager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,33 +24,25 @@ import java.util.WeakHashMap;
 
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
+import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.dialog.HelpDialog;
-import org.thomasamsler.android.flashcards.external.FlashCardExchangeData;
 import org.thomasamsler.android.flashcards.fragment.CardFragment;
 import org.thomasamsler.android.flashcards.model.Card;
+import org.thomasamsler.android.flashcards.model.CardSet;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class CardsActivity extends FragmentActivity implements AppConstants, FlashCardExchangeData {
+public class CardsPager implements AppConstants {
 
 	private static final Integer NEG_ONE = Integer.valueOf(-1);
 	
@@ -60,59 +52,31 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 	private List<Card> mCards;
 	private List<Integer> mRandomCardPositionList;
 	private List<Integer> mAvailableCardPositionList;
-	private long mCardSetId;
-	private String mCardSetTitle;
 	private int mNumberOfCards;
 	private int mHelpContext;
 	private int mFontSize;
 	
+	private CardSet mCardSet;
 	private DataSource mDataSource;
+	private MainActivity mActivity;
+	private Context mApplicationContext;
 	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public CardsPager(FragmentActivity activity, DataSource dataSource, CardSet cardSet) {
 
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.cards);
-		
-		mDataSource = new DataSource(this);
-        mDataSource.open();
+		mActivity =  (MainActivity)activity;
+		mApplicationContext = activity.getApplicationContext();
+		mDataSource = dataSource;
+		mCardSet = cardSet;
 		
 		mHelpContext = HELP_CONTEXT_VIEW_CARD;
-
-		ImageButton imageButtonList = (ImageButton)findViewById(R.id.imageButtonList);
-		imageButtonList.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				
-				finish();
-			}
-		});
 		
-		ImageButton imageButtonEdit = (ImageButton)findViewById(R.id.imageButtonEdit);
-		imageButtonEdit.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				
-				int currentIndex = mViewPager.getCurrentItem();
-				CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
-				
-				if(null != cardFragment) {
-					
-					cardFragment.onEdit();
-				}
-			}
-		});
+		mRandom = new Random();
 		
-		// Get intent data
-		Bundle bundle = getIntent().getExtras();
-		mCardSetId = bundle.getLong(AppConstants.CARD_SET_ID_KEY);
-		mCardSetTitle = bundle.getString(AppConstants.CARD_SET_TITLE_KEY);
-		
-		mCards = mDataSource.getCards(mCardSetId);
+		mCards = mDataSource.getCards(mCardSet.getId());
 		
 		if(0 == mCards.size()) {
 			
-			Toast.makeText(getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
+			Toast.makeText(mApplicationContext, R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 		}
 		
 		mNumberOfCards = mCards.size();
@@ -126,8 +90,8 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 			mAvailableCardPositionList.add(Integer.valueOf(i));
 		}
 		
-		mViewPager = (ViewPager) findViewById(R.id.viewpager);
-		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+		mViewPager = (ViewPager) mActivity.findViewById(R.id.viewpager);
+		mMyFragmentPagerAdapter = new MyFragmentPagerAdapter(mActivity.getSupportFragmentManager());
 		mViewPager.setAdapter(mMyFragmentPagerAdapter);
 		
 		/*
@@ -150,52 +114,6 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 			public void onPageScrollStateChanged(int state) { /* Nothing to do here */ }
 
 		});
-		
-		mRandom = new Random();
-	}
-	
-	@Override
-	protected void onResume() {
-		mDataSource.open();
-		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		mDataSource.close();
-		super.onPause();
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.card_menu, menu);
-	    return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-
-		switch (item.getItemId()) {
-	    case R.id.menu_card_information:
-	        showCardInformation();
-	        return true;
-	    case R.id.menu_card_delete:
-	    	deleteCard();
-	    	return true;
-	    case R.id.menu_card_help:
-	    	showHelp();
-	    	return true;
-	    case R.id.menu_card_magnify:
-	    	zoom(ACTION_MAGNIFY_FONT);
-	    	return true;
-	    case R.id.menu_card_reduce:
-	    	zoom(ACTION_REDUCE_FONT);
-	    	return true;
-	    default:
-	        return super.onOptionsItemSelected(item);
-	    }
 	}
 
 	protected DataSource getDataSource() {
@@ -205,20 +123,20 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 	
 	protected void showHelp() {
 
-		HelpDialog helpDialog = new HelpDialog(this);
+		HelpDialog helpDialog = new HelpDialog(mActivity);
 
 		switch(mHelpContext) {
 
 		case HELP_CONTEXT_DEFAULT:
-			helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+			helpDialog.setHelp(mActivity.getResources().getString(R.string.help_content_default));
 			break;
 
 		case HELP_CONTEXT_VIEW_CARD:
-			helpDialog.setHelp(getResources().getString(R.string.help_content_view_card));
+			helpDialog.setHelp(mActivity.getResources().getString(R.string.help_content_view_card));
 			break;
 
 		default:
-			helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+			helpDialog.setHelp(mActivity.getResources().getString(R.string.help_content_default));
 		}
 
 		helpDialog.show();
@@ -235,11 +153,22 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 		
 		mDataSource.updateCard(card);
 	}
+	
+	public void editCard() {
+		
+		int currentIndex = mViewPager.getCurrentItem();
+		CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
+
+		if(null != cardFragment) {
+
+			cardFragment.onEdit();
+		}
+	}
 
 	/*
-	 * Menu method
+	 * Called from action bar
 	 */
-	private void zoom(int action) {
+	public void zoom(int action) {
 		
 		int currentIndex = mViewPager.getCurrentItem();
 		CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
@@ -262,19 +191,19 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 	}
 	
 	/*
-	 * Menu method
+	 * Called from action bar
 	 */
-	private void showCardInformation() {
+	public void showCardInformation() {
 		
-		String message = String.format(getResources().getString(R.string.card_information), mCardSetTitle);
+		String message = String.format(mActivity.getResources().getString(R.string.card_information), mCardSet.getTitle());
 		
-		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+		Toast.makeText(mApplicationContext, message, Toast.LENGTH_SHORT).show();
 	}
 	
 	/*
-	 * Menu method
+	 * Called From action bar
 	 */
-	private void deleteCard() {
+	public void deleteCard() {
 		
 		// Get the current card index
 		int currentIndex = mViewPager.getCurrentItem();
@@ -313,21 +242,17 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 		// When we delete the last card in a card set, we return to the list
 		if(mRandomCardPositionList.size() == 0) {
 			
-			String message = String.format(getResources().getString(R.string.delete_last_card_message), mCardSetTitle);
-			Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-			
-			/* 
-			 * Since there are no more cards, show the CardSet list activity.
-			 * We also notify the CardSetActivity hat it needs to update the 
-			 * related CardSet's card count.
-			 */
-			Intent resultIntent = new Intent();
-			Bundle bundle = new Bundle();
-			bundle.putLong(CARD_SET_ID, card.getCardSetId());
-			resultIntent.putExtras(bundle);
-			setResult(Activity.RESULT_OK, resultIntent);
-			finish();
+			String message = String.format(mActivity.getResources().getString(R.string.delete_last_card_message), mCardSet.getTitle());
+			Toast.makeText(mApplicationContext, message, Toast.LENGTH_SHORT).show();
+			mActivity.showArrayListFragment(true);
 		}
+		else {
+			
+			Toast.makeText(mApplicationContext, R.string.delete_card, Toast.LENGTH_SHORT).show();
+		}
+		
+		// Notify CardSet that we have just deleted a card
+		mActivity.doDeleteCard(card.getCardSetId());
 	}
 	
 	/*
@@ -342,7 +267,7 @@ public class CardsActivity extends FragmentActivity implements AppConstants, Fla
 		public MyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
 			
-			mSharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+			mSharedPreferences = mActivity.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
 			int fontSizePreference = mSharedPreferences.getInt(PREFERENCE_FONT_SIZE, PREFERENCE_NORMAL_FONT_SIZE);
 			
 			switch(fontSizePreference) {

@@ -18,7 +18,7 @@ package org.thomasamsler.android.flashcards.fragment;
 
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.CardsActivity;
+import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.model.Card;
 
 import android.os.Bundle;
@@ -150,13 +150,13 @@ public class CardFragment extends Fragment implements AppConstants {
 
 					mTextViewQuestion.setText(mEditTextWord.getText());
 					mTextViewQuestion.setVisibility(View.VISIBLE);
-					((CardsActivity)getActivity()).updateCard(mCardPosition, mEditTextWord.getText().toString(), mTextViewAnswer.getText().toString());
+					((MainActivity)getActivity()).doUpdateCard(mCardPosition, mEditTextWord.getText().toString(), mTextViewAnswer.getText().toString());
 				}
 				else if(mWordToggle && !mEditTextWord.getText().toString().equals(mTextViewAnswer.getText().toString())) {
 					
 					mTextViewAnswer.setText(mEditTextWord.getText());
 					mTextViewAnswer.setVisibility(View.VISIBLE);
-					((CardsActivity)getActivity()).updateCard(mCardPosition, mTextViewQuestion.getText().toString(), mEditTextWord.getText().toString());
+					((MainActivity)getActivity()).doUpdateCard(mCardPosition, mTextViewQuestion.getText().toString(), mEditTextWord.getText().toString());
 				}
 				else if(!mWordToggle) {
 

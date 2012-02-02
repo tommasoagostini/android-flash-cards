@@ -22,14 +22,14 @@ import org.thomasamsler.android.flashcards.conversion.FileToDbConversion;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.dialog.HelpDialog;
 import org.thomasamsler.android.flashcards.fragment.AboutFragment;
+import org.thomasamsler.android.flashcards.fragment.ActionbarFragment;
 import org.thomasamsler.android.flashcards.fragment.AddCardFragment;
 import org.thomasamsler.android.flashcards.fragment.ArrayListFragment;
-import org.thomasamsler.android.flashcards.fragment.ActionbarFragment;
 import org.thomasamsler.android.flashcards.fragment.SetupFragment;
 import org.thomasamsler.android.flashcards.model.CardSet;
+import org.thomasamsler.android.flashcards.pager.CardsPager;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -37,18 +37,27 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class CardSetsActivity extends FragmentActivity implements AppConstants {
+public class MainActivity extends FragmentActivity implements AppConstants {
 	
 	private ActionbarFragment mListActionbarFragment;
 	private ArrayListFragment mArrayListFragment;
 	private AddCardFragment mAddCardFragment;
 	private SetupFragment mSetupFragment;
 	private AboutFragment mAboutFragment;
+	private CardsPager mCardsPager;
 	private int mHelpContext;
 	private DataSource mDataSource;
 	private int mActiveFragmentReference;
+	
+	private LinearLayout mFragmentContainer;
+	private ViewPager mViewPager;
+	
+	private boolean mExitOnBackPressed;
 	
 	
 	@Override
@@ -76,6 +85,10 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 			editor.commit();
 		}
 		
+		
+		mFragmentContainer = (LinearLayout)findViewById(R.id.fragmentContainer);
+		mViewPager = (ViewPager)findViewById(R.id.viewpager);
+		
         showArrayListFragment(false);
     }
 	
@@ -92,18 +105,25 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	}
 	
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+	public void onBackPressed() {
 
 		/*
-		 * If the user deleted the last Card we make sure that we update the
-		 * CardSet accordingly 
+		 * Intercepting the back button press since we need 
+		 * to handle the Cards view
 		 */
-		if(ACTIVITY_RESULT == requestCode && null != data && null != mArrayListFragment) {
-
-			long cardSetId = data.getLongExtra(CARD_SET_ID, INVALID_CARD_SET_ID);
-			mArrayListFragment.setCardSetCardCountToZero(cardSetId);
+		if(mExitOnBackPressed) {
+			
+			finish();
 		}
+		else {
+
+			showArrayListFragment(true);
+		}
+	}
+
+	public void doDeleteCard(long cardSetId) {
+		
+		mArrayListFragment.decrementCardCount(cardSetId);
 	}
 
 	public void setHelpContext(int context) {
@@ -140,8 +160,11 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         
         fragmentTransaction.commit();
         
+        mFragmentContainer.setVisibility(View.VISIBLE);
+		mViewPager.setVisibility(View.GONE);
         mHelpContext = HELP_CONTEXT_CARD_SET_LIST;
         mActiveFragmentReference = LIST_FRAGMENT;
+        mExitOnBackPressed = true;
 	}
 	
 	public void showAddCardFragment(CardSet cardSet) {
@@ -172,6 +195,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         
         mHelpContext = HELP_CONTEXT_ADD_CARD;
         mActiveFragmentReference = ADD_FRAGMENT;
+        mExitOnBackPressed = false;
 	}
 	
 	public void showSetupFragment() {
@@ -200,6 +224,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         
         mHelpContext = HELP_CONTEXT_SETUP;
         mActiveFragmentReference = SETUP_FRAGMENT;
+        mExitOnBackPressed = false;
 	}
 	
 	public void showAboutFragment() {
@@ -213,6 +238,7 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
         }
         else {
+        	
         	 mListActionbarFragment.configureForAbout();
         }
         
@@ -227,16 +253,34 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
         
         mHelpContext = HELP_CONTEXT_DEFAULT;
         mActiveFragmentReference = ABOUT_FRAGMENT;
+        mExitOnBackPressed = false;
 	}
 	
-	public void showCardsPagerActivity(CardSet cardSet) {
+	public void showCardsFragment(CardSet cardSet) {
 		
-		Intent intent = new Intent(getApplicationContext(), CardsActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putLong(CARD_SET_ID_KEY, cardSet.getId());
-		bundle.putString(CARD_SET_TITLE_KEY, cardSet.getTitle());
-		intent.putExtras(bundle);
-		startActivityForResult(intent, 0);
+		FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        
+        if(null == mListActionbarFragment) {
+
+        	mListActionbarFragment = ActionbarFragment.newInstance(CARDS_FRAGMENT);
+        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
+        }
+        else {
+        	
+        	 mListActionbarFragment.configureForCards();
+        }
+        
+        mCardsPager = new CardsPager(this, mDataSource, cardSet);
+        
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+        
+        mFragmentContainer.setVisibility(View.GONE);
+        mViewPager.setVisibility(View.VISIBLE);
+        mHelpContext = HELP_CONTEXT_VIEW_CARD;
+        mActiveFragmentReference = CARDS_FRAGMENT;
+        mExitOnBackPressed = false;
 	}
 	
 	public void showHelp() {
@@ -261,6 +305,10 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 				helpDialog.setHelp(getResources().getString(R.string.help_content_add_card));
 				break;
 			
+			case HELP_CONTEXT_VIEW_CARD:
+				helpDialog.setHelp(getResources().getString(R.string.help_content_view_card));
+				break;
+				
 			default:
 				helpDialog.setHelp(getResources().getString(R.string.help_content_default));
 		}
@@ -288,6 +336,36 @@ public class CardSetsActivity extends FragmentActivity implements AppConstants {
 	public void addCardSet(CardSet cardSet) {
 		
 		mArrayListFragment.addCardSet(cardSet);
+	}
+	
+	public void editCard() {
+		
+		mCardsPager.editCard();
+	}
+	
+	public void doZoomIn() {
+	
+		mCardsPager.zoom(ACTION_MAGNIFY_FONT);
+	}
+	
+	public void doZoomOut() {
+		
+		mCardsPager.zoom(ACTION_REDUCE_FONT);
+	}
+	
+	public void doCardInfo() {
+		
+		mCardsPager.showCardInformation();
+	}
+	
+	public void doDeleteCard() {
+		
+		mCardsPager.deleteCard();
+	}
+	
+	public void doUpdateCard(int index, String question, String answer) {
+	
+		mCardsPager.updateCard(index, question, answer);
 	}
 	
 	public DataSource getDataSource() {
