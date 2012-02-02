@@ -2,7 +2,7 @@
 <resources>
     <string name="help_content_default">
         <![CDATA[
-        <p>Help content not defined yet. Help content will be added in a future release.</p>
+        <p>Help content not defined yet.</p>
         ]]>
     </string>
     <string name="help_content_card_set_list">
