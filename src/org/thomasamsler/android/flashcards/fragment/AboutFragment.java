@@ -18,7 +18,7 @@ package org.thomasamsler.android.flashcards.fragment;
 
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.activity.MainActivity;
 
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -64,7 +64,7 @@ public class AboutFragment extends Fragment {
 
 			public void onClick(View v) {
 
-				((CardSetsActivity)getActivity()).showArrayListFragment(true);
+				((MainActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
 	}

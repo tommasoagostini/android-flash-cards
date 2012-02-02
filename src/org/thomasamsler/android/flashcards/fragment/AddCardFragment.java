@@ -18,7 +18,7 @@ package org.thomasamsler.android.flashcards.fragment;
 
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.model.Card;
 import org.thomasamsler.android.flashcards.model.CardSet;
@@ -65,7 +65,7 @@ public class AddCardFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mDataSource = ((CardSetsActivity)getActivity()).getDataSource();
+		mDataSource = ((MainActivity)getActivity()).getDataSource();
 		
 		mFrontPageWord = "";
 		mBackPageWord = "";
@@ -81,7 +81,7 @@ public class AddCardFragment extends Fragment {
 			
 			public void onClick(View v) {
 				
-				((CardSetsActivity)getActivity()).showArrayListFragment(true);
+				((MainActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
 		
@@ -128,7 +128,7 @@ public class AddCardFragment extends Fragment {
 				if(mIsSaved) {
 
 					Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_success, Toast.LENGTH_SHORT).show();
-					((CardSetsActivity)getActivity()).showArrayListFragment(true);
+					((MainActivity)getActivity()).showArrayListFragment(true);
 				}
 				else {
 
@@ -155,7 +155,7 @@ public class AddCardFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 		
-		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_ADD_CARD);
+		((MainActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_ADD_CARD);
 	}
 	
 	public void setCardSet(CardSet cardSet) {

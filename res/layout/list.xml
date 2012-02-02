@@ -4,17 +4,28 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <!-- Action bar  -->
     <LinearLayout
         android:id="@+id/actionbarContainer"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ActionBarHeight" />
 
+    <!-- Main fragment container that shows the CardSet list, Setup, Add, About, etc. fragments -->
     <LinearLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/actionbarContainer" />
 
+     <!-- Cards Pager -->
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+    	android:layout_width="match_parent" 
+    	android:layout_height="match_parent"
+    	android:layout_below="@+id/actionbarContainer"
+    	android:visibility="gone" />
+    
+    <!-- Action bar overflow action list -->
     <ListView
         android:id="@+id/listViewOverflow"
         android:layout_width="@dimen/ListOverflowWidth"
@@ -26,5 +37,5 @@
         android:fadingEdge="none"
         android:layout_marginRight="@dimen/ListOverflowPaddingRight"
         android:visibility="gone"/>
-
+    
 </RelativeLayout>

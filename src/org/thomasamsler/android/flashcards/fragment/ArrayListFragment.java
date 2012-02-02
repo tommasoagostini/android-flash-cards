@@ -36,7 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.external.FlashCardExchangeData;
 import org.thomasamsler.android.flashcards.model.Card;
@@ -51,6 +51,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.text.Html;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -79,11 +80,11 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		mDataSource = ((CardSetsActivity)getActivity()).getDataSource();
+		mDataSource = ((MainActivity)getActivity()).getDataSource();
 		
 		registerForContextMenu(getListView());
 		
-		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar);
 		
 		if(null == mCardSets) {
 			
@@ -116,18 +117,34 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			 */
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				View view = super.getView(position, convertView, parent);
+				
+				TextView textView = (TextView)super.getView(position, convertView, parent);
+				CardSet cardSet = mCardSets.get(position);
+				
+				switch(cardSet.getCardCount()) {
+				
+				case 0:
+					textView.setText(Html.fromHtml(cardSet.getTitle() + "<br /><small><i><font color='#989898'>empty</font></i></small>"));
+					break;
+				case 1:
+					textView.setText(Html.fromHtml(cardSet.getTitle() + "<br /><small><i><font color='#989898'>" + cardSet.getCardCount() + " card</font></i></small>"));
+					break;
+				default:
+					textView.setText(Html.fromHtml(cardSet.getTitle() + "<br /><small><i><font color='#989898'>" + cardSet.getCardCount() + " cards</font></i></small>"));
+					break;
+				}
+				
 				
 				if(mCardSets.get(position).isRemote()) {
 
-					((TextView)view).setTypeface(Typeface.DEFAULT_BOLD);
+					((TextView)textView).setTypeface(Typeface.DEFAULT_BOLD);
 				}
 				else {
 					
-					((TextView)view).setTypeface(Typeface.DEFAULT);
+					((TextView)textView).setTypeface(Typeface.DEFAULT);
 				}
 				
-				return view;
+				return textView;
 			}
 		};
 
@@ -163,7 +180,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		}
 		else {
 
-			((CardSetsActivity)getActivity()).showCardsPagerActivity(cardSet);
+			((MainActivity)getActivity()).showCardsFragment(cardSet);
 		}
 	}
 	
@@ -199,7 +216,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	public void onResume() {
 		super.onResume();
 		
-		((CardSetsActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_CARD_SET_LIST);
+		((MainActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_CARD_SET_LIST);
 	}
 
 	public void addCardSet(CardSet cardSet) {
@@ -209,15 +226,16 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		mArrayAdapter.notifyDataSetChanged();
 	}
 	
-	public void setCardSetCardCountToZero(long cardSetId) {
-		
+	public void decrementCardCount(long cardSetId) {
+	
 		if(AppConstants.INVALID_CARD_SET_ID != cardSetId) {
 			
 			for(CardSet cardSet : mCardSets) {
 				
 				if(cardSet.getId() == cardSetId) {
 					
-					cardSet.setCardCount(0);
+					cardSet.setCardCount(cardSet.getCardCount() - 1);
+					break;
 				}
 			}
 		}
@@ -245,7 +263,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		else {
 			
 			Toast.makeText(getActivity().getApplicationContext(), R.string.setup_no_user_name_defined, Toast.LENGTH_SHORT).show();
-			((CardSetsActivity)getActivity()).showSetupFragment();
+			((MainActivity)getActivity()).showSetupFragment();
 		}
 	}
 	
@@ -271,7 +289,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		}
 		else {
 
-			((CardSetsActivity)getActivity()).showAddCardFragment(cardSet);
+			((MainActivity)getActivity()).showAddCardFragment(cardSet);
 		}
 	}
 	
@@ -369,7 +387,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
      */
 	private boolean hasConnectivity() {
 		
-		return ((CardSetsActivity)getActivity()).hasConnectivity();
+		return ((MainActivity)getActivity()).hasConnectivity();
 	}
 	
 	private class GetExternalCardSetsTask extends AsyncTask<String, Void, JSONObject> {
@@ -710,11 +728,11 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				switch(cardSet.getFragmentId()) {
 
 				case CardSet.ADD_CARD_FRAGMENT:
-					((CardSetsActivity)getActivity()).showAddCardFragment(cardSet);
+					((MainActivity)getActivity()).showAddCardFragment(cardSet);
 					return;
 
 				case CardSet.CARDS_PAGER_FRAGMENT:
-					((CardSetsActivity)getActivity()).showCardsPagerActivity(cardSet);
+					((MainActivity)getActivity()).showCardsFragment(cardSet);
 					return;
 				}
 			}

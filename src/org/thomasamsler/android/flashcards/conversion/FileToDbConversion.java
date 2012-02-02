@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.model.Card;
 import org.thomasamsler.android.flashcards.model.CardSet;
@@ -135,7 +135,7 @@ public class FileToDbConversion {
 			
 			for(CardSet cardSet : cardSets) {
 				
-				((CardSetsActivity)mContext).addCardSet(cardSet);
+				((MainActivity)mContext).addCardSet(cardSet);
 			}
 			
 			mDialog.cancel();

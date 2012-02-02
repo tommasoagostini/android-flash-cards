@@ -31,7 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.thomasamsler.android.flashcards.AppConstants;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.CardSetsActivity;
+import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.external.FlashCardExchangeData;
 
 import android.content.Context;
@@ -86,7 +86,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 		mPreferences = getActivity().getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
 		mPreferenceUserName = mPreferences.getString(PREFERENCE_FCEX_USER_NAME, "");
 		
-		mProgressBar = (ProgressBar)getActivity().findViewById(R.id.progressBarSetup);
+		mProgressBar = (ProgressBar)getActivity().findViewById(R.id.progressBar);
 		
 		mEditTextUserName = (EditText)getActivity().findViewById(R.id.editTextSetupUserName);
 		mEditTextUserName.setText(mPreferenceUserName);
@@ -124,7 +124,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 			
 			public void onClick(View v) {
 				
-				((CardSetsActivity)getActivity()).showArrayListFragment(true);
+				((MainActivity)getActivity()).showArrayListFragment(true);
 			}
 		});
 		
@@ -178,7 +178,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 	public void onResume() {
 		super.onResume();
 		
-		((CardSetsActivity)getActivity()).setHelpContext(HELP_CONTEXT_SETUP);
+		((MainActivity)getActivity()).setHelpContext(HELP_CONTEXT_SETUP);
 	}
 	
 	/*
@@ -186,7 +186,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
      */
 	private boolean hasConnectivity() {
 		
-		return ((CardSetsActivity)getActivity()).hasConnectivity();
+		return ((MainActivity)getActivity()).hasConnectivity();
 	}
 	
 	private class GetExternalCardSetsTask extends AsyncTask<String, Void, JSONObject> {
@@ -305,7 +305,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 						editor.putString(PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
 						editor.commit();
 
-						((CardSetsActivity)getActivity()).showArrayListFragment(true);
+						((MainActivity)getActivity()).showArrayListFragment(true);
 					}
 					else if(null != responseType && RESPONSE_ERROR.equals(responseType)) {
 
