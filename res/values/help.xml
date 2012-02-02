@@ -8,7 +8,7 @@
     <string name="help_content_card_set_list">
         <![CDATA[
         <h5>Add Card Set</h5>
-        <p>To create a new card set, please tap on the right hand side plus icon on the action bar.</p>
+        <p>To create a new card set, please tap on the plus icon on the action bar.</p>
         <h5>Delete Card Set</h5>
 		<p>Tap and hold on the list item that you want to delete, and the \"Delete\" menu will show up. 
 		Then tap on delete, and confirm the deletion dialog.</p>
