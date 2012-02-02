@@ -243,13 +243,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	
 	public void getFlashCardExchangeCardSets() {
 		
-		mProgressBar.setVisibility(ProgressBar.VISIBLE);
-		
 		SharedPreferences preferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
 		String userName = preferences.getString(AppConstants.PREFERENCE_FCEX_USER_NAME, "");
 		
 		if(null != userName && !"".equals(userName)) {
 		
+			mProgressBar.setVisibility(ProgressBar.VISIBLE);
+			
 			if(hasConnectivity()) {
 			
 				new GetExternalCardSetsTask().execute(userName);
