@@ -178,7 +178,7 @@ public class MainActivity extends FragmentActivity implements
 					mActionbarFragment);
 		} else {
 
-			mActionbarFragment.configureForList();
+			mActionbarFragment.configureFor(LIST_FRAGMENT);
 		}
 
 		if (null == mCardSetsFragment) {
@@ -215,7 +215,7 @@ public class MainActivity extends FragmentActivity implements
 					mActionbarFragment);
 		} else {
 
-			mActionbarFragment.configureForAdd();
+			mActionbarFragment.configureFor(ADD_FRAGMENT);
 		}
 
 		if (null == mAddCardFragment) {
@@ -247,7 +247,7 @@ public class MainActivity extends FragmentActivity implements
 					mActionbarFragment);
 		} else {
 
-			mActionbarFragment.configureForSetup();
+			mActionbarFragment.configureFor(SETUP_FRAGMENT);
 		}
 
 		if (null == mSetupFragment) {
@@ -277,7 +277,7 @@ public class MainActivity extends FragmentActivity implements
 					mActionbarFragment);
 		} else {
 
-			mActionbarFragment.configureForAbout();
+			mActionbarFragment.configureFor(ABOUT_FRAGMENT);
 		}
 
 		if (null == mAboutFragment) {
@@ -307,7 +307,7 @@ public class MainActivity extends FragmentActivity implements
 					mActionbarFragment);
 		} else {
 
-			mActionbarFragment.configureForCards();
+			mActionbarFragment.configureFor(CARDS_FRAGMENT);
 		}
 
 		mCardsPager = new CardsPager(this, mDataSource, cardSet);
