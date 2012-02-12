@@ -16,7 +16,9 @@
 
 package org.thomasamsler.android.flashcards.activity;
 
+import org.thomasamsler.android.flashcards.ActionBusListener;
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
 import org.thomasamsler.android.flashcards.conversion.FileToDbConversion;
 import org.thomasamsler.android.flashcards.db.DataSource;
@@ -24,7 +26,7 @@ import org.thomasamsler.android.flashcards.dialog.HelpDialog;
 import org.thomasamsler.android.flashcards.fragment.AboutFragment;
 import org.thomasamsler.android.flashcards.fragment.ActionbarFragment;
 import org.thomasamsler.android.flashcards.fragment.AddCardFragment;
-import org.thomasamsler.android.flashcards.fragment.ArrayListFragment;
+import org.thomasamsler.android.flashcards.fragment.CardSetsFragment;
 import org.thomasamsler.android.flashcards.fragment.SetupFragment;
 import org.thomasamsler.android.flashcards.model.CardSet;
 import org.thomasamsler.android.flashcards.pager.CardsPager;
@@ -38,14 +40,16 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity implements AppConstants {
-	
-	private ActionbarFragment mListActionbarFragment;
-	private ArrayListFragment mArrayListFragment;
+public class MainActivity extends FragmentActivity implements
+		ActionBusListener, AppConstants {
+
+	private ActionbarFragment mActionbarFragment;
+	private CardSetsFragment mCardSetsFragment;
 	private AddCardFragment mAddCardFragment;
 	private SetupFragment mSetupFragment;
 	private AboutFragment mAboutFragment;
@@ -53,326 +57,333 @@ public class MainActivity extends FragmentActivity implements AppConstants {
 	private int mHelpContext;
 	private DataSource mDataSource;
 	private int mActiveFragmentReference;
-	
+
 	private LinearLayout mFragmentContainer;
 	private ViewPager mViewPager;
-	
+
+	private MainApplication mMainApplication;
+
 	private boolean mExitOnBackPressed;
-	
-	
+
 	@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        setContentView(R.layout.list);        
-        
-        mDataSource = new DataSource(this);
-        mDataSource.open();
-        
-        /*
-         * Determine if we need to run the File to DB conversion
-         */
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-		boolean runConversion = sharedPreferences.getBoolean(PREFERENCE_RUN_CONVERSION, PREFERENCE_RUN_CONVERSION_DEFAULT);
-		
-		if(runConversion) {
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.list);
+
+		mDataSource = new DataSource(this);
+		mDataSource.open();
+
+		mMainApplication = (MainApplication) getApplication();
+
+		mMainApplication.initActionButListener();
+
+		mMainApplication.registerAction(
+				this,
+				ACTION_SHOW_CARD_SETS,
+				ACTION_SHOW_CARDS,
+				ACTION_SHOW_HELP,
+				ACTION_SHOW_SETUP,
+				ACTION_SHOW_ABOUT,
+				ACTION_GET_EXTERNAL_CARD_SETS,
+				ACTION_SET_HELP_CONTEXT,
+				ACTION_SHOW_ADD_CARD,
+				ACTION_ADD_CARD_SET);
+
+		/*
+		 * Determine if we need to run the File to DB conversion
+		 */
+		SharedPreferences sharedPreferences = getSharedPreferences(
+				PREFERENCE_NAME, Context.MODE_PRIVATE);
+		boolean runConversion = sharedPreferences.getBoolean(
+				PREFERENCE_RUN_CONVERSION, PREFERENCE_RUN_CONVERSION_DEFAULT);
+
+		if (runConversion) {
 
 			FileToDbConversion conversion = new FileToDbConversion();
 			conversion.convert(this, mDataSource);
-			
+
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 			editor.putBoolean(PREFERENCE_RUN_CONVERSION, false);
 			editor.commit();
 		}
-		
-		
-		mFragmentContainer = (LinearLayout)findViewById(R.id.fragmentContainer);
-		mViewPager = (ViewPager)findViewById(R.id.viewpager);
-		
-        showArrayListFragment(false);
-    }
-	
+
+		mFragmentContainer = (LinearLayout) findViewById(R.id.fragmentContainer);
+		mViewPager = (ViewPager) findViewById(R.id.viewpager);
+
+		showCardSetsFragment(false);
+	}
+
 	@Override
 	protected void onResume() {
+
 		mDataSource.open();
 		super.onResume();
 	}
 
 	@Override
 	protected void onPause() {
+
 		mDataSource.close();
 		super.onPause();
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 
 		/*
-		 * Intercepting the back button press since we need 
-		 * to handle the Cards view
+		 * Intercepting the back button press since we need to handle the Cards
+		 * view
 		 */
-		if(mExitOnBackPressed) {
-			
+		if (mExitOnBackPressed) {
+
 			finish();
+		} else {
+
+			showCardSetsFragment(true);
 		}
-		else {
+	}
 
-			showArrayListFragment(true);
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+
+		super.onKeyUp(keyCode, event);
+
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+
+			mMainApplication.doAction(ACTION_SHOW_OVERFLOW_ACTIONS);
+		}
+
+		return true;
+	}
+
+	private void setHelpContext(Integer context) {
+
+		if (null != context) {
+
+			this.mHelpContext = context.intValue();
 		}
 	}
 
-	public void doDeleteCard(long cardSetId) {
-		
-		mArrayListFragment.decrementCardCount(cardSetId);
-	}
+	private void showCardSetsFragment(boolean addToBackStack) {
 
-	public void setHelpContext(int context) {
-		
-		this.mHelpContext = context;
-	}
-	
-	public void showArrayListFragment(boolean addToBackStack) {
-		
 		FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        
-        if(null == mListActionbarFragment) {
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
 
-        	mListActionbarFragment = ActionbarFragment.newInstance(LIST_FRAGMENT);
-        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
-        }
-        else {
-        	
-        	mListActionbarFragment.configureForList();
-        }
-        
-        if(null == mArrayListFragment) {
-        	
-        	mArrayListFragment = new ArrayListFragment();
-        }
+		if (null == mActionbarFragment) {
 
-        fragmentTransaction.replace(R.id.fragmentContainer, mArrayListFragment);
-        
-        if(addToBackStack) {
-        
-        	fragmentTransaction.addToBackStack(null);
-        }
-        
-        fragmentTransaction.commit();
-        
-        mFragmentContainer.setVisibility(View.VISIBLE);
+			mActionbarFragment = ActionbarFragment.newInstance(LIST_FRAGMENT);
+			fragmentTransaction.replace(R.id.actionbarContainer,
+					mActionbarFragment);
+		} else {
+
+			mActionbarFragment.configureForList();
+		}
+
+		if (null == mCardSetsFragment) {
+
+			mCardSetsFragment = new CardSetsFragment();
+		}
+
+		fragmentTransaction.replace(R.id.fragmentContainer, mCardSetsFragment);
+
+		if (addToBackStack) {
+
+			fragmentTransaction.addToBackStack(null);
+		}
+
+		fragmentTransaction.commit();
+
+		mFragmentContainer.setVisibility(View.VISIBLE);
 		mViewPager.setVisibility(View.GONE);
-        mHelpContext = HELP_CONTEXT_CARD_SET_LIST;
-        mActiveFragmentReference = LIST_FRAGMENT;
-        mExitOnBackPressed = true;
+		mHelpContext = HELP_CONTEXT_CARD_SET_LIST;
+		mActiveFragmentReference = LIST_FRAGMENT;
+		mExitOnBackPressed = true;
 	}
-	
-	public void showAddCardFragment(CardSet cardSet) {
-		
+
+	private void showAddCardFragment(CardSet cardSet) {
+
 		FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        
-        if(null == mListActionbarFragment) {
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
 
-        	mListActionbarFragment = ActionbarFragment.newInstance(ADD_FRAGMENT);
-        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
-        }
-        else {
-        	
-        	 mListActionbarFragment.configureForAdd();
-        }
-        
-        if(null == mAddCardFragment) {
-        	
-        	mAddCardFragment = new AddCardFragment();
-        }
-        
-        mAddCardFragment.setCardSet(cardSet);
-        
-        fragmentTransaction.replace(R.id.fragmentContainer, mAddCardFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-        
-        mHelpContext = HELP_CONTEXT_ADD_CARD;
-        mActiveFragmentReference = ADD_FRAGMENT;
-        mExitOnBackPressed = false;
-	}
-	
-	public void showSetupFragment() {
-		
-		FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        
-        if(null == mListActionbarFragment) {
+		if (null == mActionbarFragment) {
 
-        	mListActionbarFragment = ActionbarFragment.newInstance(SETUP_FRAGMENT);
-        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
-        }
-        else {
-        	
-        	mListActionbarFragment.configureForSetup();
-        }
-        
-        if(null == mSetupFragment) {
-        	
-        	mSetupFragment = new SetupFragment();
-        }
+			mActionbarFragment = ActionbarFragment.newInstance(ADD_FRAGMENT);
+			fragmentTransaction.replace(R.id.actionbarContainer,
+					mActionbarFragment);
+		} else {
 
-        fragmentTransaction.replace(R.id.fragmentContainer, mSetupFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-        
-        mHelpContext = HELP_CONTEXT_SETUP;
-        mActiveFragmentReference = SETUP_FRAGMENT;
-        mExitOnBackPressed = false;
-	}
-	
-	public void showAboutFragment() {
-		
-		FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        
-        if(null == mListActionbarFragment) {
-
-        	mListActionbarFragment = ActionbarFragment.newInstance(ABOUT_FRAGMENT);
-        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
-        }
-        else {
-        	
-        	 mListActionbarFragment.configureForAbout();
-        }
-        
-        if(null == mAboutFragment) {
-        	
-        	mAboutFragment = new AboutFragment();
-        }
-
-        fragmentTransaction.replace(R.id.fragmentContainer, mAboutFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-        
-        mHelpContext = HELP_CONTEXT_DEFAULT;
-        mActiveFragmentReference = ABOUT_FRAGMENT;
-        mExitOnBackPressed = false;
-	}
-	
-	public void showCardsFragment(CardSet cardSet) {
-		
-		FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        
-        if(null == mListActionbarFragment) {
-
-        	mListActionbarFragment = ActionbarFragment.newInstance(CARDS_FRAGMENT);
-        	fragmentTransaction.replace(R.id.actionbarContainer, mListActionbarFragment);
-        }
-        else {
-        	
-        	 mListActionbarFragment.configureForCards();
-        }
-        
-        mCardsPager = new CardsPager(this, mDataSource, cardSet);
-        
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-        
-        mFragmentContainer.setVisibility(View.GONE);
-        mViewPager.setVisibility(View.VISIBLE);
-        mHelpContext = HELP_CONTEXT_VIEW_CARD;
-        mActiveFragmentReference = CARDS_FRAGMENT;
-        mExitOnBackPressed = false;
-	}
-	
-	public void showHelp() {
-		
-		HelpDialog helpDialog = new HelpDialog(this);
-		
-		switch(mHelpContext) {
-		
-			case HELP_CONTEXT_DEFAULT:
-				helpDialog.setHelp(getResources().getString(R.string.help_content_default));
-				break;
-			
-			case HELP_CONTEXT_SETUP:
-				helpDialog.setHelp(getResources().getString(R.string.help_content_setup));
-				break;
-			
-			case HELP_CONTEXT_CARD_SET_LIST:
-				helpDialog.setHelp(getResources().getString(R.string.help_content_card_set_list));
-				break;
-			
-			case HELP_CONTEXT_ADD_CARD:
-				helpDialog.setHelp(getResources().getString(R.string.help_content_add_card));
-				break;
-			
-			case HELP_CONTEXT_VIEW_CARD:
-				helpDialog.setHelp(getResources().getString(R.string.help_content_view_card));
-				break;
-				
-			default:
-				helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+			mActionbarFragment.configureForAdd();
 		}
-		
+
+		if (null == mAddCardFragment) {
+
+			mAddCardFragment = new AddCardFragment();
+		}
+
+		mAddCardFragment.setCardSet(cardSet);
+
+		fragmentTransaction.replace(R.id.fragmentContainer, mAddCardFragment);
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+
+		mHelpContext = HELP_CONTEXT_ADD_CARD;
+		mActiveFragmentReference = ADD_FRAGMENT;
+		mExitOnBackPressed = false;
+	}
+
+	private void showSetupFragment() {
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+
+		if (null == mActionbarFragment) {
+
+			mActionbarFragment = ActionbarFragment.newInstance(SETUP_FRAGMENT);
+			fragmentTransaction.replace(R.id.actionbarContainer,
+					mActionbarFragment);
+		} else {
+
+			mActionbarFragment.configureForSetup();
+		}
+
+		if (null == mSetupFragment) {
+
+			mSetupFragment = new SetupFragment();
+		}
+
+		fragmentTransaction.replace(R.id.fragmentContainer, mSetupFragment);
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+
+		mHelpContext = HELP_CONTEXT_SETUP;
+		mActiveFragmentReference = SETUP_FRAGMENT;
+		mExitOnBackPressed = false;
+	}
+
+	private void showAboutFragment() {
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+
+		if (null == mActionbarFragment) {
+
+			mActionbarFragment = ActionbarFragment.newInstance(ABOUT_FRAGMENT);
+			fragmentTransaction.replace(R.id.actionbarContainer,
+					mActionbarFragment);
+		} else {
+
+			mActionbarFragment.configureForAbout();
+		}
+
+		if (null == mAboutFragment) {
+
+			mAboutFragment = new AboutFragment();
+		}
+
+		fragmentTransaction.replace(R.id.fragmentContainer, mAboutFragment);
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+
+		mHelpContext = HELP_CONTEXT_DEFAULT;
+		mActiveFragmentReference = ABOUT_FRAGMENT;
+		mExitOnBackPressed = false;
+	}
+
+	private void showCardsFragment(CardSet cardSet) {
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+
+		if (null == mActionbarFragment) {
+
+			mActionbarFragment = ActionbarFragment.newInstance(CARDS_FRAGMENT);
+			fragmentTransaction.replace(R.id.actionbarContainer,
+					mActionbarFragment);
+		} else {
+
+			mActionbarFragment.configureForCards();
+		}
+
+		mCardsPager = new CardsPager(this, mDataSource, cardSet);
+
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+
+		mFragmentContainer.setVisibility(View.GONE);
+		mViewPager.setVisibility(View.VISIBLE);
+		mHelpContext = HELP_CONTEXT_VIEW_CARD;
+		mActiveFragmentReference = CARDS_FRAGMENT;
+		mExitOnBackPressed = false;
+	}
+
+	private void showHelp() {
+
+		HelpDialog helpDialog = new HelpDialog(this);
+
+		switch (mHelpContext) {
+
+		case HELP_CONTEXT_DEFAULT:
+			helpDialog.setHelp(getResources().getString(
+					R.string.help_content_default));
+			break;
+
+		case HELP_CONTEXT_SETUP:
+			helpDialog.setHelp(getResources().getString(
+					R.string.help_content_setup));
+			break;
+
+		case HELP_CONTEXT_CARD_SET_LIST:
+			helpDialog.setHelp(getResources().getString(
+					R.string.help_content_card_set_list));
+			break;
+
+		case HELP_CONTEXT_ADD_CARD:
+			helpDialog.setHelp(getResources().getString(
+					R.string.help_content_add_card));
+			break;
+
+		case HELP_CONTEXT_VIEW_CARD:
+			helpDialog.setHelp(getResources().getString(
+					R.string.help_content_view_card));
+			break;
+
+		default:
+			helpDialog.setHelp(getResources().getString(
+					R.string.help_content_default));
+		}
+
 		helpDialog.show();
 	}
-	
-	public void getExternal() {
-		
-		if(mActiveFragmentReference == SETUP_FRAGMENT) {
-			
-			showArrayListFragment(true);
+
+	private void getExternal() {
+
+		if (mActiveFragmentReference == SETUP_FRAGMENT) {
+
+			showCardSetsFragment(true);
 		}
-		
-		if(null == mArrayListFragment) {
-    		
-    		Toast.makeText(getApplicationContext(), R.string.external_data_message_error, Toast.LENGTH_SHORT).show();
-    	}
-    	else {
-    		
-    		mArrayListFragment.getFlashCardExchangeCardSets();
-    	}
+
+		if (null == mCardSetsFragment) {
+
+			Toast.makeText(getApplicationContext(),
+					R.string.external_data_message_error, Toast.LENGTH_SHORT)
+					.show();
+		} else {
+
+			mCardSetsFragment.getFlashCardExchangeCardSets();
+		}
 	}
-	
-	public void addCardSet(CardSet cardSet) {
-		
-		mArrayListFragment.addCardSet(cardSet);
-	}
-	
-	public void editCard() {
-		
-		mCardsPager.editCard();
-	}
-	
-	public void doZoomIn() {
-	
-		mCardsPager.zoom(ACTION_MAGNIFY_FONT);
-	}
-	
-	public void doZoomOut() {
-		
-		mCardsPager.zoom(ACTION_REDUCE_FONT);
-	}
-	
-	public void doCardInfo() {
-		
-		mCardsPager.showCardInformation();
-	}
-	
-	public void doDeleteCard() {
-		
-		mCardsPager.deleteCard();
-	}
-	
-	public void doUpdateCard(int index, String question, String answer) {
-	
-		mCardsPager.updateCard(index, question, answer);
-	}
-	
+
 	public DataSource getDataSource() {
-		
+
 		return mDataSource;
 	}
-	
+
 	/*
 	 * Helper method to check if there is network connectivity
 	 */
@@ -380,20 +391,55 @@ public class MainActivity extends FragmentActivity implements AppConstants {
 
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		if(null == connectivityManager) {
+		if (null == connectivityManager) {
 
 			return false;
 		}
 
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-		if(null != networkInfo && networkInfo.isAvailable() && networkInfo.isConnected()) {
+		if (null != networkInfo && networkInfo.isAvailable()
+				&& networkInfo.isConnected()) {
 
 			return true;
-		}
-		else {
+		} else {
 
 			return false;
+		}
+	}
+
+	public void doAction(Integer action, Object data) {
+
+		switch (action) {
+
+		case ACTION_SHOW_CARD_SETS:
+			boolean addToBackStack = (null != data ? ((Boolean) data).booleanValue() : false);
+			showCardSetsFragment(addToBackStack);
+			break;
+		case ACTION_SHOW_CARDS:
+			showCardsFragment((CardSet) data);
+			break;
+		case ACTION_SHOW_HELP:
+			showHelp();
+			break;
+		case ACTION_SHOW_SETUP:
+			showSetupFragment();
+			break;
+		case ACTION_SHOW_ABOUT:
+			showAboutFragment();
+			break;
+		case ACTION_GET_EXTERNAL_CARD_SETS:
+			getExternal();
+			break;
+		case ACTION_SET_HELP_CONTEXT:
+			setHelpContext((Integer) data);
+			break;
+		case ACTION_SHOW_ADD_CARD:
+			showAddCardFragment((CardSet) data);
+			break;
+		case ACTION_ADD_CARD_SET:
+			mCardSetsFragment.addCardSet((CardSet) data);
+			break;
 		}
 	}
 }

@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/DialogTitleBottomPadding"
         android:autoLink="web"
-        android:text="@string/new_card_set_message"
         android:textColor="@color/font_color"
         android:textSize="@dimen/HelpDialogFontSize" />
 

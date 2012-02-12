@@ -34,7 +34,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.thomasamsler.android.flashcards.ActionBusListener;
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
 import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
@@ -65,7 +67,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ArrayListFragment extends ListFragment implements FlashCardExchangeData {
+public class CardSetsFragment extends ListFragment implements AppConstants, ActionBusListener, FlashCardExchangeData {
 
 	private static final int MENU_ITEM_ADD = 1;
 	private static final int MENU_ITEM_DELETE = 2;
@@ -75,16 +77,22 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	private ProgressBar mProgressBar;
 	
 	private DataSource mDataSource;
+	private MainActivity mActivity;
+	private MainApplication mMainApplication;
 	
 	@Override
 	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		mDataSource = ((MainActivity)getActivity()).getDataSource();
+		mActivity = (MainActivity) getActivity();
+		mDataSource = mActivity.getDataSource();
+		mMainApplication = (MainApplication) mActivity.getApplication();
+		
+		mMainApplication.registerAction(this, ACTION_DELETE_CARD_UPDATE_CARD_SET);
 		
 		registerForContextMenu(getListView());
 		
-		mProgressBar = (ProgressBar) getActivity().findViewById(R.id.progressBar);
+		mProgressBar = (ProgressBar) mActivity.findViewById(R.id.progressBar);
 		
 		if(null == mCardSets) {
 			
@@ -93,7 +101,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		
 		if(0 == mCardSets.size()) {
 
-			SharedPreferences sharedPreferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+			SharedPreferences sharedPreferences = mActivity.getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
 			boolean showSample = sharedPreferences.getBoolean(AppConstants.PREFERENCE_SHOW_SAMPLE, AppConstants.PREFERENCE_SHOW_SAMPLE_DEFAULT);
 
 			if(showSample) {
@@ -103,13 +111,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			}
 			else {
 
-				Toast.makeText(getActivity().getApplicationContext(), R.string.list_no_card_sets_message, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mMainApplication, R.string.list_no_card_sets_message, Toast.LENGTH_SHORT).show();
 			}
 		}
 
 		Collections.sort(mCardSets);
 
-		mArrayAdapter = new ArrayAdapter<CardSet>(getActivity(), android.R.layout.simple_list_item_1, mCardSets) {
+		mArrayAdapter = new ArrayAdapter<CardSet>(mActivity, android.R.layout.simple_list_item_1, mCardSets) {
 			
 			/*
 			 * Overwriting getView method to style the list item font. If it's a remote item
@@ -159,7 +167,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 		if(!cardSet.isRemote() && !cardSet.hasCards()) {
 		
-			Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
+			Toast.makeText(mMainApplication, R.string.view_cards_emtpy_set_message, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		
@@ -175,12 +183,12 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			else {
 				
 				mProgressBar.setVisibility(ProgressBar.GONE);
-				Toast.makeText(getActivity().getApplicationContext(), R.string.util_connectivity_error, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mMainApplication, R.string.util_connectivity_error, Toast.LENGTH_SHORT).show();
 			}
 		}
 		else {
 
-			((MainActivity)getActivity()).showCardsFragment(cardSet);
+			mMainApplication.doAction(ACTION_SHOW_CARDS, cardSet);
 		}
 	}
 	
@@ -216,7 +224,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	public void onResume() {
 		super.onResume();
 		
-		((MainActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_CARD_SET_LIST);
+		mMainApplication.doAction(ACTION_SET_HELP_CONTEXT, HELP_CONTEXT_CARD_SET_LIST);
 	}
 
 	public void addCardSet(CardSet cardSet) {
@@ -226,7 +234,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 		mArrayAdapter.notifyDataSetChanged();
 	}
 	
-	public void decrementCardCount(long cardSetId) {
+	private void decrementCardCount(long cardSetId) {
 	
 		if(AppConstants.INVALID_CARD_SET_ID != cardSetId) {
 			
@@ -243,7 +251,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 	
 	public void getFlashCardExchangeCardSets() {
 		
-		SharedPreferences preferences = getActivity().getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences preferences = mActivity.getSharedPreferences(AppConstants.PREFERENCE_NAME, Context.MODE_PRIVATE);
 		String userName = preferences.getString(AppConstants.PREFERENCE_FCEX_USER_NAME, "");
 		
 		if(null != userName && !"".equals(userName)) {
@@ -257,13 +265,13 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			else {
 				
 				mProgressBar.setVisibility(ProgressBar.GONE);
-				Toast.makeText(getActivity().getApplicationContext(), R.string.util_connectivity_error, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mMainApplication, R.string.util_connectivity_error, Toast.LENGTH_SHORT).show();
 			}
 		}
 		else {
 			
-			Toast.makeText(getActivity().getApplicationContext(), R.string.setup_no_user_name_defined, Toast.LENGTH_SHORT).show();
-			((MainActivity)getActivity()).showSetupFragment();
+			Toast.makeText(mMainApplication, R.string.setup_no_user_name_defined, Toast.LENGTH_SHORT).show();
+			mMainApplication.doAction(ACTION_SHOW_SETUP);
 		}
 	}
 	
@@ -284,18 +292,18 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 			else {
 				
 				mProgressBar.setVisibility(ProgressBar.GONE);
-				Toast.makeText(getActivity().getApplicationContext(), R.string.util_connectivity_error, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mMainApplication, R.string.util_connectivity_error, Toast.LENGTH_SHORT).show();
 			}
 		}
 		else {
 
-			((MainActivity)getActivity()).showAddCardFragment(cardSet);
+			mMainApplication.doAction(ACTION_SHOW_ADD_CARD, cardSet);
 		}
 	}
 	
 	private void deleteCardSet(final int listItemPosition) {
 		
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 		builder.setMessage(R.string.delete_card_set_dialog_message);
 		builder.setCancelable(false);
 		builder.setPositiveButton(R.string.delete_card_set_dialog_ok, new DialogInterface.OnClickListener() {
@@ -387,7 +395,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
      */
 	private boolean hasConnectivity() {
 		
-		return ((MainActivity)getActivity()).hasConnectivity();
+		return mActivity.hasConnectivity();
 	}
 	
 	private class GetExternalCardSetsTask extends AsyncTask<String, Void, JSONObject> {
@@ -501,7 +509,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 					if(null == responseType || !RESPONSE_OK.equals(responseType)) {
 
-						Toast.makeText(getActivity().getApplicationContext(), R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
+						Toast.makeText(mMainApplication, R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
 						return;
 					}
 
@@ -544,7 +552,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 					 * In case the cardSet list is null, an exception occurred in 
 					 * doInBackground().
 					 */
-					Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
+					Toast.makeText(mMainApplication, R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
 				}
 			}
 			catch(Exception e) {
@@ -654,7 +662,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 				if(null == jsonObject) {
 
-					Toast.makeText(getActivity().getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity.getApplicationContext(), R.string.view_cards_fetch_remote_error, Toast.LENGTH_LONG).show();
 					return;
 				}
 
@@ -667,7 +675,7 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 					if(null == responseType || !RESPONSE_OK.equals(responseType)) {
 
-						Toast.makeText(getActivity().getApplicationContext(), R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
+						Toast.makeText(mActivity.getApplicationContext(), R.string.util_flash_card_exchange_api_error, Toast.LENGTH_LONG).show();
 						return;
 					}
 
@@ -728,11 +736,11 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 				switch(cardSet.getFragmentId()) {
 
 				case CardSet.ADD_CARD_FRAGMENT:
-					((MainActivity)getActivity()).showAddCardFragment(cardSet);
+					mMainApplication.doAction(ACTION_SHOW_ADD_CARD, cardSet);
 					return;
 
 				case CardSet.CARDS_PAGER_FRAGMENT:
-					((MainActivity)getActivity()).showCardsFragment(cardSet);
+					mMainApplication.doAction(ACTION_SHOW_CARDS, cardSet);
 					return;
 				}
 			}
@@ -740,6 +748,16 @@ public class ArrayListFragment extends ListFragment implements FlashCardExchange
 
 				Log.e(AppConstants.LOG_TAG, "General Exception", e);
 			}
+		}
+	}
+
+	public void doAction(Integer action, Object data) {
+
+		switch(action) {
+		
+		case ACTION_DELETE_CARD_UPDATE_CARD_SET:
+			decrementCardCount(((Long) data).longValue());
+			break;
 		}
 	}
 }

@@ -17,8 +17,8 @@
 package org.thomasamsler.android.flashcards.fragment;
 
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.MainActivity;
 
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -31,7 +31,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class AboutFragment extends Fragment {
+public class AboutFragment extends Fragment implements AppConstants {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class AboutFragment extends Fragment {
 
 			public void onClick(View v) {
 
-				((MainActivity)getActivity()).showArrayListFragment(true);
+				((MainApplication)getActivity().getApplication()).doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
 			}
 		});
 	}

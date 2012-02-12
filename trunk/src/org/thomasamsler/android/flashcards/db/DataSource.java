@@ -41,6 +41,7 @@ public class DataSource {
 	public void open() throws SQLException {
 		
 		mDb = mDbH.getWritableDatabase();
+		
 	}
 	
 	public void close() {

@@ -24,6 +24,7 @@ public class Card {
 	private String mQuestion;
 	private String mAnswer;
 	private long mCardSetId;
+	private int mRandomCardIndex;
 	
 	public Card() { }
 	
@@ -74,4 +75,14 @@ public class Card {
 	public void setCardSetId(long cardSetId) {
 		this.mCardSetId = cardSetId;
 	}
+
+	public int getRandomCardIndex() {
+		return mRandomCardIndex;
+	}
+
+	public void setRandomCardIndex(int randomCardIndex) {
+		this.mRandomCardIndex = randomCardIndex;
+	}
+	
+	
 }
