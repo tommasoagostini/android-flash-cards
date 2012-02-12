@@ -19,7 +19,9 @@ package org.thomasamsler.android.flashcards.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.thomasamsler.android.flashcards.ActionBusListener;
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
 import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
@@ -43,24 +45,24 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ActionbarFragment extends Fragment implements AppConstants {
+public class ActionbarFragment extends Fragment implements AppConstants, ActionBusListener {
 
 	/*
 	 * These values need to be in sync with values present in card_set_menu.xml
 	 */
-	private final int ACTION_SETUP = 0;
-	private final int ACTION_ABOUT = 1;
-	private final int ACTION_FCE = 2;
-	private final int ACTION_HELP = 3;
+	private final int OVERFLOW_ACTION_SETUP = 0;
+	private final int OVERFLOW_ACTION_ABOUT = 1;
+	private final int OVERFLOW_ACTION_FCE = 2;
+	private final int OVERFLOW_ACTION_HELP = 3;
 
 	/*
 	 * These values need to be in sync with values present in card_menu.xml
 	 */
-	private final int ACTION_ZOOM_IN = 0;
-	private final int ACTION_ZOOM_OUT = 1;
-	private final int ACTION_CARD_INFO = 2;
-	private final int ACTION_DELETE_CARD = 3;
-	private final int ACTION_HELP_CARD = 4;
+	private final int OVERFLOW_ACTION_ZOOM_IN = 0;
+	private final int OVERFLOW_ACTION_ZOOM_OUT = 1;
+	private final int OVERFLOW_ACTION_CARD_INFO = 2;
+	private final int OVERFLOW_ACTION_DELETE_CARD = 3;
+	private final int OVERFLOW_ACTION_HELP_CARD = 4;
 
 	private DataSource mDataSource;
 	private ListView mListViewOverflow;
@@ -74,6 +76,8 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 
 	private int mFragmentType;
 
+	private MainApplication mMainApplication;
+	
 	public static ActionbarFragment newInstance(int fragmentType) {
 
 		ActionbarFragment listActionbarFragment = new ActionbarFragment();
@@ -93,13 +97,17 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 		super.onActivityCreated(savedInstanceState);
 
 		mDataSource = ((MainActivity)getActivity()).getDataSource();
+		
+		mMainApplication = (MainApplication) getActivity().getApplication();
+		
+		mMainApplication.registerAction(this, ACTION_SHOW_OVERFLOW_ACTIONS);
 
 		mImageButtonEdit = (ImageButton)getActivity().findViewById(R.id.imageButtonEdit);
 		mImageButtonEdit.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 
-				((MainActivity)getActivity()).editCard();
+				mMainApplication.doAction(ACTION_EDIT_CARD);
 			}
 		});
 
@@ -108,7 +116,7 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 
 			public void onClick(View v) {
 
-				((MainActivity)getActivity()).showArrayListFragment(true);
+				mMainApplication.doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
 			}
 		});
 
@@ -140,6 +148,7 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 
 							boolean titleExists = false;
 							List<CardSet> cardSets = mDataSource.getCardSets();
+							
 							for(CardSet cardSet : cardSets) {
 
 								if(newTitle.equals(cardSet.getTitle())) {
@@ -156,7 +165,7 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 							else {
 
 								CardSet cardSet = mDataSource.createCardSet(newTitle);
-								((MainActivity)getActivity()).addCardSet(cardSet);
+								mMainApplication.doAction(ACTION_ADD_CARD_SET, cardSet);
 							}
 						}
 					}
@@ -195,12 +204,16 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 		mOverflowActions = new ArrayList<String>();
 		mArrayAdapter = getArrayAdapter();
 		mListViewOverflow.setAdapter(mArrayAdapter);
-		//mListViewOverflow.setOnItemClickListener(getListFragmentActionListener());
 
 		/*
 		 * Now we configure the action bar for the associated fragment
 		 */
-		switch(mFragmentType) {
+		configureFor(mFragmentType);
+	}
+	
+	private void configureFor(int fragmentType) {
+		
+		switch(fragmentType) {
 
 		case SETUP_FRAGMENT:
 			configureForSetup();
@@ -219,7 +232,7 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 			break;
 		}
 	}
-
+	
 	public void configureForAdd() {
 
 		mImageButtonEdit.setVisibility(View.GONE);
@@ -233,7 +246,7 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 
 		mImageButtonEdit.setVisibility(View.GONE);
 		mImageButtonNewCardSet.setVisibility(View.VISIBLE);
-		mImageButtonList.setVisibility(View.GONE);
+		mImageButtonList.setVisibility(View.VISIBLE);
 		mImageButtonOverflow.setVisibility(View.VISIBLE);
 		mFragmentType = LIST_FRAGMENT;
 		mListViewOverflow.setOnItemClickListener(getListFragmentActionListener());
@@ -273,6 +286,16 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 
 		this.mFragmentType = fragmentType;
 	}
+	
+	public void doAction(Integer action, Object data) {
+
+		switch(action) {
+		
+		case ACTION_SHOW_OVERFLOW_ACTIONS:
+			toggleVisibility(mListViewOverflow);
+			break;
+		}
+	}
 
 	private ArrayAdapter<String> getArrayAdapter() {
 
@@ -300,24 +323,24 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 
 				switch(position) {
 
-				case ACTION_ZOOM_IN:
-					((MainActivity)getActivity()).doZoomIn();
+				case OVERFLOW_ACTION_ZOOM_IN:
+					mMainApplication.doAction(ACTION_ZOOM_IN_CARD);
 					break;
 
-				case ACTION_ZOOM_OUT:
-					((MainActivity)getActivity()).doZoomOut();
+				case OVERFLOW_ACTION_ZOOM_OUT:
+					mMainApplication.doAction(ACTION_ZOOM_OUT_CARD);
 					break;
 
-				case ACTION_CARD_INFO:
-					((MainActivity)getActivity()).doCardInfo();
+				case OVERFLOW_ACTION_CARD_INFO:
+					mMainApplication.doAction(ACTION_SHOW_CARD_INFO);
 					break;
 
-				case ACTION_DELETE_CARD:
-					((MainActivity)getActivity()).doDeleteCard();
+				case OVERFLOW_ACTION_DELETE_CARD:
+					mMainApplication.doAction(ACTION_DELETE_CARD);
 					break;
 			
-				case ACTION_HELP_CARD:
-					((MainActivity)getActivity()).showHelp();
+				case OVERFLOW_ACTION_HELP_CARD:
+					mMainApplication.doAction(ACTION_SHOW_HELP);
 					break;
 				}
 			}
@@ -334,20 +357,20 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 
 				switch(position) {
 
-				case ACTION_SETUP:
-					((MainActivity)getActivity()).showSetupFragment();
+				case OVERFLOW_ACTION_SETUP:
+					mMainApplication.doAction(ACTION_SHOW_SETUP);
 					break;
 
-				case ACTION_ABOUT:
-					((MainActivity)getActivity()).showAboutFragment();
+				case OVERFLOW_ACTION_ABOUT:
+					mMainApplication.doAction(ACTION_SHOW_ABOUT);
 					break;
 
-				case ACTION_FCE:
-					((MainActivity)getActivity()).getExternal();
+				case OVERFLOW_ACTION_FCE:
+					mMainApplication.doAction(ACTION_GET_EXTERNAL_CARD_SETS);
 					break;
 
-				case ACTION_HELP:
-					((MainActivity)getActivity()).showHelp();
+				case OVERFLOW_ACTION_HELP:
+					mMainApplication.doAction(ACTION_SHOW_HELP);
 					break;
 				}
 			}
@@ -364,5 +387,18 @@ public class ActionbarFragment extends Fragment implements AppConstants {
 		}
 
 		mArrayAdapter.notifyDataSetChanged();
+	}
+
+
+	private void toggleVisibility(View view) {
+		
+		if(View.VISIBLE == view.getVisibility()) {
+			
+			view.setVisibility(View.GONE);
+		}
+		else {
+			
+			view.setVisibility(View.VISIBLE);
+		}
 	}
 }

@@ -55,10 +55,6 @@ public interface AppConstants {
 	// CardsPagerActivity
 	public static final int HELP_CONTEXT_VIEW_CARD = 4;
 	
-	// CardFragemnt Actions
-	public static final int ACTION_MAGNIFY_FONT = 1;
-	public static final int ACTION_REDUCE_FONT = 2;
-	
 	// Activity Result
 	public static final int ACTIVITY_RESULT = 0;
 	public static final String CARD_SET_ID = "csi";
@@ -73,4 +69,23 @@ public interface AppConstants {
 	public static final int CARDS_FRAGMENT = 4;
 	
 	public static final String FRAGMENT_TYPE = "ft";
+	
+	// Action Bus Actions
+	public static final int ACTION_EDIT_CARD = 0;
+	public static final int ACTION_ZOOM_IN_CARD = 1;
+	public static final int ACTION_ZOOM_OUT_CARD = 2;
+	public static final int ACTION_SHOW_CARD_INFO = 3;
+	public static final int ACTION_DELETE_CARD = 4;
+	public static final int ACTION_SHOW_HELP = 5;
+	public static final int ACTION_SHOW_SETUP = 6;
+	public static final int ACTION_SHOW_ABOUT = 7;
+	public static final int ACTION_GET_EXTERNAL_CARD_SETS = 8;
+	public static final int ACTION_SET_HELP_CONTEXT = 9;
+	public static final int ACTION_SHOW_CARD_SETS = 10;
+	public static final int ACTION_SHOW_ADD_CARD = 11;
+	public static final int ACTION_SHOW_CARDS = 12;
+	public static final int ACTION_ADD_CARD_SET = 13;
+	public static final int ACTION_UPDATE_CARD = 14;
+	public static final int ACTION_SHOW_OVERFLOW_ACTIONS = 15;
+	public static final int ACTION_DELETE_CARD_UPDATE_CARD_SET = 16;
 }

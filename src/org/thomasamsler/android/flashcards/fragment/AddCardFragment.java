@@ -17,6 +17,7 @@
 package org.thomasamsler.android.flashcards.fragment;
 
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
 import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
@@ -38,7 +39,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AddCardFragment extends Fragment {
+public class AddCardFragment extends Fragment implements AppConstants {
 
 	private CardSet mCardSet;
 	private String mFrontPageWord;
@@ -81,7 +82,7 @@ public class AddCardFragment extends Fragment {
 			
 			public void onClick(View v) {
 				
-				((MainActivity)getActivity()).showArrayListFragment(true);
+				((MainApplication)getActivity().getApplication()).doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
 			}
 		});
 		
@@ -128,7 +129,7 @@ public class AddCardFragment extends Fragment {
 				if(mIsSaved) {
 
 					Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_success, Toast.LENGTH_SHORT).show();
-					((MainActivity)getActivity()).showArrayListFragment(true);
+					((MainApplication)getActivity().getApplication()).doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
 				}
 				else {
 
@@ -154,8 +155,7 @@ public class AddCardFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		
-		((MainActivity)getActivity()).setHelpContext(AppConstants.HELP_CONTEXT_ADD_CARD);
+		((MainApplication)getActivity().getApplication()).doAction(ACTION_SET_HELP_CONTEXT, Integer.valueOf(HELP_CONTEXT_ADD_CARD));
 	}
 	
 	public void setCardSet(CardSet cardSet) {

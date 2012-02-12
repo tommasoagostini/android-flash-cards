@@ -25,18 +25,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
-import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
 import org.thomasamsler.android.flashcards.model.Card;
 import org.thomasamsler.android.flashcards.model.CardSet;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class FileToDbConversion {
+public class FileToDbConversion implements AppConstants {
 
 	private Context mContext;
 	private DataSource mDataSource;
@@ -133,9 +134,11 @@ public class FileToDbConversion {
 		@Override
 		protected void onPostExecute(List<CardSet> cardSets) {
 			
+			MainApplication mainApplication = (MainApplication)((Activity)mContext).getApplication();
+			
 			for(CardSet cardSet : cardSets) {
 				
-				((MainActivity)mContext).addCardSet(cardSet);
+				mainApplication.doAction(ACTION_ADD_CARD_SET, cardSet);
 			}
 			
 			mDialog.cancel();

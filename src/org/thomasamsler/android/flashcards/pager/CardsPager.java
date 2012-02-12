@@ -16,13 +16,16 @@
 
 package org.thomasamsler.android.flashcards.pager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.WeakHashMap;
 
+import org.thomasamsler.android.flashcards.ActionBusListener;
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
 import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.db.DataSource;
@@ -42,7 +45,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-public class CardsPager implements AppConstants {
+public class CardsPager implements ActionBusListener, AppConstants {
 
 	private static final Integer NEG_ONE = Integer.valueOf(-1);
 	
@@ -60,15 +63,26 @@ public class CardsPager implements AppConstants {
 	private DataSource mDataSource;
 	private MainActivity mActivity;
 	private Context mApplicationContext;
+	private MainApplication mMainApplication;
 	
 	public CardsPager(FragmentActivity activity, DataSource dataSource, CardSet cardSet) {
 
 		mActivity =  (MainActivity)activity;
 		mApplicationContext = activity.getApplicationContext();
+		mMainApplication = (MainApplication) activity.getApplication();
 		mDataSource = dataSource;
 		mCardSet = cardSet;
 		
 		mHelpContext = HELP_CONTEXT_VIEW_CARD;
+		
+		mMainApplication.registerAction(
+				this,
+				ACTION_EDIT_CARD,
+				ACTION_ZOOM_IN_CARD,
+				ACTION_ZOOM_OUT_CARD,
+				ACTION_SHOW_CARD_INFO,
+				ACTION_DELETE_CARD,
+				ACTION_UPDATE_CARD);
 		
 		mRandom = new Random();
 		
@@ -115,11 +129,6 @@ public class CardsPager implements AppConstants {
 
 		});
 	}
-
-	protected DataSource getDataSource() {
-		
-		return mDataSource;
-	}
 	
 	protected void showHelp() {
 
@@ -142,19 +151,19 @@ public class CardsPager implements AppConstants {
 		helpDialog.show();
 	}
 
-	public void updateCard(int index, String question, String answer) {
+	private void updateCard(Card updatedCard) {
 
 		/*
-		 * First, we update the in memory list of words
+		 * First, we update the in memory list of cards
 		 */
-		Card card = mCards.get(mRandomCardPositionList.get(index));
-		card.setQuestion(question);
-		card.setAnswer(answer);
+		Card card = mCards.get(mRandomCardPositionList.get(updatedCard.getRandomCardIndex()));
+		card.setQuestion(updatedCard.getQuestion());
+		card.setAnswer(updatedCard.getAnswer());
 		
 		mDataSource.updateCard(card);
 	}
 	
-	public void editCard() {
+	private void editCard() {
 		
 		int currentIndex = mViewPager.getCurrentItem();
 		CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
@@ -168,7 +177,7 @@ public class CardsPager implements AppConstants {
 	/*
 	 * Called from action bar
 	 */
-	public void zoom(int action) {
+	private void zoom(int action) {
 		
 		int currentIndex = mViewPager.getCurrentItem();
 		CardFragment cardFragment = mMyFragmentPagerAdapter.getFragment(currentIndex);
@@ -178,11 +187,11 @@ public class CardsPager implements AppConstants {
 			return;
 		}
 		
-		if(ACTION_MAGNIFY_FONT == action) {
+		if(ACTION_ZOOM_IN_CARD == action) {
 			
 			mFontSize += FONT_SIZE_ZOOM_CHANGE;
 		}
-		else if(ACTION_REDUCE_FONT == action) {
+		else if(ACTION_ZOOM_OUT_CARD == action) {
 			
 			mFontSize -= FONT_SIZE_ZOOM_CHANGE;
 		}
@@ -190,10 +199,8 @@ public class CardsPager implements AppConstants {
 		cardFragment.setFontSize(mFontSize);
 	}
 	
-	/*
-	 * Called from action bar
-	 */
-	public void showCardInformation() {
+
+	private void showCardInformation() {
 		
 		String message = String.format(mActivity.getResources().getString(R.string.card_information), mCardSet.getTitle());
 		
@@ -244,7 +251,7 @@ public class CardsPager implements AppConstants {
 			
 			String message = String.format(mActivity.getResources().getString(R.string.delete_last_card_message), mCardSet.getTitle());
 			Toast.makeText(mApplicationContext, message, Toast.LENGTH_SHORT).show();
-			mActivity.showArrayListFragment(true);
+			mMainApplication.doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
 		}
 		else {
 			
@@ -252,7 +259,7 @@ public class CardsPager implements AppConstants {
 		}
 		
 		// Notify CardSet that we have just deleted a card
-		mActivity.doDeleteCard(card.getCardSetId());
+		mMainApplication.doAction(ACTION_DELETE_CARD_UPDATE_CARD_SET, Long.valueOf(card.getCardSetId()));
 	}
 	
 	/*
@@ -260,7 +267,7 @@ public class CardsPager implements AppConstants {
 	 */
 	private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-		private Map<Integer, CardFragment> mPageReferenceMap = new WeakHashMap<Integer, CardFragment>();
+		private Map<Integer, WeakReference<CardFragment>> mPageReferenceMap = new HashMap<Integer, WeakReference<CardFragment>>();
 		
 		SharedPreferences mSharedPreferences = null;
 		
@@ -298,7 +305,7 @@ public class CardsPager implements AppConstants {
 			}
 			
 			CardFragment cardFragment = CardFragment.newInstance(mCards.get(mRandomCardPositionList.get(index)), index, mNumberOfCards, mFontSize);
-			mPageReferenceMap.put(Integer.valueOf(index), cardFragment);
+			mPageReferenceMap.put(Integer.valueOf(index), new WeakReference<CardFragment>(cardFragment));
 			
 			return cardFragment;
 		}
@@ -327,8 +334,42 @@ public class CardsPager implements AppConstants {
 		}
 		
 		public CardFragment getFragment(int key) {
+
+			WeakReference<CardFragment> weakReference = mPageReferenceMap.get(key);
 			
-			return mPageReferenceMap.get(key);
+			if(null != weakReference) {
+				
+				return (CardFragment) weakReference.get();
+			}
+			else {
+				
+				return null;
+			}
+		}
+	}
+
+	public void doAction(Integer action, Object data) {
+
+		switch(action) {
+		
+		case ACTION_EDIT_CARD:
+			editCard();
+			break;
+		case ACTION_ZOOM_IN_CARD:
+			zoom(ACTION_ZOOM_IN_CARD);
+			break;
+		case ACTION_ZOOM_OUT_CARD:
+			zoom(ACTION_ZOOM_OUT_CARD);
+			break;
+		case ACTION_SHOW_CARD_INFO:
+			showCardInformation();
+			break;
+		case ACTION_DELETE_CARD:
+			deleteCard();
+			break;
+		case ACTION_UPDATE_CARD:
+			updateCard((Card) data);
+			break;
 		}
 	}
 }

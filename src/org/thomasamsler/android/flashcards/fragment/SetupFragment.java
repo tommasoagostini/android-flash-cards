@@ -30,6 +30,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.thomasamsler.android.flashcards.AppConstants;
+import org.thomasamsler.android.flashcards.MainApplication;
 import org.thomasamsler.android.flashcards.R;
 import org.thomasamsler.android.flashcards.activity.MainActivity;
 import org.thomasamsler.android.flashcards.external.FlashCardExchangeData;
@@ -71,6 +72,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 	private Spinner mSpinner;
 	private ArrayAdapter<CharSequence> mSpinnerAdapter;
 	private int mPreferenceFontSize;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -124,7 +126,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 			
 			public void onClick(View v) {
 				
-				((MainActivity)getActivity()).showArrayListFragment(true);
+				((MainApplication)getActivity().getApplication()).doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
 			}
 		});
 		
@@ -178,7 +180,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 	public void onResume() {
 		super.onResume();
 		
-		((MainActivity)getActivity()).setHelpContext(HELP_CONTEXT_SETUP);
+		((MainApplication)getActivity().getApplication()).doAction(ACTION_SET_HELP_CONTEXT, HELP_CONTEXT_SETUP);
 	}
 	
 	/*
@@ -305,7 +307,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 						editor.putString(PREFERENCE_FCEX_USER_NAME, jsonObject.getString(FIELD_FC_ARG));
 						editor.commit();
 
-						((MainActivity)getActivity()).showArrayListFragment(true);
+						((MainApplication)getActivity().getApplication()).doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
 					}
 					else if(null != responseType && RESPONSE_ERROR.equals(responseType)) {
 
