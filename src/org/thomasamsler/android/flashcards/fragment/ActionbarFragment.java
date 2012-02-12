@@ -211,7 +211,12 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		configureFor(mFragmentType);
 	}
 	
-	private void configureFor(int fragmentType) {
+	public void configureFor(int fragmentType) {
+		
+		if(View.VISIBLE == mListViewOverflow.getVisibility()) {
+		
+			mListViewOverflow.setVisibility(View.GONE);
+		}
 		
 		switch(fragmentType) {
 
@@ -233,7 +238,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		}
 	}
 	
-	public void configureForAdd() {
+	private void configureForAdd() {
 
 		mImageButtonEdit.setVisibility(View.GONE);
 		mImageButtonNewCardSet.setVisibility(View.GONE);
@@ -242,7 +247,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		mFragmentType = ADD_FRAGMENT;
 	}
 
-	public void configureForList() {
+	private void configureForList() {
 
 		mImageButtonEdit.setVisibility(View.GONE);
 		mImageButtonNewCardSet.setVisibility(View.VISIBLE);
@@ -253,7 +258,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		addOverflowActions(getResources().getStringArray(R.array.card_set_actions));
 	}
 
-	public void configureForSetup() {
+	private void configureForSetup() {
 
 		mImageButtonEdit.setVisibility(View.GONE);
 		mImageButtonNewCardSet.setVisibility(View.GONE);
@@ -262,7 +267,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		mFragmentType = SETUP_FRAGMENT;
 	}
 
-	public void configureForAbout() {
+	private void configureForAbout() {
 
 		mImageButtonEdit.setVisibility(View.GONE);
 		mImageButtonNewCardSet.setVisibility(View.GONE);
@@ -271,7 +276,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		mFragmentType = ABOUT_FRAGMENT;
 	}
 
-	public void configureForCards() {
+	private void configureForCards() {
 
 		mImageButtonEdit.setVisibility(View.VISIBLE);
 		mImageButtonNewCardSet.setVisibility(View.GONE);
