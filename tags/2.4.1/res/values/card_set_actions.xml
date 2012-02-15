@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="card_set_actions">
+        <item>Setup</item>
+        <item>About</item>
+        <item>Flashcard Exchange</item>
+        <item>Help</item>
+    </string-array>
+</resources>
