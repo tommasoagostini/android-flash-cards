@@ -35,7 +35,6 @@ import org.thomasamsler.android.flashcards.model.Card;
 import org.thomasamsler.android.flashcards.model.CardSet;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -65,13 +64,14 @@ public class CardsPager implements ActionBusListener, AppConstants {
 	private Context mApplicationContext;
 	private MainApplication mMainApplication;
 	
-	public CardsPager(FragmentActivity activity, DataSource dataSource, CardSet cardSet) {
+	public CardsPager(FragmentActivity activity, DataSource dataSource, CardSet cardSet, int fontSize) {
 
 		mActivity =  (MainActivity)activity;
 		mApplicationContext = activity.getApplicationContext();
 		mMainApplication = (MainApplication) activity.getApplication();
 		mDataSource = dataSource;
 		mCardSet = cardSet;
+		mFontSize = fontSize;
 		
 		mHelpContext = HELP_CONTEXT_VIEW_CARD;
 		
@@ -261,6 +261,7 @@ public class CardsPager implements ActionBusListener, AppConstants {
 		// Notify CardSet that we have just deleted a card
 		mMainApplication.doAction(ACTION_DELETE_CARD_UPDATE_CARD_SET, Long.valueOf(card.getCardSetId()));
 	}
+
 	
 	/*
 	 * Classes
@@ -269,28 +270,8 @@ public class CardsPager implements ActionBusListener, AppConstants {
 
 		private Map<Integer, WeakReference<CardFragment>> mPageReferenceMap = new HashMap<Integer, WeakReference<CardFragment>>();
 		
-		SharedPreferences mSharedPreferences = null;
-		
 		public MyFragmentPagerAdapter(FragmentManager fm) {
 			super(fm);
-			
-			mSharedPreferences = mActivity.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-			int fontSizePreference = mSharedPreferences.getInt(PREFERENCE_FONT_SIZE, PREFERENCE_NORMAL_FONT_SIZE);
-			
-			switch(fontSizePreference) {
-			case PREFERENCE_SMALL_FONT_SIZE:
-				mFontSize = SMALL_FONT_SIZE;
-				break;
-			case PREFERENCE_NORMAL_FONT_SIZE:
-				mFontSize = NORMAL_FONT_SIZE;
-				break;
-			case PREFERENCE_LARGE_FONT_SIZE:
-				mFontSize = LARGE_FONT_SIZE;
-				break;
-			default:
-				mFontSize = NORMAL_FONT_SIZE;
-				break;
-			}
 		}
 
 		@Override

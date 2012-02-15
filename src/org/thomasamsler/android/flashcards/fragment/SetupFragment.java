@@ -157,6 +157,7 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 				SharedPreferences.Editor editor = mPreferences.edit();
 				editor.putInt(PREFERENCE_FONT_SIZE, pos);
 				editor.commit();
+				Toast.makeText(getActivity().getApplicationContext(), R.string.setup_changed_font_size, Toast.LENGTH_SHORT).show();
 			}
 
 			public void onNothingSelected(AdapterView<?> arg0) { /* Nothing to do */}

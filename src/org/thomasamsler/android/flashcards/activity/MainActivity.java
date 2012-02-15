@@ -310,7 +310,7 @@ public class MainActivity extends FragmentActivity implements
 			mActionbarFragment.configureFor(CARDS_FRAGMENT);
 		}
 
-		mCardsPager = new CardsPager(this, mDataSource, cardSet);
+		mCardsPager = new CardsPager(this, mDataSource, cardSet, getFontSizePreference());
 
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
@@ -379,6 +379,32 @@ public class MainActivity extends FragmentActivity implements
 		}
 	}
 
+	private int getFontSizePreference() {
+
+		int fontSize = NORMAL_FONT_SIZE;
+		
+		SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+		int fontSizePreference = sharedPreferences.getInt(PREFERENCE_FONT_SIZE, PREFERENCE_NORMAL_FONT_SIZE);
+
+		switch(fontSizePreference) {
+		case PREFERENCE_SMALL_FONT_SIZE:
+			fontSize = SMALL_FONT_SIZE;
+			break;
+		case PREFERENCE_NORMAL_FONT_SIZE:
+			fontSize = NORMAL_FONT_SIZE;
+			break;
+		case PREFERENCE_LARGE_FONT_SIZE:
+			fontSize = LARGE_FONT_SIZE;
+			break;
+		default:
+			fontSize = NORMAL_FONT_SIZE;
+			break;
+		}
+		
+		return fontSize;
+	}
+	
+	
 	public DataSource getDataSource() {
 
 		return mDataSource;
