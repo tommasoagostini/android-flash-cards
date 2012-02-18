@@ -64,6 +64,8 @@ public class MainActivity extends FragmentActivity implements
 	private MainApplication mMainApplication;
 
 	private boolean mExitOnBackPressed;
+	
+	private int mFontSize;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,16 +90,15 @@ public class MainActivity extends FragmentActivity implements
 				ACTION_GET_EXTERNAL_CARD_SETS,
 				ACTION_SET_HELP_CONTEXT,
 				ACTION_SHOW_ADD_CARD,
-				ACTION_ADD_CARD_SET);
+				ACTION_ADD_CARD_SET,
+				ACTION_FONT_SIZE_CHANGE);
 
 		/*
 		 * Determine if we need to run the File to DB conversion
 		 */
-		SharedPreferences sharedPreferences = getSharedPreferences(
-				PREFERENCE_NAME, Context.MODE_PRIVATE);
-		boolean runConversion = sharedPreferences.getBoolean(
-				PREFERENCE_RUN_CONVERSION, PREFERENCE_RUN_CONVERSION_DEFAULT);
-
+		SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+		boolean runConversion = sharedPreferences.getBoolean(PREFERENCE_RUN_CONVERSION, PREFERENCE_RUN_CONVERSION_DEFAULT);
+		
 		if (runConversion) {
 
 			FileToDbConversion conversion = new FileToDbConversion();
@@ -107,6 +108,12 @@ public class MainActivity extends FragmentActivity implements
 			editor.putBoolean(PREFERENCE_RUN_CONVERSION, false);
 			editor.commit();
 		}
+		
+		/*
+		 * Getting the preferred font size
+		 */
+		int fontSizePreference = sharedPreferences.getInt(PREFERENCE_FONT_SIZE, PREFERENCE_NORMAL_FONT_SIZE);
+		mFontSize = getFontSizePreference(fontSizePreference);
 
 		mFragmentContainer = (LinearLayout) findViewById(R.id.fragmentContainer);
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -138,7 +145,8 @@ public class MainActivity extends FragmentActivity implements
 		if (mExitOnBackPressed) {
 
 			finish();
-		} else {
+		}
+		else {
 
 			showCardSetsFragment(true);
 		}
@@ -168,15 +176,14 @@ public class MainActivity extends FragmentActivity implements
 	private void showCardSetsFragment(boolean addToBackStack) {
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 		if (null == mActionbarFragment) {
 
 			mActionbarFragment = ActionbarFragment.newInstance(LIST_FRAGMENT);
-			fragmentTransaction.replace(R.id.actionbarContainer,
-					mActionbarFragment);
-		} else {
+			fragmentTransaction.replace(R.id.actionbarContainer,mActionbarFragment);
+		}
+		else {
 
 			mActionbarFragment.configureFor(LIST_FRAGMENT);
 		}
@@ -205,15 +212,14 @@ public class MainActivity extends FragmentActivity implements
 	private void showAddCardFragment(CardSet cardSet) {
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 		if (null == mActionbarFragment) {
 
 			mActionbarFragment = ActionbarFragment.newInstance(ADD_FRAGMENT);
-			fragmentTransaction.replace(R.id.actionbarContainer,
-					mActionbarFragment);
-		} else {
+			fragmentTransaction.replace(R.id.actionbarContainer, mActionbarFragment);
+		}
+		else {
 
 			mActionbarFragment.configureFor(ADD_FRAGMENT);
 		}
@@ -243,9 +249,9 @@ public class MainActivity extends FragmentActivity implements
 		if (null == mActionbarFragment) {
 
 			mActionbarFragment = ActionbarFragment.newInstance(SETUP_FRAGMENT);
-			fragmentTransaction.replace(R.id.actionbarContainer,
-					mActionbarFragment);
-		} else {
+			fragmentTransaction.replace(R.id.actionbarContainer, mActionbarFragment);
+		}
+		else {
 
 			mActionbarFragment.configureFor(SETUP_FRAGMENT);
 		}
@@ -267,15 +273,14 @@ public class MainActivity extends FragmentActivity implements
 	private void showAboutFragment() {
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 		if (null == mActionbarFragment) {
 
 			mActionbarFragment = ActionbarFragment.newInstance(ABOUT_FRAGMENT);
-			fragmentTransaction.replace(R.id.actionbarContainer,
-					mActionbarFragment);
-		} else {
+			fragmentTransaction.replace(R.id.actionbarContainer, mActionbarFragment);
+		}
+		else {
 
 			mActionbarFragment.configureFor(ABOUT_FRAGMENT);
 		}
@@ -297,20 +302,19 @@ public class MainActivity extends FragmentActivity implements
 	private void showCardsFragment(CardSet cardSet) {
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 		if (null == mActionbarFragment) {
 
 			mActionbarFragment = ActionbarFragment.newInstance(CARDS_FRAGMENT);
-			fragmentTransaction.replace(R.id.actionbarContainer,
-					mActionbarFragment);
-		} else {
+			fragmentTransaction.replace(R.id.actionbarContainer, mActionbarFragment);
+		}
+		else {
 
 			mActionbarFragment.configureFor(CARDS_FRAGMENT);
 		}
 
-		mCardsPager = new CardsPager(this, mDataSource, cardSet, getFontSizePreference());
+		mCardsPager = new CardsPager(this, mDataSource, cardSet, mFontSize);
 
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
@@ -329,33 +333,28 @@ public class MainActivity extends FragmentActivity implements
 		switch (mHelpContext) {
 
 		case HELP_CONTEXT_DEFAULT:
-			helpDialog.setHelp(getResources().getString(
-					R.string.help_content_default));
+			helpDialog.setHelp(getResources().getString(R.string.help_content_default));
 			break;
 
 		case HELP_CONTEXT_SETUP:
-			helpDialog.setHelp(getResources().getString(
-					R.string.help_content_setup));
+			helpDialog.setHelp(getResources().getString(R.string.help_content_setup));
 			break;
 
 		case HELP_CONTEXT_CARD_SET_LIST:
-			helpDialog.setHelp(getResources().getString(
-					R.string.help_content_card_set_list));
+			helpDialog.setHelp(getResources().getString(R.string.help_content_card_set_list));
 			break;
 
 		case HELP_CONTEXT_ADD_CARD:
-			helpDialog.setHelp(getResources().getString(
-					R.string.help_content_add_card));
+			helpDialog.setHelp(getResources().getString(R.string.help_content_add_card));
 			break;
 
 		case HELP_CONTEXT_VIEW_CARD:
-			helpDialog.setHelp(getResources().getString(
-					R.string.help_content_view_card));
+			helpDialog.setHelp(getResources().getString(R.string.help_content_view_card));
 			break;
 
 		default:
-			helpDialog.setHelp(getResources().getString(
-					R.string.help_content_default));
+			helpDialog.setHelp(getResources().getString(R.string.help_content_default));
+			break;
 		}
 
 		helpDialog.show();
@@ -379,14 +378,12 @@ public class MainActivity extends FragmentActivity implements
 		}
 	}
 
-	private int getFontSizePreference() {
+	private int getFontSizePreference(int fontSizePreference) {
 
 		int fontSize = NORMAL_FONT_SIZE;
-		
-		SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-		int fontSizePreference = sharedPreferences.getInt(PREFERENCE_FONT_SIZE, PREFERENCE_NORMAL_FONT_SIZE);
 
 		switch(fontSizePreference) {
+		
 		case PREFERENCE_SMALL_FONT_SIZE:
 			fontSize = SMALL_FONT_SIZE;
 			break;
@@ -424,11 +421,11 @@ public class MainActivity extends FragmentActivity implements
 
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-		if (null != networkInfo && networkInfo.isAvailable()
-				&& networkInfo.isConnected()) {
+		if (null != networkInfo && networkInfo.isAvailable() && networkInfo.isConnected()) {
 
 			return true;
-		} else {
+		}
+		else {
 
 			return false;
 		}
@@ -465,6 +462,10 @@ public class MainActivity extends FragmentActivity implements
 			break;
 		case ACTION_ADD_CARD_SET:
 			mCardSetsFragment.addCardSet((CardSet) data);
+			break;
+		case ACTION_FONT_SIZE_CHANGE:
+			int fontSizePreference = (null != data ? ((Integer)data).intValue() : PREFERENCE_NORMAL_FONT_SIZE);
+			mFontSize = getFontSizePreference(fontSizePreference);
 			break;
 		}
 	}
