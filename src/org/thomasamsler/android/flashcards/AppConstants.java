@@ -88,4 +88,5 @@ public interface AppConstants {
 	public static final int ACTION_UPDATE_CARD = 14;
 	public static final int ACTION_SHOW_OVERFLOW_ACTIONS = 15;
 	public static final int ACTION_DELETE_CARD_UPDATE_CARD_SET = 16;
+	public static final int ACTION_FONT_SIZE_CHANGE = 17;
 }

@@ -23,6 +23,7 @@ import org.thomasamsler.android.flashcards.model.Card;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -59,7 +60,7 @@ public class CardFragment extends Fragment implements AppConstants {
 	private int mFontSize;
 
 	public static CardFragment newInstance(Card card, int wordIndex, int totalWords, int fontSize) {
-
+		
 		CardFragment pageFragment = new CardFragment();
 		pageFragment.setFontSize(fontSize);
 		Bundle bundle = new Bundle();
