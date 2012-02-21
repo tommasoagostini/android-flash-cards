@@ -73,6 +73,9 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 	private ArrayAdapter<CharSequence> mSpinnerAdapter;
 	private int mPreferenceFontSize;
 	
+	private boolean mIsSpinnerReady;
+	private int mSpinnerPosition;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -84,6 +87,8 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 	public void onActivityCreated(Bundle savedInstanceState) {
 	
 		super.onCreate(savedInstanceState);
+		
+		mIsSpinnerReady = false;
 		
 		mPreferences = getActivity().getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
 		mPreferenceUserName = mPreferences.getString(PREFERENCE_FCEX_USER_NAME, "");
@@ -157,8 +162,20 @@ public class SetupFragment extends Fragment implements AppConstants, FlashCardEx
 				SharedPreferences.Editor editor = mPreferences.edit();
 				editor.putInt(PREFERENCE_FONT_SIZE, pos);
 				editor.commit();
-				Toast.makeText(getActivity().getApplicationContext(), R.string.setup_changed_font_size, Toast.LENGTH_SHORT).show();
+				
+				// We don't want to show the message when the spinner is initialize via setSelection() below.
+				if(mIsSpinnerReady && mSpinnerPosition != pos) {
+					
+					Toast.makeText(getActivity().getApplicationContext(), R.string.setup_changed_font_size, Toast.LENGTH_SHORT).show();
+				}
+				else {
+					
+					mIsSpinnerReady = true;
+				}
+				
 				((MainApplication)getActivity().getApplication()).doAction(ACTION_FONT_SIZE_CHANGE, Integer.valueOf(pos));
+				
+				mSpinnerPosition = pos;
 			}
 
 			public void onNothingSelected(AdapterView<?> arg0) { /* Nothing to do */}

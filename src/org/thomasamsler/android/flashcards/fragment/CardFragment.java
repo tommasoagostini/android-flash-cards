@@ -23,7 +23,7 @@ import org.thomasamsler.android.flashcards.model.Card;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,14 +83,14 @@ public class CardFragment extends Fragment implements AppConstants {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		mCardView = inflater.inflate(R.layout.card, container, false);
+		mCardView = inflater.inflate(R.layout.card_fragment, container, false);
 
 		mCardQuestion = getArguments().getString(CARD_QUESTION);
 		mCardAnswer = getArguments().getString(CARD_ANSWER);
 		mCardPosition = getArguments().getInt(CARD_POSITION_KEY);
 		
 		mTextViewQuestion = (TextView)mCardView.findViewById(R.id.textViewQuestion);
-		mTextViewQuestion.setTextSize(mFontSize);
+		mTextViewQuestion.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
 		
 		if(null != mCardQuestion) {
 		
@@ -102,7 +102,7 @@ public class CardFragment extends Fragment implements AppConstants {
 		}
 
 		mTextViewAnswer = (TextView)mCardView.findViewById(R.id.textViewAnswer);
-		mTextViewAnswer.setTextSize(mFontSize);
+		mTextViewAnswer.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
 		
 		if(null != mCardAnswer) {
 			
@@ -114,7 +114,7 @@ public class CardFragment extends Fragment implements AppConstants {
 		}
 
 		mEditTextWord = (EditText)mCardView.findViewById(R.id.editTextWord);
-		mEditTextWord.setTextSize(mFontSize);
+		mEditTextWord.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
 
 		mLinearLayoutEditButtons = (LinearLayout)mCardView.findViewById(R.id.linearLayoutEditButtons);
 
@@ -224,8 +224,8 @@ public class CardFragment extends Fragment implements AppConstants {
 
 		if(null != mTextViewQuestion && null != mTextViewAnswer) {
 		
-			mTextViewQuestion.setTextSize(mFontSize);
-			mTextViewAnswer.setTextSize(mFontSize);
+			mTextViewQuestion.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
+			mTextViewAnswer.setTextSize(TypedValue.COMPLEX_UNIT_SP, mFontSize);
 		}
 	}
 	

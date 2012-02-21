@@ -3,8 +3,8 @@
     <string-array name="card_actions">
         <item>Zoom In</item>
         <item>Zoom Out</item>
-        <item>Card Info</item>
         <item>Delete Card</item>
+        <item>Card Info</item>
         <item>Help</item>
     </string-array>
 </resources>

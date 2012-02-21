@@ -48,21 +48,29 @@ import android.widget.Toast;
 public class ActionbarFragment extends Fragment implements AppConstants, ActionBusListener {
 
 	/*
-	 * These values need to be in sync with values present in card_set_menu.xml
+	 * These values need to be in sync with values present in card_set_actions.xml
 	 */
-	private final int OVERFLOW_ACTION_SETUP = 0;
-	private final int OVERFLOW_ACTION_ABOUT = 1;
-	private final int OVERFLOW_ACTION_FCE = 2;
-	private final int OVERFLOW_ACTION_HELP = 3;
+	private final int CS_OVERFLOW_ACTION_SETUP = 0;
+	private final int CS_OVERFLOW_ACTION_FCE = 1;
+	private final int CS_OVERFLOW_ACTION_SEND_FEEDBACK = 2;
+	private final int CS_OVERFLOW_ACTION_ABOUT = 3;
+	private final int CS_OVERFLOW_ACTION_HELP = 4;
 
 	/*
-	 * These values need to be in sync with values present in card_menu.xml
+	 * These values need to be in sync with values present in card_actions.xml
 	 */
-	private final int OVERFLOW_ACTION_ZOOM_IN = 0;
-	private final int OVERFLOW_ACTION_ZOOM_OUT = 1;
-	private final int OVERFLOW_ACTION_CARD_INFO = 2;
-	private final int OVERFLOW_ACTION_DELETE_CARD = 3;
-	private final int OVERFLOW_ACTION_HELP_CARD = 4;
+	private final int C_OVERFLOW_ACTION_ZOOM_IN = 0;
+	private final int C_OVERFLOW_ACTION_ZOOM_OUT = 1;
+	private final int C_OVERFLOW_ACTION_DELETE_CARD = 2;
+	private final int C_OVERFLOW_ACTION_CARD_INFO = 3;
+	private final int C_OVERFLOW_ACTION_HELP_CARD = 4;
+	
+	/*
+	 * These values need to be in sync with values present in setup_actions.xml
+	 */
+	private final int S_OVERFLOW_ACTION_SEND_FEEDBACK = 0;
+	private final int S_OVERFLOW_ACTION_ABOUT = 1;
+	private final int S_OVERFLOW_ACTION_HELP = 2;
 
 	private DataSource mDataSource;
 	private ListView mListViewOverflow;
@@ -224,7 +232,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 			configureForSetup();
 			break;
 		case LIST_FRAGMENT:
-			configureForList();
+			configureForCardSets();
 			break;
 		case ADD_FRAGMENT:
 			configureForAdd();
@@ -247,15 +255,15 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		mFragmentType = ADD_FRAGMENT;
 	}
 
-	private void configureForList() {
+	private void configureForCardSets() {
 
 		mImageButtonEdit.setVisibility(View.GONE);
 		mImageButtonNewCardSet.setVisibility(View.VISIBLE);
 		mImageButtonList.setVisibility(View.VISIBLE);
 		mImageButtonOverflow.setVisibility(View.VISIBLE);
 		mFragmentType = LIST_FRAGMENT;
-		mListViewOverflow.setOnItemClickListener(getListFragmentActionListener());
-		addOverflowActions(getResources().getStringArray(R.array.card_set_actions));
+		mListViewOverflow.setOnItemClickListener(getCardSetsFragmentActionListener());
+		setOverflowActions(getResources().getStringArray(R.array.card_set_actions));
 	}
 
 	private void configureForSetup() {
@@ -265,6 +273,8 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		mImageButtonList.setVisibility(View.VISIBLE);
 		mImageButtonOverflow.setVisibility(View.VISIBLE);
 		mFragmentType = SETUP_FRAGMENT;
+		mListViewOverflow.setOnItemClickListener(getSetupFragmentActionListener());
+		setOverflowActions(getResources().getStringArray(R.array.setup_actions));
 	}
 
 	private void configureForAbout() {
@@ -284,7 +294,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		mImageButtonOverflow.setVisibility(View.VISIBLE);
 		mFragmentType = CARDS_FRAGMENT;
 		mListViewOverflow.setOnItemClickListener(getCardFragmentActionListener());
-		addOverflowActions(getResources().getStringArray(R.array.card_actions));
+		setOverflowActions(getResources().getStringArray(R.array.card_actions));
 	}
 
 	public void setFragmentType(int fragmentType) {
@@ -328,23 +338,23 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 
 				switch(position) {
 
-				case OVERFLOW_ACTION_ZOOM_IN:
+				case C_OVERFLOW_ACTION_ZOOM_IN:
 					mMainApplication.doAction(ACTION_ZOOM_IN_CARD);
 					break;
 
-				case OVERFLOW_ACTION_ZOOM_OUT:
+				case C_OVERFLOW_ACTION_ZOOM_OUT:
 					mMainApplication.doAction(ACTION_ZOOM_OUT_CARD);
 					break;
 
-				case OVERFLOW_ACTION_CARD_INFO:
+				case C_OVERFLOW_ACTION_CARD_INFO:
 					mMainApplication.doAction(ACTION_SHOW_CARD_INFO);
 					break;
 
-				case OVERFLOW_ACTION_DELETE_CARD:
+				case C_OVERFLOW_ACTION_DELETE_CARD:
 					mMainApplication.doAction(ACTION_DELETE_CARD);
 					break;
 			
-				case OVERFLOW_ACTION_HELP_CARD:
+				case C_OVERFLOW_ACTION_HELP_CARD:
 					mMainApplication.doAction(ACTION_SHOW_HELP);
 					break;
 				}
@@ -352,7 +362,7 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 		};
 	}
 
-	private OnItemClickListener getListFragmentActionListener() {
+	private OnItemClickListener getCardSetsFragmentActionListener() {
 
 		return new OnItemClickListener() {
 
@@ -362,27 +372,57 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 
 				switch(position) {
 
-				case OVERFLOW_ACTION_SETUP:
+				case CS_OVERFLOW_ACTION_SETUP:
 					mMainApplication.doAction(ACTION_SHOW_SETUP);
 					break;
 
-				case OVERFLOW_ACTION_ABOUT:
+				case CS_OVERFLOW_ACTION_ABOUT:
 					mMainApplication.doAction(ACTION_SHOW_ABOUT);
 					break;
 
-				case OVERFLOW_ACTION_FCE:
+				case CS_OVERFLOW_ACTION_FCE:
 					mMainApplication.doAction(ACTION_GET_EXTERNAL_CARD_SETS);
 					break;
 
-				case OVERFLOW_ACTION_HELP:
+				case CS_OVERFLOW_ACTION_HELP:
 					mMainApplication.doAction(ACTION_SHOW_HELP);
+					break;
+				
+				case CS_OVERFLOW_ACTION_SEND_FEEDBACK:
+					mMainApplication.doAction(ACTION_SEND_FEEDBACK);
+					break;
+				}
+			}
+		};
+	}
+	
+	private OnItemClickListener getSetupFragmentActionListener() {
+		
+		return new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				
+				mListViewOverflow.setVisibility(View.GONE);
+
+				switch(position) {
+
+				case S_OVERFLOW_ACTION_ABOUT:
+					mMainApplication.doAction(ACTION_SHOW_ABOUT);
+					break;
+
+				case S_OVERFLOW_ACTION_HELP:
+					mMainApplication.doAction(ACTION_SHOW_HELP);
+					break;
+				
+				case S_OVERFLOW_ACTION_SEND_FEEDBACK:
+					mMainApplication.doAction(ACTION_SEND_FEEDBACK);
 					break;
 				}
 			}
 		};
 	}
 
-	private void addOverflowActions(String[] actions) {
+	private void setOverflowActions(String[] actions) {
 
 		mOverflowActions.clear();
 
