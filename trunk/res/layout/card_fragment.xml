@@ -12,7 +12,8 @@
         android:gravity="center_vertical|center_horizontal"
         android:textColor="@color/font_color"
         android:textStyle="bold"
-        android:typeface="normal" />
+        android:typeface="normal"
+        android:textSize="@dimen/CardDefaultFontSize" />
     
     <TextView
         android:id="@+id/textViewAnswer"
@@ -22,7 +23,8 @@
         android:textColor="@color/font_color"
         android:textStyle="bold"
         android:typeface="normal"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:textSize="@dimen/CardDefaultFontSize" />
 
     <EditText
         android:id="@+id/editTextWord"
@@ -36,7 +38,8 @@
         android:textColor="@color/font_color"
         android:typeface="normal"
         android:visibility="invisible"
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine"
+        android:textSize="@dimen/CardDefaultFontSize" />
 
     
     <LinearLayout

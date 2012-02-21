@@ -12,7 +12,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/AddWordTitleTopPadding"
         android:text="@string/add_card_front_title"
-        android:textColor="@color/font_color_card_info" />
+        android:textColor="@color/font_color_card_info"
+        android:textSize="@dimen/CardDefaultFontSize" />
 
     <EditText
         android:id="@+id/editTextAdd"
@@ -22,7 +23,8 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/AddWordEditTextPadding"
         android:layout_marginRight="@dimen/AddWordEditTextPadding"
-        android:inputType="text" />
+        android:inputType="text"
+        android:textSize="@dimen/CardDefaultFontSize" />
 
     <LinearLayout
         android:id="@+id/linearLayoutAddEditButtons"

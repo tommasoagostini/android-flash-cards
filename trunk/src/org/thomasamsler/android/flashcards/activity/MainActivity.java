@@ -32,6 +32,7 @@ import org.thomasamsler.android.flashcards.model.CardSet;
 import org.thomasamsler.android.flashcards.pager.CardsPager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -45,9 +46,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity implements
-		ActionBusListener, AppConstants {
+public class MainActivity extends FragmentActivity implements ActionBusListener, AppConstants {
 
+	private static final String FEEDBACK_EMAIL_ADDRESS = "tamsler@gmail.com";
+	
 	private ActionbarFragment mActionbarFragment;
 	private CardSetsFragment mCardSetsFragment;
 	private AddCardFragment mAddCardFragment;
@@ -71,7 +73,7 @@ public class MainActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.list);
+		setContentView(R.layout.main);
 
 		mDataSource = new DataSource(this);
 		mDataSource.open();
@@ -91,7 +93,8 @@ public class MainActivity extends FragmentActivity implements
 				ACTION_SET_HELP_CONTEXT,
 				ACTION_SHOW_ADD_CARD,
 				ACTION_ADD_CARD_SET,
-				ACTION_FONT_SIZE_CHANGE);
+				ACTION_FONT_SIZE_CHANGE,
+				ACTION_SEND_FEEDBACK);
 
 		/*
 		 * Determine if we need to run the File to DB conversion
@@ -401,6 +404,18 @@ public class MainActivity extends FragmentActivity implements
 		return fontSize;
 	}
 	
+	private void sendFeedback() {
+		
+		String toList[] = { FEEDBACK_EMAIL_ADDRESS };
+        
+        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+        emailIntent.setType("plain/text");
+        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, toList);
+        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getString(R.string.email_feedback_subject));
+        
+        startActivity(Intent.createChooser(emailIntent, getResources().getString(R.string.email_feedback_chooser)));
+	}
+	
 	
 	public DataSource getDataSource() {
 
@@ -466,6 +481,9 @@ public class MainActivity extends FragmentActivity implements
 		case ACTION_FONT_SIZE_CHANGE:
 			int fontSizePreference = (null != data ? ((Integer)data).intValue() : PREFERENCE_NORMAL_FONT_SIZE);
 			mFontSize = getFontSizePreference(fontSizePreference);
+			break;
+		case ACTION_SEND_FEEDBACK:
+			sendFeedback();
 			break;
 		}
 	}

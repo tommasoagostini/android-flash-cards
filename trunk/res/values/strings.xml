@@ -66,5 +66,8 @@
     <string name="image_divider">Divider</string>
     
     <string name="help_dialog_title">Help</string>
+    
+    <string name="email_feedback_chooser">Send your email in:</string>
+    <string name="email_feedback_subject">Flash Cards: User Feedback</string>
 
 </resources>
