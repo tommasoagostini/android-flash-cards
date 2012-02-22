@@ -56,6 +56,7 @@ public class MainActivity extends FragmentActivity implements ActionBusListener,
 	private SetupFragment mSetupFragment;
 	private AboutFragment mAboutFragment;
 	private CardsPager mCardsPager;
+	private CardSet mCurrentCardSet;
 	private int mHelpContext;
 	private DataSource mDataSource;
 	private int mActiveFragmentReference;
@@ -94,7 +95,8 @@ public class MainActivity extends FragmentActivity implements ActionBusListener,
 				ACTION_SHOW_ADD_CARD,
 				ACTION_ADD_CARD_SET,
 				ACTION_FONT_SIZE_CHANGE,
-				ACTION_SEND_FEEDBACK);
+				ACTION_SEND_FEEDBACK,
+				ACTION_RESHUFFLE_CARDS);
 
 		/*
 		 * Determine if we need to run the File to DB conversion
@@ -304,6 +306,8 @@ public class MainActivity extends FragmentActivity implements ActionBusListener,
 
 	private void showCardsFragment(CardSet cardSet) {
 
+		mCurrentCardSet = cardSet;
+		
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -484,6 +488,9 @@ public class MainActivity extends FragmentActivity implements ActionBusListener,
 			break;
 		case ACTION_SEND_FEEDBACK:
 			sendFeedback();
+			break;
+		case ACTION_RESHUFFLE_CARDS:
+			showCardsFragment(mCurrentCardSet);
 			break;
 		}
 	}

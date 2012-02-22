@@ -62,8 +62,9 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 	private final int C_OVERFLOW_ACTION_ZOOM_IN = 0;
 	private final int C_OVERFLOW_ACTION_ZOOM_OUT = 1;
 	private final int C_OVERFLOW_ACTION_DELETE_CARD = 2;
-	private final int C_OVERFLOW_ACTION_CARD_INFO = 3;
-	private final int C_OVERFLOW_ACTION_HELP_CARD = 4;
+	private final int C_OVERFLOW_ACTION_RESHUFFLE = 3;
+	private final int C_OVERFLOW_ACTION_CARD_INFO = 4;
+	private final int C_OVERFLOW_ACTION_HELP_CARD = 5;
 	
 	/*
 	 * These values need to be in sync with values present in setup_actions.xml
@@ -356,6 +357,10 @@ public class ActionbarFragment extends Fragment implements AppConstants, ActionB
 			
 				case C_OVERFLOW_ACTION_HELP_CARD:
 					mMainApplication.doAction(ACTION_SHOW_HELP);
+					break;
+					
+				case C_OVERFLOW_ACTION_RESHUFFLE:
+					mMainApplication.doAction(ACTION_RESHUFFLE_CARDS);
 					break;
 				}
 			}
