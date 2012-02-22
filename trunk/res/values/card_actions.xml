@@ -4,6 +4,7 @@
         <item>Zoom In</item>
         <item>Zoom Out</item>
         <item>Delete Card</item>
+        <item>Reshuffle</item>
         <item>Card Info</item>
         <item>Help</item>
     </string-array>
