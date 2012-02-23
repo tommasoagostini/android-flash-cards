@@ -88,7 +88,7 @@ public class MainApplication extends Application {
 	/*
 	 * This will be called from the main activity in its onCreate() method
 	 */
-	public void initActionButListener() {
+	public void initActionBusListener() {
 		
 		actionBusListeners = new HashMap<Integer, List<WeakReference<ActionBusListener>>>();
 	}
