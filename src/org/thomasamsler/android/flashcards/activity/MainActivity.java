@@ -81,7 +81,7 @@ public class MainActivity extends FragmentActivity implements ActionBusListener,
 
 		mMainApplication = (MainApplication) getApplication();
 
-		mMainApplication.initActionButListener();
+		mMainApplication.initActionBusListener();
 
 		mMainApplication.registerAction(
 				this,
