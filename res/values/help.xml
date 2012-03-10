@@ -29,8 +29,8 @@
     <string name="help_content_add_card">
         <![CDATA[
         <p>Enter content for the card\'s front side. Then tap on the save icon, which flips the card
-        so that you can enter content for the card\'s back side. Then tap on the save icon, which adds the card
-        and returns to the card set list.</p>
+        so that you can enter content for the card\'s back side. Then tap on the save icon, which adds the card.</p>
+        <p>You can continue adding cards, or click on the cancle button to return to the card set list.</p>
         ]]>
     </string>
     <string name="help_content_view_card">

@@ -58,7 +58,7 @@ public class AddCardFragment extends Fragment implements AppConstants {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
-		return inflater.inflate(R.layout.add_fragment, container, false);
+		return inflater.inflate(R.layout.add_card_fragment, container, false);
 	}
 	
 	
@@ -117,7 +117,7 @@ public class AddCardFragment extends Fragment implements AppConstants {
 					}
 					else if(null == mBackPageWord || "".equals(mBackPageWord)) {
 						
-						Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_front_page, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_back_page, Toast.LENGTH_SHORT).show();
 						
 						flipCard(mView);
 						return;
@@ -129,7 +129,7 @@ public class AddCardFragment extends Fragment implements AppConstants {
 				if(mIsSaved) {
 
 					Toast.makeText(getActivity().getApplicationContext(), R.string.add_card_save_message_success, Toast.LENGTH_SHORT).show();
-					((MainApplication)getActivity().getApplication()).doAction(ACTION_SHOW_CARD_SETS, Boolean.TRUE);
+					((MainApplication)getActivity().getApplication()).doAction(ACTION_SHOW_ADD_CARD, mCardSet);
 				}
 				else {
 

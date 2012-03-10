@@ -7,7 +7,7 @@
     <dimen name="ActionBarHeight">50dp</dimen>
     <dimen name="ActionBarFontSize">18dp</dimen>
     <dimen name="SaveButtonTopPadding">20dp</dimen>
-    <dimen name="AddWordTitleTopPadding">15dp</dimen>
+    <dimen name="AddWordTitleTopPadding">5dp</dimen>
     <dimen name="AddWordEditTextPadding">10dp</dimen>
     <dimen name="EditButtonsCenterPadding">20dp</dimen>
     <dimen name="DialogTitleBottomPadding">15dp</dimen>
@@ -29,5 +29,5 @@
     <dimen name="EditWordPaddingLeftRight">10dp</dimen>
     <dimen name="ListOverflowPaddingRight">10dp</dimen>
     <dimen name="ListOverflowWidth">150dp</dimen>
-    <dimen name="CardDefaultFontSize">40sp</dimen>
+    <dimen name="CardDefaultFontSize">30sp</dimen>
 </resources>

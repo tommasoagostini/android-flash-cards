@@ -18,19 +18,22 @@
     <EditText
         android:id="@+id/editTextAdd"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/AddWordEditTextPadding"
-        android:layout_marginRight="@dimen/AddWordEditTextPadding"
-        android:inputType="text"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textViewAddTitle"
+        android:gravity="top|left"
+        android:layout_marginBottom="@dimen/EditWordPaddingTopBottom"
+        android:layout_marginLeft="@dimen/EditWordPaddingLeftRight"
+        android:layout_marginRight="@dimen/EditWordPaddingLeftRight"
+        android:textColor="@color/font_color"
+        android:typeface="normal"
+        android:inputType="textMultiLine"
         android:textSize="@dimen/CardDefaultFontSize" />
 
     <LinearLayout
         android:id="@+id/linearLayoutAddEditButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextAdd"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/SaveButtonTopPadding" >
 
