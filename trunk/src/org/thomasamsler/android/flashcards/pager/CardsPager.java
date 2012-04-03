@@ -218,14 +218,19 @@ public class CardsPager implements ActionBusListener, AppConstants {
 		// Reduce the card counter by one
 		mNumberOfCards -= 1;
 		
-		// Mark card as deleted. The saveCards(...) method ignores null or empty string cards
-		Card card = mCards.set(mRandomCardPositionList.get(currentIndex), null);
+		Card card = null;
 		
-		// Delete card
-		mDataSource.deleteCard(card);
-		
-		// Remove the deleted card position
-		mRandomCardPositionList.remove(currentIndex);
+		if(mRandomCardPositionList.size() > 0) {
+
+			// Mark card as deleted. The saveCards(...) method ignores null or empty string cards
+			card = mCards.set(mRandomCardPositionList.get(currentIndex), null);
+
+			// Delete card
+			mDataSource.deleteCard(card);
+
+			// Remove the deleted card position
+			mRandomCardPositionList.remove(currentIndex);
+		}
 
 		/*
 		 * Determine all remaining random card positions
@@ -258,8 +263,11 @@ public class CardsPager implements ActionBusListener, AppConstants {
 			Toast.makeText(mApplicationContext, R.string.delete_card, Toast.LENGTH_SHORT).show();
 		}
 		
-		// Notify CardSet that we have just deleted a card
-		mMainApplication.doAction(ACTION_DELETE_CARD_UPDATE_CARD_SET, Long.valueOf(card.getCardSetId()));
+		if(null != card) {
+		
+			// Notify CardSet that we have just deleted a card
+			mMainApplication.doAction(ACTION_DELETE_CARD_UPDATE_CARD_SET, Long.valueOf(card.getCardSetId()));
+		}
 	}
 
 	
